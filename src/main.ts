@@ -29,11 +29,16 @@ home.onSkills = () => { skills.returnTo = "home"; game.show("skills"); };
 home.onSettings = () => settings.show();
 pause.onSettings = () => settings.show();
 
+// Portrait screens get a tall arena (640x1280); landscape keeps the classic
+// 960x720. Same mechanics — the battlefield just matches the glass.
+if (window.innerHeight > window.innerWidth) game.world = { w: 640, h: 1280 };
+else game.world = { w: WORLD_W, h: WORLD_H };
+
 const phaser = new Phaser.Game({
   type: Phaser.AUTO,
   parent: "game",
-  width: WORLD_W,
-  height: WORLD_H,
+  width: game.world.w,
+  height: game.world.h,
   backgroundColor: "#081120",
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   scene: [],

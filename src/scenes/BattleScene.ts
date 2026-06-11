@@ -53,7 +53,7 @@ interface EnemyBullet {
 export class BattleScene extends Phaser.Scene {
   private onHud!: (s: HudState) => void;
 
-  private towerPos = new Phaser.Math.Vector2(C.WORLD_W / 2, C.WORLD_H / 2);
+  private towerPos = new Phaser.Math.Vector2(game.world.w / 2, game.world.h / 2);
   private gun!: Phaser.GameObjects.Image;
   private shieldGfx!: Phaser.GameObjects.Graphics;
   private fxLayer!: Phaser.GameObjects.Layer;
@@ -206,11 +206,12 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private edgePosition(): [number, number] {
+    const { w, h } = game.world;
     const side = Math.floor(Math.random() * 4);
-    if (side === 0) return [Math.random() * C.WORLD_W, -C.SPAWN_MARGIN];
-    if (side === 1) return [Math.random() * C.WORLD_W, C.WORLD_H + C.SPAWN_MARGIN];
-    if (side === 2) return [-C.SPAWN_MARGIN, Math.random() * C.WORLD_H];
-    return [C.WORLD_W + C.SPAWN_MARGIN, Math.random() * C.WORLD_H];
+    if (side === 0) return [Math.random() * w, -C.SPAWN_MARGIN];
+    if (side === 1) return [Math.random() * w, h + C.SPAWN_MARGIN];
+    if (side === 2) return [-C.SPAWN_MARGIN, Math.random() * h];
+    return [w + C.SPAWN_MARGIN, Math.random() * h];
   }
 
   // -- player fire -----------------------------------------------------------------
@@ -455,15 +456,16 @@ export class BattleScene extends Phaser.Scene {
 
   private flashScreen(color: number, alpha: number): void {
     if (game.gs.reduceMotion) return;
-    const r = this.fx(this.add.rectangle(C.WORLD_W / 2, C.WORLD_H / 2, C.WORLD_W, C.WORLD_H, color, alpha));
+    const r = this.fx(this.add.rectangle(game.world.w / 2, game.world.h / 2, game.world.w, game.world.h, color, alpha));
     this.tweens.add({ targets: r, alpha: 0, duration: 220, onComplete: () => r.destroy() });
   }
 
   private drawBackdrop(): void {
+    const { w, h } = game.world;
     const g = this.add.graphics();
     g.lineStyle(1, 0x6096e6, 0.06);
-    for (let x = 0; x <= C.WORLD_W; x += 48) g.lineBetween(x, 0, x, C.WORLD_H);
-    for (let y = 0; y <= C.WORLD_H; y += 48) g.lineBetween(0, y, C.WORLD_W, y);
+    for (let x = 0; x <= w; x += 48) g.lineBetween(x, 0, x, h);
+    for (let y = 0; y <= h; y += 48) g.lineBetween(0, y, w, y);
     for (let i = 1; i <= 5; i++) {
       const ring = this.add.graphics();
       ring.lineStyle(1, 0x3b9dff, 0.10 - i * 0.015);
@@ -593,7 +595,7 @@ export class BattleScene extends Phaser.Scene {
       if (b.guided) this.steerBullet(b, dt);
       b.dot.x += b.vx * dt;
       b.dot.y += b.vy * dt;
-      if (b.dot.x < -20 || b.dot.x > C.WORLD_W + 20 || b.dot.y < -20 || b.dot.y > C.WORLD_H + 20) {
+      if (b.dot.x < -20 || b.dot.x > game.world.w + 20 || b.dot.y < -20 || b.dot.y > game.world.h + 20) {
         b.alive = false; b.dot.destroy(); continue;
       }
       for (const e of this.enemies) {

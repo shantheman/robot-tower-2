@@ -19,6 +19,9 @@ export interface ScreenHooks {
 export class Game {
   readonly gs: GameState;
   screen: Screen = "home";
+  /** World dimensions — picked at boot: classic 960x720 on landscape screens,
+   * a tall battlefield on portrait phones (same mechanics, taller arena). */
+  world = { w: 960, h: 720 };
   /** Why the shop is open: between waves (cleared) or a mid-wave Tab pause. */
   shopMode: "cleared" | "paused" = "paused";
   private hooks = new Map<Screen, ScreenHooks>();
