@@ -76,7 +76,7 @@ export function updateHud(s: HudState): void {
       // the monochrome glyphs — those still live in ULT_ICONS).
       const art = ITEM_ART[u.key];
       $("ult-icon").innerHTML = art
-        ? `<img src="${art}" alt="" draggable="false" />`
+        ? `<img class="${u.key}" src="${art}" alt="" draggable="false" />`
         : ULT_ICONS[u.key] ?? "";
     }
     const stateText = u.ready ? "FIRE" : `${Math.ceil(u.cooldown)}s`;
