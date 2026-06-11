@@ -118,6 +118,8 @@ export class BattleScene extends Phaser.Scene {
     // Dev/debug handle for the headless QA driver (steps update() manually).
     (window as unknown as Record<string, unknown>).rt2scene = this;
     this.startBattle();
+    // If a menu screen (Home) is up, idle paused until it starts a battle.
+    if (game.screen !== "battle") this.setPaused(true);
   }
 
   /** Track a transient effect so startBattle can hard-clear leftovers. */
@@ -137,6 +139,7 @@ export class BattleScene extends Phaser.Scene {
     this.clearBoard(true);
     this.fxLayer.removeAll(true);
     this.over = false;
+    this.setPaused(false);
     this.drone?.destroy();
     this.drone = undefined;
     this.startWave();

@@ -1,0 +1,68 @@
+/** Settings modal — sound toggle, volume slider, reduce-motion, fullscreen.
+ * Same options as the original game's panel (plus the version + credits
+ * footer). Opens over Home or as the in-battle pause menu's settings. */
+
+import { game } from "../game";
+import { GAME_VERSION } from "../version";
+
+export class SettingsModal {
+  private root: HTMLElement;
+
+  constructor(parent: HTMLElement) {
+    this.root = document.createElement("div");
+    this.root.id = "settings";
+    this.root.className = "modal-dim hidden";
+    parent.appendChild(this.root);
+    this.root.addEventListener("click", (ev) => {
+      if (ev.target === this.root) this.hide();
+    });
+  }
+
+  show(): void { this.render(); this.root.classList.remove("hidden"); }
+  hide(): void { this.root.classList.add("hidden"); game.gs.save(); }
+  get visible(): boolean { return !this.root.classList.contains("hidden"); }
+
+  private row(label: string, control: string): string {
+    return `<div class="set-row"><span class="set-label">${label}</span>${control}</div>`;
+  }
+
+  render(): void {
+    const gs = game.gs;
+    const toggle = (key: string, on: boolean) =>
+      `<button class="set-toggle ${on ? "on" : ""}" data-key="${key}">${on ? "ON" : "OFF"}</button>`;
+    this.root.innerHTML = `
+      <div class="modal-card">
+        <header><span class="modal-title">SETTINGS</span><button class="modal-x" data-act="close">✕</button></header>
+        ${this.row("Sound", toggle("sound", !gs.muted))}
+        ${this.row("Volume", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.volume * 100)}" data-key="volume" />
+          <b id="vol-pct">${Math.round(gs.volume * 100)}%</b></span>`)}
+        ${this.row("Reduce motion (no shake)", toggle("motion", gs.reduceMotion))}
+        ${this.row("Fullscreen", toggle("fullscreen", !!document.fullscreenElement))}
+        <footer class="modal-foot">
+          <span>v${GAME_VERSION} · Made by Callum</span>
+          <span>Fonts: Chakra Petch & Space Grotesk (SIL OFL)</span>
+        </footer>
+      </div>`;
+
+    this.root.querySelectorAll<HTMLButtonElement>(".set-toggle").forEach((el) => {
+      el.addEventListener("click", () => {
+        const k = el.dataset.key;
+        if (k === "sound") gs.muted = !gs.muted;
+        else if (k === "motion") gs.reduceMotion = !gs.reduceMotion;
+        else if (k === "fullscreen") {
+          if (document.fullscreenElement) void document.exitFullscreen();
+          else void document.documentElement.requestFullscreen().catch(() => undefined);
+        }
+        gs.save();
+        this.render();
+      });
+    });
+    const slider = this.root.querySelector<HTMLInputElement>("input[data-key=volume]");
+    slider?.addEventListener("input", () => {
+      gs.volume = Number(slider.value) / 100;
+      this.root.querySelector("#vol-pct")!.textContent = `${slider.value}%`;
+    });
+    slider?.addEventListener("change", () => gs.save());
+    this.root.querySelector("[data-act=close]")?.addEventListener("click", () => this.hide());
+  }
+}
