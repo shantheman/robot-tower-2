@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.6.2 — 2026-06-11
+
+- **Floating footer on Upgrades + Skill Tree** (new mocks): the big CTA and
+  your balance (coins in the store, cores in the tree) now ride a pinned
+  bar at the bottom of the screen instead of hiding below the fold on
+  phones. Applied on desktop too — same bar, same reason, shorter windows.
+- The currency readout moved out of the panel headers into that bar.
+
 ## v0.6.1 — 2026-06-11
 
 - **Favicon**: the crystal core in the browser tab, plus an apple-touch-icon

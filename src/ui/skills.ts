@@ -83,8 +83,6 @@ export class SkillsPanel {
     this.root.innerHTML = `
       <header class="panel-head">
         <div class="panel-title-group"><h1>SKILL TREE</h1></div>
-        <div class="panel-money"><span class="core-icon"></span><b class="cores-b">${gs.cores}</b>
-          <span class="cores-lbl">CORES</span></div>
       </header>
       <div class="tree-legend">
         <span class="lg owned"><i></i>OWNED</span>
@@ -96,6 +94,8 @@ export class SkillsPanel {
       <div class="tree-cols">${cols}</div>
       <div class="tree-foot">${isTouch() ? "Tap" : "Click"} a node to unlock it.</div>
       <footer class="panel-foot">
+        <div class="foot-bal"><label>CORES</label>
+          <span class="fb-val"><span class="core-icon"></span><b class="cy">${gs.cores}</b></span></div>
         <button class="cta startwave" data-act="back">
           <span class="play">▸&#xFE0E;</span>
           <span class="cta-col"><span class="cta-big">${this.returnTo === "battle" ? "RESUME BATTLE" : "BACK TO BASE"}</span>

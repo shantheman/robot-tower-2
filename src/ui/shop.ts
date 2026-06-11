@@ -180,7 +180,6 @@ export class ShopPanel {
           <h1>UPGRADES</h1>
           <span class="panel-status ${cleared ? "ok" : ""}">${cleared ? "✓ WAVE CLEARED" : "❚❚ BATTLE PAUSED"}</span>
         </div>
-        <div class="panel-money"><span class="coin-icon stack"></span><b>${Math.floor(gs.money).toLocaleString("en-US")}</b></div>
       </header>
 
       <section class="tower-hero">
@@ -228,6 +227,8 @@ export class ShopPanel {
       <div class="card-grid ult">${ults.map((c) => this.card(c)).join("")}</div>`}
 
       <footer class="panel-foot">
+        <div class="foot-bal"><label>BALANCE</label>
+          <span class="fb-val"><span class="coin-icon"></span><b>${Math.floor(gs.money).toLocaleString("en-US")}</b></span></div>
         ${cleared
         ? `<button class="cta startwave" data-act="next">
              <span class="play">▸&#xFE0E;</span>
