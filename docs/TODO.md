@@ -42,6 +42,12 @@ and git).
       `art/17_interceptor.webp` / `art/18_field_medic.webp`.
 - [x] **Currency art** — DONE (2026-06-11): crystal core + gold coins
       (single inline, stack in corner displays) replace the CSS glyphs.
+- [ ] **Replace the locked icon** — locked skill nodes and achievements
+      currently show the generic 🔒 emoji (OS-rendered, so it looks like
+      stock clip-art and varies per platform). Doesn't fit the design;
+      swap for a custom SVG glyph or painterly art in the game's style.
+      Sites: skill-tree locked nodes + legend (`src/ui/skills.ts`),
+      achievements modal (`src/ui/achievements.ts`).
 - [ ] **Final enemy sprites** — the HANDOFF marks the current five as
       temporary ("likely replaced later, possibly animated"). Boss, Shooter,
       and the in-battle drone still use the old pygame-era art, which clashes
