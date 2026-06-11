@@ -739,6 +739,7 @@ html.touch kbd { display: none; }
 .sc-count { display: none; }
 @media (max-width: 760px) {
   .lg-hint { display: none; }
+  .cores-lbl { display: none; } /* just the diamond + number upper-right */
   .tree-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
   .tree-tab {
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
