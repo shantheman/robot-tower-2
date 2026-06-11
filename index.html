@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Robot Tower Survival</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="stage">
+    <div id="game"></div>
+
+    <!-- DOM/CSS HUD overlay — real HTML floating over the WebGL battle -->
+    <div id="hud">
+      <div class="hud-top">
+        <div class="panel badge-group">
+          <span class="badge level">LEVEL <b id="hud-level">1</b></span>
+          <span class="divider"></span>
+          <span class="badge wave">WAVE <b id="hud-wave">1/7</b></span>
+        </div>
+        <div class="panel integrity">
+          <label>TOWER INTEGRITY</label>
+          <div class="bar"><div id="hud-hp" class="fill"></div></div>
+          <span id="hud-hp-text" class="bar-text">100 / 100</span>
+        </div>
+        <div class="panel counters">
+          <span class="coin-icon"></span><b id="hud-money" class="money">0</b>
+          <span class="divider"></span>
+          <span class="core-icon"></span><b id="hud-cores" class="cores">0</b>
+          <span class="divider"></span>
+          <button id="hud-gear" class="gear" title="Settings">&#9881;</button>
+        </div>
+      </div>
+      <div class="hud-bottom">
+        <button class="hud-btn">Skill Tree&ensp;<kbd>T</kbd></button>
+        <button class="hud-btn">Upgrades&ensp;<kbd>Tab</kbd></button>
+      </div>
+      <div id="wave-intro" class="wave-intro hidden">
+        <div class="wi-level" id="wi-level">LEVEL 1</div>
+        <div class="wi-wave" id="wi-wave">WAVE 1</div>
+        <div class="wi-count" id="wi-count">3</div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

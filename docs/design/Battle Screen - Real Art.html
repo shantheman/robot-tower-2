@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Robot Tower Survival — Real Art Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+  html, body { margin: 0; height: 100%; background: #1a1a1f; }
+  * { box-sizing: border-box; }
+  @keyframes fly {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.6); }
+    20%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(108px, 0) scale(1.1); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="battle-live.jsx"></script>
+<script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel" src="home.jsx"></script>
+<script type="text/babel" src="panels.jsx"></script>
+
+<script type="text/babel">
+  const { DesignCanvas, DCSection, DCArtboard } = window;
+  const { BattleLive, SpriteRoster, WaveIntro, DeathScreen, HomeNew, HomeContinue } = window;
+  const { SkillTreeScreen, UpgradesStoreScreen } = window;
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="live" title="Battle Screen — Real Art (live)"
+          subtitle="AI sprites cut out & wired in. Crystal-spire tower (3/4) in the center; top-down enemies advance and rotate to face it. This is the mixed-perspective test.">
+          <DCArtboard id="scene" label="Live battle — enemies advancing & rotating around the tower" width={1280} height={800}><BattleLive /></DCArtboard>
+        </DCSection>
+        <DCSection id="flow" title="Game Flow Screens"
+          subtitle="Built on the same battle system & art. Home (two states) → wave intro → battle → death (money salvages into cores at 100:1).">
+          <DCArtboard id="home-new" label="Home — new player (no progress yet)" width={1280} height={800}><HomeNew /></DCArtboard>
+          <DCArtboard id="home-cont" label="Home — returning player (Continue)" width={1280} height={800}><HomeContinue /></DCArtboard>
+          <DCArtboard id="wave" label="Wave intro — countdown over the battlefield" width={1280} height={800}><WaveIntro /></DCArtboard>
+          <DCArtboard id="death" label="You Died — money converts to cores @ 100:1 (animated)" width={1280} height={800}><DeathScreen /></DCArtboard>
+        </DCSection>
+        <DCSection id="panels" title="Menu Panels — cleaned up"
+          subtitle="Polished Skill Tree & Upgrades store using your real item content, matched to the Real-Art type/gradient/card system. All node & card states shown (owned · available · locked · too-expensive · equipped).">
+          <DCArtboard id="skilltree" label="Skill Tree — owned / available / locked node states" width={1280} height={760}><SkillTreeScreen /></DCArtboard>
+          <DCArtboard id="store-cleared" label="Upgrades — between waves (Wave Cleared → Start Next Wave)" width={1280} height={920}><UpgradesStoreScreen status="cleared" /></DCArtboard>
+          <DCArtboard id="store-paused" label="Upgrades — opened mid-battle (Battle Paused)" width={1280} height={920}><UpgradesStoreScreen status="paused" /></DCArtboard>
+        </DCSection>
+        <DCSection id="assets" title="Extracted sprites"
+          subtitle="Background-removed cut-outs, ready to drop into the engine. Enemies are top-down (rotation-ready); tower is 3/4 (static centerpiece).">
+          <DCArtboard id="roster" label="Sprite roster" width={1180} height={360}><SpriteRoster /></DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

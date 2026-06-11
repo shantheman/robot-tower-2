@@ -1,0 +1,167 @@
+/* Visual system per docs/design/HANDOFF.md — palette, fonts, HUD chrome.
+   Values lifted from the design mocks (battle-live.jsx). */
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("/fonts/ChakraPetch-Medium.ttf") format("truetype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("/fonts/ChakraPetch-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("/fonts/ChakraPetch-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/fonts/SpaceGrotesk-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/fonts/SpaceGrotesk-Medium.ttf") format("truetype");
+  font-weight: 500;
+}
+
+:root {
+  --bg-deep: #04080f;
+  --bg-navy: #081120;
+  --bg-panel: rgba(8, 14, 28, 0.7);
+  --line: rgba(120, 160, 230, 0.16);
+  --line-strong: rgba(120, 160, 230, 0.25);
+  --cyan: #7fe8ff;
+  --blue: #3b9dff;
+  --red: #ff5238;
+  --orange: #ff9341;
+  --gold: #ffc94a;
+  --green: #46e39a;
+  --text: #dce8f5;
+  --dim: #7e93ad;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg-deep);
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  color: var(--text);
+  overflow: hidden;
+}
+
+body { display: grid; place-items: center; }
+
+/* The stage is a fixed 4:3 box (the game's logical aspect) centered in the
+   window, so the DOM HUD and the Phaser canvas always share the same bounds
+   — no drift at odd window shapes. */
+#stage {
+  position: relative;
+  width: min(100vw, calc(100vh * 4 / 3));
+  height: min(100vh, calc(100vw * 3 / 4));
+  background: radial-gradient(120% 120% at 50% 50%, #0e1b30 0%, #081120 55%, #04080f 100%);
+}
+#game { position: absolute; inset: 0; }
+#game canvas { display: block; }
+
+/* -- HUD chrome ----------------------------------------------------------- */
+#hud { position: absolute; inset: 0; pointer-events: none; font-family: "Chakra Petch", sans-serif; }
+#hud button { pointer-events: auto; }
+
+.hud-top {
+  position: absolute; top: 14px; left: 16px; right: 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.panel {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(4px);
+}
+.badge { font-size: 14px; letter-spacing: 0.12em; color: var(--dim); }
+.badge b { font-size: 16px; margin-left: 4px; }
+.badge.level b { color: var(--cyan); }
+.badge.wave b { color: var(--red); }
+.divider { width: 1px; height: 26px; background: var(--line-strong); }
+
+.integrity {
+  flex: 1 1 auto; min-width: 150px; max-width: 360px;
+  flex-direction: column; gap: 4px; padding: 8px 14px; position: relative;
+}
+.integrity label { font-size: 10px; letter-spacing: 0.22em; color: var(--dim); }
+.integrity .bar {
+  width: 100%; height: 14px; border-radius: 7px; overflow: hidden;
+  background: rgba(8, 14, 28, 0.85); border: 1px solid var(--line);
+}
+.integrity .fill {
+  height: 100%; width: 100%;
+  background: linear-gradient(90deg, #2ee6a0, #46e39a);
+  box-shadow: 0 0 12px rgba(70, 227, 154, 0.5);
+  transition: width 0.15s ease;
+}
+.integrity .fill.low {
+  background: linear-gradient(90deg, #ff5238, #ff9341);
+  box-shadow: 0 0 12px rgba(255, 82, 56, 0.5);
+}
+.bar-text {
+  position: absolute; left: 0; right: 0; top: 22px; text-align: center;
+  font-size: 11px; font-weight: 600; color: var(--text); text-shadow: 0 1px 2px #000;
+}
+
+.counters b { font-size: 17px; }
+.counters .money { color: var(--gold); }
+.counters .cores { color: var(--cyan); }
+.coin-icon {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe79a, #f2a93a);
+  box-shadow: 0 0 10px rgba(255, 201, 74, 0.5);
+}
+.core-icon {
+  width: 16px; height: 16px; transform: rotate(45deg); border-radius: 4px;
+  background: radial-gradient(circle at 35% 30%, #b6f0ff, #3fc8e6);
+  box-shadow: 0 0 10px rgba(127, 232, 255, 0.6);
+}
+.gear {
+  width: 38px; height: 38px; border-radius: 11px; border: 1px solid var(--line);
+  background: var(--bg-panel); color: var(--dim); font-size: 18px; cursor: pointer;
+}
+.gear:hover { background: rgba(127, 232, 255, 0.16); color: var(--cyan); }
+
+.hud-bottom {
+  position: absolute; bottom: 16px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between;
+}
+.hud-btn {
+  font-family: "Chakra Petch", sans-serif; font-size: 14px; font-weight: 600;
+  color: var(--text); padding: 12px 20px; border-radius: 12px; cursor: pointer;
+  background: var(--bg-panel); border: 1px solid var(--line-strong);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.hud-btn:hover { border-color: var(--cyan); box-shadow: 0 0 14px rgba(127, 232, 255, 0.25); }
+.hud-btn kbd {
+  font-family: inherit; font-size: 11px; color: var(--dim);
+  border: 1px solid var(--line-strong); border-radius: 5px; padding: 1px 6px;
+}
+
+/* -- Wave intro ------------------------------------------------------------- */
+.wave-intro {
+  position: absolute; inset: 0; display: grid; place-content: center; gap: 6px;
+  text-align: center; background: rgba(6, 10, 18, 0.6);
+}
+.wave-intro.hidden { display: none; }
+.wi-level { font-size: 14px; letter-spacing: 0.3em; color: var(--dim); }
+.wi-wave {
+  font-size: 64px; font-weight: 700; letter-spacing: 0.06em; color: var(--cyan);
+  text-shadow: 0 0 30px rgba(127, 232, 255, 0.45);
+  animation: wi-pop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+.wi-wave.boss { color: var(--red); text-shadow: 0 0 30px rgba(255, 82, 56, 0.5); }
+.wi-count { font-size: 28px; font-weight: 600; color: var(--text); }
+@keyframes wi-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

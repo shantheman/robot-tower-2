@@ -1,0 +1,11 @@
+# Dependencies / build
+node_modules/
+dist/
+
+# OS / editor cruft
+.DS_Store
+.thumbnail
+Thumbs.db
+
+# Local captures
+renders/
