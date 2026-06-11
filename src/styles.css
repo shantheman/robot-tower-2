@@ -127,15 +127,18 @@ body { display: grid; place-items: center; }
 .counters b { font-size: 17px; }
 .counters .money { color: var(--gold); }
 .counters .cores { color: var(--cyan); }
+/* Currency art (Shannon's drop, 2026-06-11): single coin inline/price chips,
+ * .stack (coin pile) for the corner money displays, crystal core for cores. */
 .coin-icon {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffe79a, #f2a93a);
-  box-shadow: 0 0 10px rgba(255, 201, 74, 0.5);
+  width: 20px; height: 20px;
+  background: url("/art/coin.webp") center / contain no-repeat;
+  filter: drop-shadow(0 0 5px rgba(255, 201, 74, 0.45));
 }
+.coin-icon.stack { width: 29px; background-image: url("/art/coins.webp"); }
 .core-icon {
-  width: 16px; height: 16px; transform: rotate(45deg); border-radius: 4px;
-  background: radial-gradient(circle at 35% 30%, #b6f0ff, #3fc8e6);
-  box-shadow: 0 0 10px rgba(127, 232, 255, 0.6);
+  width: 17px; height: 17px;
+  background: url("/art/core.webp") center / contain no-repeat;
+  filter: drop-shadow(0 0 5px rgba(127, 232, 255, 0.5));
 }
 .gear {
   width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line);
@@ -328,7 +331,7 @@ body { display: grid; place-items: center; }
 }
 .card-price.poor { background: rgba(120, 160, 230, 0.06); border-color: rgba(120, 160, 230, 0.18); color: #56668c; }
 .card-state { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--green); margin-top: auto; padding: 8px 0; }
-.coin-icon.dim { background: #5a5238; box-shadow: none; }
+.coin-icon.dim { filter: grayscale(0.8) brightness(0.55); }
 .core-icon.small { width: 13px; height: 13px; }
 
 .panel-foot { margin-top: auto; padding-top: 18px; display: flex; align-items: center; justify-content: center; }
@@ -578,7 +581,8 @@ body { display: grid; place-items: center; }
   .badge b { font-size: 13px; }
   .counters b { font-size: 14px; }
   .coin-icon { width: 15px; height: 15px; }
-  .core-icon { width: 12px; height: 12px; }
+  .coin-icon.stack { width: 22px; }
+  .core-icon { width: 13px; height: 13px; }
   .gear { width: 34px; height: 34px; font-size: 16px; border-radius: 10px; }
   .gear.trophy svg { width: 17px; height: 17px; }
   .integrity { order: 3; min-width: 100%; max-width: none; padding: 7px 10px; }

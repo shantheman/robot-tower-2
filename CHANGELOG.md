@@ -2,6 +2,20 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.6.0 — 2026-06-11
+
+Shannon's art drop — the last text-only corners get real paint:
+
+- **Auto-Shooter** finally has its own icon (a proper tower-mounted
+  auto-turret), and **Interceptor** + **Field Medic** ship with their
+  quadcopter art in both the store and the skill tree.
+- **Currency went painterly**: the gold coin (single on every price chip,
+  a coin *stack* in the corner money displays) and the crystal **core**
+  replace the old CSS circle/diamond everywhere — battle HUD, store,
+  skill tree, home, and achievement bounties.
+- The game's new address: **https://shantheman.github.io/core-defender/**
+  (repo renamed to match the new name; the old URL is retired).
+
 ## v0.5.1 — 2026-06-11
 
 - **The game is now CORE DEFENDER** — Callum picked the name from the design

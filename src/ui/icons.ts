@@ -42,12 +42,15 @@ export const ITEM_ART: Record<string, string> = {
   plating: "art/07_plating.webp",
   shield: "art/08_shield.webp",
   drone: "art/09_drone.webp",
-  // (Auto-Shooter has no dedicated art yet — the "10_auto_shooter" file
-  // actually depicts Twin Targeting per the spec. Card renders text-only.)
+  // ("10_auto_shooter" depicts Twin Targeting per the spec; the real
+  // Auto-Shooter art arrived later as 16.)
   twin: "art/10_auto_shooter.webp",
   gen: "art/11_generator.webp",
   emp: "art/12_emp_burst.webp",
   freeze: "art/13_freeze_bomb.webp",
   warp: "art/14_time_warp.webp",
   laser: "art/15_laser_beam.webp",
+  auto: "art/16_auto_shooter.webp",
+  interceptor: "art/17_interceptor.webp",
+  medic: "art/18_field_medic.webp",
 };

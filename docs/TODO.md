@@ -36,12 +36,12 @@ and git).
 
 ## Art & assets
 
-- [ ] **Auto-Shooter icon** — the only store card with no art (the drop's
-      "auto_shooter" file was actually Twin Targeting). Needs a small
-      tower-mounted turret, distinct from Main Turret.
-- [ ] **Interceptor + Field Medic icons** — Shannon generating (2026-06-11).
-      Drop in the usual 240px format; map keys `interceptor` / `medic` in
-      `src/ui/icons.ts` ITEM_ART.
+- [x] **Auto-Shooter icon** — DONE (2026-06-11): Shannon's auto-target art,
+      shipped as `art/16_auto_shooter.webp`.
+- [x] **Interceptor + Field Medic icons** — DONE (2026-06-11): shipped as
+      `art/17_interceptor.webp` / `art/18_field_medic.webp`.
+- [x] **Currency art** — DONE (2026-06-11): crystal core + gold coins
+      (single inline, stack in corner displays) replace the CSS glyphs.
 - [ ] **Final enemy sprites** — the HANDOFF marks the current five as
       temporary ("likely replaced later, possibly animated"). Boss, Shooter,
       and the in-battle drone still use the old pygame-era art, which clashes

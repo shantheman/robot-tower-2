@@ -180,7 +180,7 @@ export class ShopPanel {
           <h1>UPGRADES</h1>
           <span class="panel-status ${cleared ? "ok" : ""}">${cleared ? "✓ WAVE CLEARED" : "❚❚ BATTLE PAUSED"}</span>
         </div>
-        <div class="panel-money"><span class="coin-icon"></span><b>${Math.floor(gs.money).toLocaleString("en-US")}</b></div>
+        <div class="panel-money"><span class="coin-icon stack"></span><b>${Math.floor(gs.money).toLocaleString("en-US")}</b></div>
       </header>
 
       <section class="tower-hero">
@@ -201,7 +201,7 @@ export class ShopPanel {
             </span>
           </div>
           <div class="pips">${pips}</div>
-          <div class="tower-perks"><span>+10% earnings</span><span>+20 max HP</span><span>+30 start cash</span></div>
+          <div class="tower-perks"><span>+10% earnings</span><span>+20 max HP</span><span>+30 start coins</span></div>
         </div>
         <button class="cta levelup ${gs.cores >= towerCost ? "" : "disabled"}" data-act="towerup">
           <span class="cta-big">LEVEL UP</span>
