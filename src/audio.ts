@@ -2,7 +2,7 @@
  * files; every sound is generated at runtime from the same recipes
  * (square/sine, linear decay, optional pitch sweep + noise).
  *
- * Respects GameState.muted/volume. The AudioContext unlocks on the first
+ * Respects GameState.volume (0 = muted). The AudioContext unlocks on the first
  * user gesture (browser autoplay policy).
  */
 
@@ -73,7 +73,7 @@ document.addEventListener("visibilitychange", () => {
 
 export function play(name: keyof typeof SPECS): void {
   const gs = game.gs;
-  if (gs.muted || gs.volume <= 0) return;
+  if (gs.volume <= 0) return; // volume 0 IS mute
   const c = ensureContext();
   const buf = buffers.get(name);
   if (!c || !buf) return;

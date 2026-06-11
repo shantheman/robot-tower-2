@@ -39,22 +39,19 @@ export class SettingsModal {
     this.root.innerHTML = `
       <div class="modal-card">
         <header><span class="modal-title">SETTINGS</span><button class="modal-x" data-act="close">✕</button></header>
-        ${this.row("Sound", toggle("sound", !gs.muted))}
         ${this.row("Volume", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.volume * 100)}" data-key="volume" />
           <b id="vol-pct">${Math.round(gs.volume * 100)}%</b></span>`)}
         ${this.row("Reduce motion (no shake)", toggle("motion", gs.reduceMotion))}
         ${this.row("Reset progress", `<button class="set-toggle danger" data-key="reset">RESET</button>`)}
         <footer class="modal-foot">
           <span>v${GAME_VERSION} · Made by Callum</span>
-          <span>Fonts: Chakra Petch & Space Grotesk (SIL OFL)</span>
         </footer>
       </div>`;
 
     this.root.querySelectorAll<HTMLButtonElement>(".set-toggle").forEach((el) => {
       el.addEventListener("click", () => {
         const k = el.dataset.key;
-        if (k === "sound") gs.muted = !gs.muted;
-        else if (k === "motion") gs.reduceMotion = !gs.reduceMotion;
+        if (k === "motion") gs.reduceMotion = !gs.reduceMotion;
         else if (k === "reset") {
           if (el.textContent === "SURE?") {
             localStorage.removeItem("rts2_save");

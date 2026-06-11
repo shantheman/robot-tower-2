@@ -76,7 +76,6 @@ export class GameState {
   bestWave = 0;
   skills = new Set<SkillKey>();
   achievements = new Set<string>();
-  muted = false;
   volume = 1.0;
   reduceMotion = false;
 
@@ -134,7 +133,6 @@ export class GameState {
       this.bestWave = d.best_wave | 0;
       this.skills = new Set(d.skills ?? []);
       this.achievements = new Set(d.achievements ?? []);
-      this.muted = !!d.muted;
       this.volume = Math.min(1, Math.max(0, d.volume ?? 1));
       this.reduceMotion = !!d.reduce_motion;
     } catch { /* unreadable save -> defaults */ }
@@ -150,7 +148,6 @@ export class GameState {
         best_wave: this.bestWave,
         skills: [...this.skills].sort(),
         achievements: [...this.achievements].sort(),
-        muted: this.muted,
         volume: Math.round(this.volume * 100) / 100,
         reduce_motion: this.reduceMotion,
       }));
