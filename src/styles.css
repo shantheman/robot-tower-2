@@ -233,6 +233,7 @@ body { display: grid; place-items: center; }
 }
 .tower-info { flex: 1; }
 .tower-line { display: flex; align-items: center; gap: 13px; }
+.tl-head, .tl-nums { display: flex; align-items: center; gap: 13px; }
 .tower-label { font-size: 12px; letter-spacing: 0.24em; color: #9fc7ee; white-space: nowrap; }
 .perm-badge {
   display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700;
@@ -569,7 +570,23 @@ body { display: grid; place-items: center; }
   .st-chip { font-size: 10px; padding: 4px 9px; }
   .hud-btn { font-size: 12px; padding: 9px 14px; border-radius: 10px; }
   .wi-wave { font-size: 44px; }
-  .turret-thumb { display: none; } /* shop hero: art yields to content on phones */
+  /* Tower Level card, stacked (per mock): small thumb + header row,
+     big numbers under, pips, dotted perks, full-width LEVEL UP. */
+  .tower-hero { display: grid; grid-template-columns: auto 1fr; align-items: start; row-gap: 4px; }
+  .turret-thumb { width: 60px; height: 60px; }
+  .turret-thumb .tt-base { width: 60px; height: 60px; }
+  .turret-thumb .tt-gun { height: 41px; }
+  .tower-info { min-width: 0; }
+  .tower-line { flex-direction: column; align-items: flex-start; gap: 7px; }
+  .tl-nums { gap: 10px; }
+  .tl-now { font-size: 34px; }
+  .tl-next { font-size: 26px; }
+  .tower-perks { gap: 0; flex-wrap: wrap; font-size: 12.5px; }
+  .tower-perks span:not(:first-child)::before { content: "·"; margin: 0 7px; color: #56668c; }
+  .cta.levelup {
+    grid-column: 1 / -1; width: 100%;
+    flex-direction: row; gap: 10px; padding: 12px 16px; margin-top: 8px;
+  }
   .menu-btn { width: min(340px, 86vw); }
   .menu-row { width: min(340px, 86vw); }
   .menu-row .menu-btn { flex: 1; width: auto; }

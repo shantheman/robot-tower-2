@@ -458,8 +458,7 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
-  /** Touch feedback: anchor ring + drag knob at the thumb, and a faint aim
-   * tracer from the tower (the thumb is far from the action by design). */
+  /** Touch feedback: anchor ring + drag knob at the thumb. */
   private drawJoystick(p: Phaser.Input.Pointer): void {
     this.joyGfx.clear();
     if (!this.joyOrigin) return;
@@ -471,12 +470,6 @@ export class BattleScene extends Phaser.Scene {
       const k = d.normalize().scale(len);
       this.joyGfx.fillStyle(0x7fe8ff, 0.45).fillCircle(o.x + k.x, o.y + k.y, 11);
     }
-    // Aim tracer from the tower
-    const a = this.aimAngle;
-    this.joyGfx.lineStyle(2, 0x7fe8ff, 0.13).lineBetween(
-      this.towerPos.x + Math.cos(a) * 58, this.towerPos.y + Math.sin(a) * 58,
-      this.towerPos.x + Math.cos(a) * 190, this.towerPos.y + Math.sin(a) * 190,
-    );
   }
 
   private flashScreen(color: number, alpha: number): void {

@@ -167,11 +167,15 @@ export class ShopPanel {
         </div>
         <div class="tower-info">
           <div class="tower-line">
-            <span class="tower-label">TOWER LEVEL</span>
-            <span class="perm-badge">✦ PERMANENT</span>
-            <span class="tl-now">${gs.towerLevel}</span>
-            <span class="tl-arrow">→</span>
-            <span class="tl-next">${gs.towerLevel + 1}</span>
+            <span class="tl-head">
+              <span class="tower-label">TOWER LEVEL</span>
+              <span class="perm-badge">✦ PERMANENT</span>
+            </span>
+            <span class="tl-nums">
+              <span class="tl-now">${gs.towerLevel}</span>
+              <span class="tl-arrow">→</span>
+              <span class="tl-next">${gs.towerLevel + 1}</span>
+            </span>
           </div>
           <div class="pips">${pips}</div>
           <div class="tower-perks"><span>+10% earnings</span><span>+20 max HP</span><span>+30 start cash</span></div>
@@ -184,7 +188,7 @@ export class ShopPanel {
 
       <div class="section-head field"><span class="sh-label">FIELD UPGRADES</span>
         <span class="sh-note">↺ reset at end of level</span><span class="sh-rule"></span></div>
-      ${(["CANNON", "DEFENSE", "DRONE", "ECONOMY"] as Category[]).map((cat) => {
+      ${(["ECONOMY", "CANNON", "DEFENSE", "DRONE"] as Category[]).map((cat) => {
         const items = this.fieldCards().filter((c) => c.cat === cat);
         if (!items.length) return "";
         return `<div class="cluster">
