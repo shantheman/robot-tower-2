@@ -72,9 +72,9 @@ and git).
 
 ## Launch readiness
 
-- [ ] **Deploy the web build** — it's LAN-only today. GitHub Pages / Netlify
-      / Cloudflare Pages; `vite build` output is static. This is the
-      "Callum sends a link to friends" unlock and should come first.
+- [x] **Deploy the web build** — DONE (2026-06-11): GitHub Pages, auto-deploys
+      from main on every push (tests must pass first). Live at
+      https://shantheman.github.io/robot-tower-2/
 - [ ] **PWA pass** — manifest + icons + service worker: installable to the
       home screen, runs offline, fullscreen standalone on iOS. Cheap, and a
       real alternative to app stores for the friend-circle audience.

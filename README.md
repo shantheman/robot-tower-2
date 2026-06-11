@@ -5,6 +5,9 @@ The cross-platform rewrite of [Robot Tower Survival](https://github.com/TheDemon
 real HTML/CSS. Targets: **browser** (always, during development), then
 **iOS / Android** via Capacitor and **macOS / Windows** desktop builds.
 
+**Play it now:** https://shantheman.github.io/robot-tower-2/ (auto-deploys
+from main).
+
 ## Run it
 
 ```sh
