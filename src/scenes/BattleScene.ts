@@ -162,7 +162,8 @@ export class BattleScene extends Phaser.Scene {
     if (bossWave) {
       game.show("home");        // level complete -> Home (cores banked)
     } else {
-      game.show("shop");        // between-waves shop (Start Next Wave to go on)
+      game.shopMode = "cleared"; // between-waves shop (Start Next Wave to go on)
+      game.show("shop");
       this.setPaused(true);
     }
   }

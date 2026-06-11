@@ -19,6 +19,8 @@ export interface ScreenHooks {
 export class Game {
   readonly gs: GameState;
   screen: Screen = "home";
+  /** Why the shop is open: between waves (cleared) or a mid-wave Tab pause. */
+  shopMode: "cleared" | "paused" = "paused";
   private hooks = new Map<Screen, ScreenHooks>();
   /** The battle scene registers these so DOM panels can drive it. */
   battle: {
