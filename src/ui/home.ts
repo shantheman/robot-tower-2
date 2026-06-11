@@ -4,12 +4,14 @@
  * on names unless the rename to "Core Defender" is made deliberately). */
 
 import { game } from "../game";
-import { SKILL_NODES } from "../sim/state";
+import { ACHIEVEMENTS, SKILL_NODES } from "../sim/state";
+import { TROPHY_ICON } from "./icons";
 
 export class HomeScreen {
   private root: HTMLElement;
   onSkills: () => void = () => {};
   onSettings: () => void = () => {};
+  onAchievements: () => void = () => {};
 
   constructor(parent: HTMLElement) {
     this.root = document.createElement("div");
@@ -39,6 +41,7 @@ export class HomeScreen {
       <div class="home-grid"></div>
       <div class="home-topbar">
         ${returning ? `<div class="home-cores"><span class="core-icon small"></span><b>${gs.cores}</b></div>` : ""}
+        <button class="gear trophy" data-act="achievements" title="Achievements (${gs.achievements.size}/${ACHIEVEMENTS.length})">${TROPHY_ICON}</button>
         <button class="gear" data-act="settings" title="Settings">⚙</button>
       </div>
       <div class="home-cols">
@@ -79,5 +82,7 @@ export class HomeScreen {
       el.addEventListener("click", () => this.onSkills()));
     this.root.querySelectorAll("[data-act=settings]").forEach((el) =>
       el.addEventListener("click", () => this.onSettings()));
+    this.root.querySelector("[data-act=achievements]")?.addEventListener("click", () =>
+      this.onAchievements());
   }
 }

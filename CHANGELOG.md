@@ -2,6 +2,18 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.3.0 — 2026-06-11
+
+Achievements get their windows back (the system always worked — silently):
+
+- **Trophy button** in the Home top bar opens the achievements modal
+  (two columns on desktop, single-column scroll on phones).
+- **Unlock toasts in battle**: "Achievement: Boss Slayer! +10 cores" slides
+  in top-center the moment it happens.
+- **Cores bounties**: each achievement pays a one-time 10-25 cores
+  (190 total across all 12) — a fun secondary goal that doesn't distort
+  the wave economy.
+
 ## v0.2.0 — 2026-06-11
 
 Death shouldn't erase 14 waves of fun:

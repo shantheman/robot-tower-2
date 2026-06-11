@@ -3,13 +3,29 @@
  * moves numbers and toggles classes. */
 
 import type { HudState } from "../scenes/BattleScene";
+import { game } from "../game";
 import { isBossWave, levelStartWave } from "../sim/waves";
 
 const $ = (id: string) => document.getElementById(id)!;
 
 let lastShown = { level: -1, wave: -1, money: -1, cores: -1, hp: -1, count: -1 };
 
+/** Drain sim announcements (achievement unlocks) into sliding toasts. */
+function drainToasts(): void {
+  const ev = game.gs.events;
+  while (ev.length) {
+    const e = ev.shift()!;
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = e.text;
+    document.getElementById("toasts")!.appendChild(t);
+    setTimeout(() => t.classList.add("out"), 2600);
+    setTimeout(() => t.remove(), 3100);
+  }
+}
+
 export function updateHud(s: HudState): void {
+  drainToasts();
   if (s.level !== lastShown.level) {
     $("hud-level").textContent = String(s.level);
     lastShown.level = s.level;

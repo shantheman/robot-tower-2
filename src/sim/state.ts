@@ -38,21 +38,25 @@ export const SKILL_NODES: SkillNode[] = [
   { key: "laser", name: "Laser Beam", cost: 150, desc: "The mega-beam", prereq: "warp", branch: "ULTIMATES" },
 ];
 
-export const ACHIEVEMENTS: [string, string, string][] = [
-  ["wave10", "Hold the Line", "Reach wave 10"],
-  ["wave25", "Last Stand", "Reach wave 25"],
-  ["wave50", "Unstoppable", "Reach wave 50"],
-  ["level5", "Onward & Upward", "Reach Level 5"],
-  ["boss", "Boss Slayer", "Destroy a boss"],
-  ["combo15", "Killing Spree", "Hit a 15+ kill combo"],
-  ["kills200", "Robot Recycler", "200 kills in one run"],
-  ["perfect", "Untouchable", "Clear a wave with zero tower damage"],
-  ["rich", "War Chest", "Hold 2,000 coins at once"],
-  ["arsenal", "Full Arsenal", "Own 3 ultimates in one run"],
-  ["skilled", "Scholar of War", "Unlock 6 skill-tree nodes"],
-  ["emp_fry", "Flyswatter", "Fry 5+ projectiles with one EMP"],
+export interface Achievement {
+  id: string; name: string; how: string;
+  bounty: number; // one-time cores reward on unlock
+}
+export const ACHIEVEMENTS: Achievement[] = [
+  { id: "wave10", name: "Hold the Line", how: "Reach wave 10", bounty: 10 },
+  { id: "wave25", name: "Last Stand", how: "Reach wave 25", bounty: 15 },
+  { id: "wave50", name: "Unstoppable", how: "Reach wave 50", bounty: 25 },
+  { id: "level5", name: "Onward & Upward", how: "Reach Level 5", bounty: 15 },
+  { id: "boss", name: "Boss Slayer", how: "Destroy a boss", bounty: 10 },
+  { id: "combo15", name: "Killing Spree", how: "Hit a 15+ kill combo", bounty: 15 },
+  { id: "kills200", name: "Robot Recycler", how: "200 kills in one run", bounty: 20 },
+  { id: "perfect", name: "Untouchable", how: "Clear a wave with zero tower damage", bounty: 15 },
+  { id: "rich", name: "War Chest", how: "Hold 2,000 coins at once", bounty: 15 },
+  { id: "arsenal", name: "Full Arsenal", how: "Own 3 ultimates in one run", bounty: 20 },
+  { id: "skilled", name: "Scholar of War", how: "Unlock 6 skill-tree nodes", bounty: 20 },
+  { id: "emp_fry", name: "Flyswatter", how: "Fry 5+ projectiles with one EMP", bounty: 10 },
 ];
-const ACH_NAMES = new Map(ACHIEVEMENTS.map(([id, name]) => [id, name]));
+const ACH_BY_ID = new Map(ACHIEVEMENTS.map((a) => [a.id, a]));
 
 export type BonusKind = "cash" | "heal" | "rapid";
 
@@ -444,8 +448,13 @@ export class GameState {
   unlockAchievement(id: string): boolean {
     if (this.achievements.has(id)) return false;
     this.achievements.add(id);
+    const a = ACH_BY_ID.get(id);
+    if (a) this.cores += a.bounty; // one-time cores bounty
     this.save();
-    this.events.push({ kind: "achievement", text: `Achievement: ${ACH_NAMES.get(id) ?? id}!` });
+    this.events.push({
+      kind: "achievement",
+      text: `Achievement: ${a?.name ?? id}!${a ? ` +${a.bounty} cores` : ""}`,
+    });
     return true;
   }
 

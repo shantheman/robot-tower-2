@@ -660,3 +660,53 @@ html.touch kbd { display: none; }
 }
 
 .set-toggle.danger { color: var(--red); border-color: rgba(255, 82, 56, 0.4); }
+
+/* -- Achievements modal + unlock toasts --------------------------------------- */
+.gear.trophy { color: #c9a44a; display: grid; place-items: center; }
+.gear.trophy:hover { color: #ffc94a; border-color: rgba(255, 201, 74, 0.45); }
+.ach-card { width: 720px; max-width: 94vw; }
+.ach-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  max-height: min(62vh, 560px); overflow-y: auto;
+}
+@media (max-width: 760px) { .ach-grid { grid-template-columns: 1fr; } }
+.ach-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(14, 24, 40, 0.7); border: 1px solid var(--line);
+  opacity: 0.65;
+}
+.ach-row.got {
+  opacity: 1; border-color: rgba(70, 227, 154, 0.55);
+  background: linear-gradient(160deg, rgba(70, 227, 154, 0.1), rgba(10, 30, 24, 0.45));
+}
+.ach-mark { font-size: 13px; width: 18px; text-align: center; }
+.ach-row.got .ach-mark { color: var(--green); }
+.ach-col { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; flex: 1; }
+.ach-name { font-family: "Space Grotesk", sans-serif; font-size: 14.5px; color: #eaf4ff; }
+.ach-how { font-family: "Space Grotesk", sans-serif; font-size: 11.5px; color: #7488ad; }
+.ach-bounty {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12.5px; font-weight: 700; color: var(--dim);
+}
+.ach-bounty.paid { color: var(--cyan); }
+
+#toasts {
+  position: absolute; top: 64px; left: 0; right: 0; z-index: 30;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  font-family: "Chakra Petch", sans-serif; font-size: 13.5px; font-weight: 700;
+  letter-spacing: 0.06em; color: #ffe9a8;
+  padding: 10px 22px; border-radius: 12px;
+  background: rgba(20, 30, 16, 0.92); border: 1px solid rgba(255, 201, 74, 0.5);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 201, 74, 0.2);
+  animation: toast-in 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.toast.out { opacity: 0; transform: translateY(-12px); }
+@keyframes toast-in {
+  from { transform: translateY(-18px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

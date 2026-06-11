@@ -13,6 +13,7 @@ import { HomeScreen } from "./ui/home";
 import { DeadScreen } from "./ui/dead";
 import { PauseScreen } from "./ui/pause";
 import { SettingsModal } from "./ui/settings";
+import { AchievementsModal } from "./ui/achievements";
 
 if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
   document.documentElement.classList.add("touch");
@@ -29,8 +30,10 @@ const home = new HomeScreen(panels);
 new DeadScreen(panels);
 const pause = new PauseScreen(panels);
 const settings = new SettingsModal(document.body);
+const achievements = new AchievementsModal(document.body);
 home.onSkills = () => { skills.returnTo = "home"; game.show("skills"); };
 home.onSettings = () => settings.show();
+home.onAchievements = () => achievements.show();
 pause.onSettings = () => settings.show();
 
 // Portrait screens get a tall arena (640x1280); landscape keeps the classic
@@ -96,6 +99,10 @@ window.addEventListener("keydown", (ev) => {
   if (ev.key === "Tab") ev.preventDefault(); // never let Tab move focus
   if (settings.visible) {
     if (ev.key === "Escape") settings.hide();
+    return;
+  }
+  if (achievements.visible) {
+    if (ev.key === "Escape") achievements.hide();
     return;
   }
   if (game.screen === "battle") {

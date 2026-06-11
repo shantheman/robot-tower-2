@@ -13,6 +13,9 @@ export const CAT_ICONS: Record<Category, string> = {
   ULTIMATES: `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>`,
 };
 
+/** Trophy (Home top bar -> achievements modal). Drawn, not emoji. */
+export const TROPHY_ICON = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M8 5H5a3 3 0 003 4M16 5h3a3 3 0 01-3 4"/><path d="M12 13v4M8 20h8M10 17h4"/></svg>`;
+
 export function catIcon(cat: Category): string {
   return `<span class="cat-icon">${CAT_ICONS[cat]}</span>`;
 }
