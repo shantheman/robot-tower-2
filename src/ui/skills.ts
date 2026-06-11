@@ -63,7 +63,6 @@ export class SkillsPanel {
 
     this.root.innerHTML = `
       <header class="panel-head">
-        <button class="back-btn" data-act="back">‹ Back</button>
         <div class="panel-title-group"><h1>SKILL TREE</h1></div>
         <div class="panel-money"><span class="core-icon"></span><b class="cores-b">${gs.cores}</b>
           <span class="cores-lbl">CORES</span></div>
@@ -75,7 +74,14 @@ export class SkillsPanel {
         <span class="lg locked"><i></i>LOCKED</span>
       </div>
       <div class="tree-cols">${cols}</div>
-      <div class="tree-foot">${isTouch() ? "Tap" : "Click"} a node to unlock it.</div>`;
+      <div class="tree-foot">${isTouch() ? "Tap" : "Click"} a node to unlock it.</div>
+      <footer class="panel-foot">
+        <button class="cta startwave" data-act="back">
+          <span class="play">▸&#xFE0E;</span>
+          <span class="cta-col"><span class="cta-big">${this.returnTo === "battle" ? "RESUME BATTLE" : "BACK TO BASE"}</span>
+          ${isTouch() ? "" : `<span class="cta-sub2">[Esc]</span>`}</span>
+        </button>
+      </footer>`;
 
     this.root.querySelectorAll<HTMLButtonElement>(".skill-node.available").forEach((el) => {
       el.addEventListener("click", () => {

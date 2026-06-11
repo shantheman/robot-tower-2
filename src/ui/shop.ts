@@ -152,7 +152,6 @@ export class ShopPanel {
 
     this.root.innerHTML = `
       <header class="panel-head">
-        ${cleared ? "" : `<button class="back-btn" data-act="close">‹ Back</button>`}
         <div class="panel-title-group">
           <h1>UPGRADES</h1>
           <span class="panel-status ${cleared ? "ok" : ""}">${cleared ? "✓ WAVE CLEARED" : "❚❚ BATTLE PAUSED"}</span>
@@ -211,7 +210,11 @@ export class ShopPanel {
              <span class="cta-col"><span class="cta-big">START NEXT WAVE</span>
              <span class="cta-sub2">Wave ${Math.min(wil + 1, total)} of ${total}${isTouch() ? "" : " · [Space]"}</span></span>
            </button>`
-        : isTouch() ? "" : `<span class="foot-hint">[Tab / Esc] Close & resume</span>`}
+        : `<button class="cta startwave" data-act="close">
+             <span class="play">▸&#xFE0E;</span>
+             <span class="cta-col"><span class="cta-big">RESUME BATTLE</span>
+             <span class="cta-sub2">Wave ${wil} of ${total}${isTouch() ? "" : " · [Tab / Esc]"}</span></span>
+           </button>`}
       </footer>`;
 
     // Wire clicks
