@@ -585,6 +585,14 @@ body { display: grid; place-items: center; }
   .coin-icon { width: 15px; height: 15px; }
   .coin-icon.stack { width: 22px; }
   .core-icon { width: 17px; height: 17px; }
+  /* Smaller reservations on phones — 4ch+3ch overflows the 375px top row
+   * and wraps the counters under the badges. 3ch covers money to 999;
+   * past that the panel grows once (still no per-tick jitter). The panel
+   * also runs tighter gaps/padding: the row only has ~4px of slack at
+   * 375px, and 4-digit money needs ~8px beyond its reservation. */
+  .counters { gap: 5px; padding: 7px 8px; }
+  .counters .money { min-width: 3ch; }
+  .counters .cores { min-width: 2ch; }
   .gear { width: 34px; height: 34px; font-size: 16px; border-radius: 10px; }
   .gear.trophy svg { width: 17px; height: 17px; }
   .integrity { order: 3; min-width: 100%; max-width: none; padding: 7px 10px; }
