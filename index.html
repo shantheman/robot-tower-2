@@ -28,9 +28,8 @@
           <span class="badge wave">WAVE <b id="hud-wave">1/7</b></span>
         </div>
         <div class="panel integrity">
-          <label>TOWER HEALTH</label>
+          <div class="int-row"><label>TOWER HEALTH</label><span id="hud-hp-text" class="int-num">100 / 100</span></div>
           <div class="bar"><div id="hud-hp" class="fill"></div></div>
-          <span id="hud-hp-text" class="bar-text">100 / 100</span>
         </div>
         <div class="panel counters">
           <span class="coin-icon"></span><b id="hud-money" class="money">0</b>
@@ -46,9 +45,28 @@
         <div id="st-rapid" class="st-chip orange hidden">RAPID FIRE!</div>
       </div>
       <div class="hud-bottom">
-        <button id="btn-skills" class="hud-btn">Skill Tree&ensp;<kbd>T</kbd></button>
-        <button id="st-ult" class="ult-btn hidden">EMP READY <kbd>Space</kbd></button>
-        <button id="btn-shop" class="hud-btn">Upgrades&ensp;<kbd>Tab</kbd></button>
+        <div class="hud-corner">
+          <span class="corner-label">SKILL TREE</span>
+          <button id="btn-skills" class="hud-btn">
+            <span class="btn-icon skills"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8 4.6v9.8l-8 4.6-8-4.6V7.1z"/><path d="M12 7.5l4 2.3v4.4l-4 2.3-4-2.3V9.8z"/></svg></span>
+            <span class="btn-text">Skill Tree&ensp;<kbd>T</kbd></span>
+          </button>
+        </div>
+        <div id="ult-wrap" class="ult-wrap hidden">
+          <div id="ult-name" class="ult-name">FREEZE BOMB</div>
+          <button id="st-ult" class="ult-circle">
+            <span id="ult-icon" class="ult-icon"></span>
+            <span id="ult-state" class="ult-state">FIRE</span>
+          </button>
+          <kbd class="ult-kbd">Space</kbd>
+        </div>
+        <div class="hud-corner">
+          <span class="corner-label">UPGRADES</span>
+          <button id="btn-shop" class="hud-btn">
+            <span class="btn-icon shop"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 4l7 13H5z"/></svg></span>
+            <span class="btn-text">Upgrades&ensp;<kbd>Tab</kbd></span>
+          </button>
+        </div>
       </div>
       <div id="wave-intro" class="wave-intro hidden">
         <div class="wi-level" id="wi-level">LEVEL 1</div>

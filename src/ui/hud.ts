@@ -3,8 +3,15 @@
  * moves numbers and toggles classes. */
 
 import type { HudState } from "../scenes/BattleScene";
+import { EMP_COOLDOWN, FREEZE_COOLDOWN, LASER_COOLDOWN, WARP_COOLDOWN } from "../config";
 import { game } from "../game";
+import { ULT_ICONS } from "./icons";
 import { isBossWave, levelStartWave } from "../sim/waves";
+
+const ULT_CD_TOTAL: Record<string, number> = {
+  emp: EMP_COOLDOWN, freeze: FREEZE_COOLDOWN, warp: WARP_COOLDOWN, laser: LASER_COOLDOWN,
+};
+let shownUltKey: string | null = null;
 
 const $ = (id: string) => document.getElementById(id)!;
 
@@ -58,14 +65,25 @@ export function updateHud(s: HudState): void {
     if (show && html !== undefined && el.innerHTML !== html) el.innerHTML = html;
   };
   chip("st-shield", s.shield > 0, `SHIELD <b>${s.shield}</b>`);
+  const wrap = $("ult-wrap");
   if (s.ultimate) {
     const u = s.ultimate;
-    chip("st-ult", true, u.ready
-      ? `${u.name.toUpperCase()} READY <kbd>Space</kbd>`
-      : `${u.name.toUpperCase()} ${u.cooldown.toFixed(0)}s`);
-    $("st-ult").classList.toggle("cooling", !u.ready);
+    wrap.classList.remove("hidden");
+    if (shownUltKey !== u.key) {
+      shownUltKey = u.key;
+      $("ult-name").textContent = u.name.toUpperCase();
+      $("ult-icon").innerHTML = ULT_ICONS[u.key] ?? "";
+    }
+    const stateText = u.ready ? "FIRE" : `${Math.ceil(u.cooldown)}s`;
+    const st = $("ult-state");
+    if (st.textContent !== stateText) st.textContent = stateText;
+    const circle = $("st-ult");
+    circle.classList.toggle("cooling", !u.ready);
+    const frac = u.ready ? 1 : 1 - u.cooldown / (ULT_CD_TOTAL[u.key] ?? 10);
+    circle.style.setProperty("--cd", String(Math.max(0, Math.min(1, frac))));
   } else {
-    chip("st-ult", false);
+    wrap.classList.add("hidden");
+    shownUltKey = null;
   }
   chip("st-combo", s.combo >= 3,
     `COMBO x<b>${s.combo}</b> · +${Math.round((s.comboMult - 1) * 100)}% coins`);
