@@ -8,6 +8,7 @@ import { game } from "./game";
 import { BattleScene } from "./scenes/BattleScene";
 import { updateHud } from "./ui/hud";
 import { ShopPanel } from "./ui/shop";
+import { SkillsPanel } from "./ui/skills";
 
 const stage = document.getElementById("stage")!;
 const panels = document.createElement("div");
@@ -15,6 +16,7 @@ panels.id = "panels";
 stage.appendChild(panels);
 
 const shop = new ShopPanel(panels);
+const skills = new SkillsPanel(panels);
 
 const phaser = new Phaser.Game({
   type: Phaser.AUTO,
@@ -36,6 +38,17 @@ game.screen = "battle";
 
 // HUD buttons
 document.getElementById("btn-shop")?.addEventListener("click", openPauseShop);
+document.getElementById("btn-skills")?.addEventListener("click", openSkills);
+
+function openSkills(): void {
+  if (game.screen === "battle") {
+    skills.returnTo = "battle";
+    game.battle?.setPaused(true);
+  } else if (game.screen === "home") {
+    skills.returnTo = "home";
+  } else return;
+  game.show("skills");
+}
 
 function openPauseShop(): void {
   if (game.screen !== "battle") return;
@@ -49,6 +62,9 @@ window.addEventListener("keydown", (ev) => {
   if (ev.key === "Tab") ev.preventDefault(); // never let Tab move focus
   if (game.screen === "battle") {
     if (ev.key === "Tab") openPauseShop();
+    else if (ev.key === "t" || ev.key === "T") openSkills();
+  } else if (game.screen === "skills") {
+    if (ev.key === "Escape" || ev.key === "t" || ev.key === "T") skills.close();
   } else if (game.screen === "shop") {
     if (game.shopMode === "paused" && (ev.key === "Tab" || ev.key === "Escape")) shop.close();
     else if (game.shopMode === "cleared" && (ev.key === " " || ev.key === "Enter")) {
