@@ -5,6 +5,7 @@
 import { game } from "../game";
 import { play } from "../audio";
 import { SKILL_NODES, SkillNode } from "../sim/state";
+import { catIcon } from "./icons";
 
 const BRANCHES = ["CANNON", "DEFENSE", "DRONE", "ULTIMATES"] as const;
 
@@ -57,7 +58,7 @@ export class SkillsPanel {
           : "";
         return conn + this.nodeHtml(n);
       }).join("");
-      return `<div class="skill-col"><div class="sc-head">${branch}</div>${items}</div>`;
+      return `<div class="skill-col"><div class="sc-head">${catIcon(branch)}<span>${branch}</span></div>${items}</div>`;
     }).join("");
 
     this.root.innerHTML = `

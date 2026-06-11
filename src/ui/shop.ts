@@ -6,6 +6,7 @@ import * as C from "../config";
 import { game } from "../game";
 import { play } from "../audio";
 import { waveInLevel, wavesForLevel } from "../sim/waves";
+import { Category, catIcon } from "./icons";
 
 interface CardSpec {
   key: string;
@@ -13,6 +14,7 @@ interface CardSpec {
   desc: string;
   cost: number | null;          // null -> owned (green check)
   state: "buy" | "poor" | "owned" | "equipped";
+  cat: Category;                // which cluster it renders under (v3 layout)
   onBuy?: () => boolean;
 }
 
@@ -35,47 +37,47 @@ export class ShopPanel {
     const m = gs.money;
     const cards: CardSpec[] = [
       {
-        key: "gen", name: "Generator",
+        key: "gen", cat: "ECONOMY", name: "Generator",
         desc: `Lv ${gs.genLevel} · +${Math.round(C.GEN_INCOME * (gs.genLevel + 1))} coins/sec`,
         cost: gs.genCost(), state: m >= gs.genCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyGen(),
       },
       {
-        key: "auto", name: "Auto-Shooter",
+        key: "auto", cat: "DRONE", name: "Auto-Shooter",
         desc: gs.autoLevel === 0 ? "deploy · auto-targets" : `Lv ${gs.autoLevel} · fires faster`,
         cost: gs.autoCost(), state: m >= gs.autoCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyAuto(),
       },
       {
-        key: "turret", name: "Main Turret",
+        key: "turret", cat: "CANNON", name: "Main Turret",
         desc: `Lv ${gs.turretLevel} · +dmg, rate, size`,
         cost: gs.turretCost(), state: m >= gs.turretCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyTurret(),
       },
       {
-        key: "drone", name: "Drone",
+        key: "drone", cat: "DRONE", name: "Drone",
         desc: gs.droneLevel === 0 ? "deploy · auto-hunts" : `Lv ${gs.droneLevel} · +dmg, range, rate`,
         cost: gs.droneCost(), state: m >= gs.droneCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyDrone(),
       },
     ];
     if (gs.skills.has("multi")) cards.push({
-      key: "multi", name: "Multi-Shot", desc: `Lv ${gs.multiLevel} · +1 bullet / lvl`,
+      key: "multi", cat: "CANNON", name: "Multi-Shot", desc: `Lv ${gs.multiLevel} · +1 bullet / lvl`,
       cost: gs.multiCost(), state: m >= gs.multiCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyMulti(),
     });
     if (gs.skills.has("pierce")) cards.push({
-      key: "pierce", name: "Piercing", desc: `Lv ${gs.pierceLevel} · pass through`,
+      key: "pierce", cat: "CANNON", name: "Piercing", desc: `Lv ${gs.pierceLevel} · pass through`,
       cost: gs.pierceCost(), state: m >= gs.pierceCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyPierce(),
     });
     if (gs.skills.has("explosive")) cards.push({
-      key: "explosive", name: "Explosive", desc: `Lv ${gs.explosiveLevel} · hits blast`,
+      key: "explosive", cat: "CANNON", name: "Explosive", desc: `Lv ${gs.explosiveLevel} · hits blast`,
       cost: gs.explosiveCost(), state: m >= gs.explosiveCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyExplosive(),
     });
     if (gs.skills.has("guided")) cards.push({
-      key: "guided", name: "Guided", desc: "bullets bend to foes",
+      key: "guided", cat: "CANNON", name: "Guided", desc: "bullets bend to foes",
       cost: gs.guidedOwned ? null : C.GUIDED_COST,
       state: gs.guidedOwned ? "owned" : m >= C.GUIDED_COST ? "buy" : "poor",
       onBuy: () => gs.tryBuyGuided(),
@@ -83,19 +85,19 @@ export class ShopPanel {
     if (gs.skills.has("repair")) {
       const hurt = gs.hp < gs.maxHp();
       cards.push({
-        key: "repair", name: "Repair", desc: `restore +${C.REPAIR_HP} HP`,
+        key: "repair", cat: "DEFENSE", name: "Repair", desc: `restore +${C.REPAIR_HP} HP`,
         cost: gs.repairCost(),
         state: hurt && m >= gs.repairCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyRepair(),
       });
     }
     if (gs.skills.has("plating")) cards.push({
-      key: "plating", name: "Plating", desc: `+${C.PLATING_HP} max HP`,
+      key: "plating", cat: "DEFENSE", name: "Plating", desc: `+${C.PLATING_HP} max HP`,
       cost: gs.platingCost(), state: m >= gs.platingCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyPlating(),
     });
     if (gs.skills.has("shield")) cards.push({
-      key: "shield", name: "Shield",
+      key: "shield", cat: "DEFENSE", name: "Shield",
       desc: gs.shieldLevel === 0
         ? `${C.SHIELD_BASE_HITS} layers, ${C.SHIELD_HIT_ABSORB} dmg each`
         : `Lv ${gs.shieldLevel} · +1 layer`,
@@ -114,7 +116,7 @@ export class ShopPanel {
         const equipped = gs.equippedUltimate === k;
         const cost = C.ULTIMATE_COSTS[k];
         return {
-          key: k, name: C.ULTIMATE_NAMES[k],
+          key: k, cat: "ULTIMATES" as Category, name: C.ULTIMATE_NAMES[k],
           desc: { emp: "Zap + stun everything", freeze: "Freezes all enemies", warp: "Slow-motion for enemies", laser: "The mega-beam" }[k],
           cost: owned ? null : cost,
           state: equipped ? "equipped" as const : owned ? "owned" as const
@@ -182,7 +184,14 @@ export class ShopPanel {
 
       <div class="section-head field"><span class="sh-label">FIELD UPGRADES</span>
         <span class="sh-note">↺ reset at end of level</span><span class="sh-rule"></span></div>
-      <div class="card-grid">${this.fieldCards().map((c) => this.card(c)).join("")}</div>
+      ${(["CANNON", "DEFENSE", "DRONE", "ECONOMY"] as Category[]).map((cat) => {
+        const items = this.fieldCards().filter((c) => c.cat === cat);
+        if (!items.length) return "";
+        return `<div class="cluster">
+          <div class="cluster-head">${catIcon(cat)}<span>${cat}</span><i class="cluster-rule"></i></div>
+          <div class="card-grid">${items.map((c) => this.card(c)).join("")}</div>
+        </div>`;
+      }).join("")}
 
       ${ults.length === 0 ? "" : `
       <div class="section-head ult"><span class="sh-label">ULTIMATES</span>

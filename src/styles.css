@@ -276,7 +276,7 @@ body { display: grid; place-items: center; }
 .section-head.field .sh-rule { background: linear-gradient(90deg, rgba(255, 181, 107, 0.4), transparent); }
 .section-head.ult .sh-rule { background: linear-gradient(90deg, rgba(180, 140, 255, 0.4), transparent); }
 
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(138px, 1fr)); gap: 10px; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 11px; }
 .card-grid.ult { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .store-card {
   padding: 12px 14px; border-radius: 13px; display: flex; flex-direction: column; gap: 9px;
@@ -582,3 +582,14 @@ body { display: grid; place-items: center; }
   .panel-money { gap: 6px; }
   .back-btn { font-size: 12px; padding: 7px 12px; }
 }
+
+/* -- v3: category icons + clustered store ---------------------------------- */
+.cat-icon { display: inline-flex; align-items: center; color: #9fb3d6; }
+.cat-icon svg { display: block; }
+.sc-head { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.cluster { margin-top: 13px; }
+.cluster-head {
+  display: flex; align-items: center; gap: 9px; margin-bottom: 9px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.18em; color: #9fb3d6;
+}
+.cluster-head .cluster-rule { flex: 1; height: 1px; background: rgba(120, 160, 230, 0.1); }

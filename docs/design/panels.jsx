@@ -134,9 +134,11 @@ function SkillTreeScreen() {
       <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22, alignItems: 'start', marginTop: 8 }}>
         {TREE.map((col, ci) => (
           <div key={ci} style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ textAlign: 'center', fontFamily: CHK, fontSize: 13, fontWeight: 600, letterSpacing: '.22em',
-              color: '#9fb3d6', marginBottom: 16, paddingBottom: 12,
-              borderBottom: '1px solid rgba(120,160,230,0.16)' }}>{col.col}</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(120,160,230,0.16)' }}>
+              <CatIcon type={col.col} />
+              <span style={{ fontFamily: CHK, fontSize: 13, fontWeight: 600, letterSpacing: '.22em', color: '#9fb3d6' }}>{col.col}</span>
+            </div>
             {col.nodes.map((n, ni) => (
               <React.Fragment key={ni}>
                 {ni > 0 && (
@@ -160,19 +162,37 @@ function SkillTreeScreen() {
 
 /* ============================ UPGRADES STORE ============================ */
 // state: 'buy' (affordable), 'poor' (too expensive), 'owned', 'equipped'
-const FIELD = [
-  { name: 'Generator', desc: 'Lv 4 · +15 cash/sec', cost: 327, state: 'buy' },
-  { name: 'Auto-Shooter', desc: 'Lv 1 · fires faster', cost: 80, state: 'buy' },
-  { name: 'Main Turret', desc: 'Lv 1 · +dmg, rate, size', cost: 96, state: 'buy' },
-  { name: 'Drone', desc: 'deploy · auto-hunts', cost: 100, state: 'buy' },
-  { name: 'Multi-Shot', desc: 'Lv 0 · +1 bullet / lvl', cost: 220, state: 'buy' },
-  { name: 'Piercing', desc: 'Lv 0 · pass through', cost: 150, state: 'buy' },
-  { name: 'Explosive', desc: 'Lv 2 · hits blast', cost: 810, state: 'poor' },
-  { name: 'Guided', desc: 'bullets bend to foes', cost: 0, state: 'owned' },
-  { name: 'Repair', desc: 'restore +30 HP', cost: 60, state: 'buy' },
-  { name: 'Plating', desc: '+25 max HP', cost: 90, state: 'buy' },
-  { name: 'Shield', desc: 'Lv 1 · +1 hit absorbed', cost: 595, state: 'poor' },
+const FIELD_GROUPS = [
+  { cat: 'CANNON', items: [
+    { name: 'Main Turret', desc: 'Lv 1 · +dmg, rate, size', cost: 96, state: 'buy' },
+    { name: 'Multi-Shot', desc: 'Lv 0 · +1 bullet / lvl', cost: 220, state: 'buy' },
+    { name: 'Piercing', desc: 'Lv 0 · pass through', cost: 150, state: 'buy' },
+    { name: 'Explosive', desc: 'Lv 2 · hits blast', cost: 810, state: 'poor' },
+    { name: 'Guided', desc: 'bullets bend to foes', cost: 0, state: 'owned' },
+  ] },
+  { cat: 'DEFENSE', items: [
+    { name: 'Repair', desc: 'restore +30 HP', cost: 60, state: 'buy' },
+    { name: 'Plating', desc: '+25 max HP', cost: 90, state: 'buy' },
+    { name: 'Shield', desc: 'Lv 1 · +1 hit absorbed', cost: 595, state: 'poor' },
+  ] },
+  { cat: 'DRONE', items: [
+    { name: 'Drone', desc: 'deploy · auto-hunts', cost: 100, state: 'buy' },
+    { name: 'Auto-Shooter', desc: 'Lv 1 · fires faster', cost: 80, state: 'buy' },
+  ] },
+  { cat: 'ECONOMY', items: [
+    { name: 'Generator', desc: 'Lv 4 · +15 cash/sec', cost: 327, state: 'buy' },
+  ] },
 ];
+
+function CatIcon({ type, c = '#9fb3d6' }) {
+  const p = { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: c, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  if (type === 'CANNON') return (<svg {...p}><circle cx="12" cy="12" r="7" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>);
+  if (type === 'DEFENSE') return (<svg {...p}><path d="M12 3l7 3v5c0 4-3 7-7 9-4-2-7-5-7-9V6z" /></svg>);
+  if (type === 'DRONE') return (<svg {...p}><circle cx="6" cy="6" r="2.4" /><circle cx="18" cy="6" r="2.4" /><circle cx="6" cy="18" r="2.4" /><circle cx="18" cy="18" r="2.4" /><path d="M8 8l3 3M16 8l-3 3M8 16l3-3M16 16l-3-3" /></svg>);
+  if (type === 'ECONOMY') return (<svg {...p}><circle cx="12" cy="12" r="8" /><path d="M12 8v8M9.6 9.6h3.4a2 2 0 010 4H9.6" /></svg>);
+  if (type === 'ULTIMATES' || type === 'ULTIMATE') return (<svg {...p} fill={c} stroke="none"><path d="M13 2L4.5 13.5H11l-1 8.5L19.5 10H13z" /></svg>);
+  return null;
+}
 const ULT = [
   { name: 'EMP Burst', desc: 'Zap + stun everything', cost: 400, state: 'buy' },
   { name: 'Freeze Bomb', desc: 'Freezes all enemies', cost: 0, state: 'equipped' },
@@ -273,15 +293,24 @@ function UpgradesStoreScreen({ status = 'paused' }) {
         </button>
       </div>
 
-      {/* field upgrades */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0 13px' }}>
+      {/* field upgrades — clustered by type */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0 6px' }}>
         <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: '.16em', color: '#ffb56b', whiteSpace: 'nowrap' }}>FIELD UPGRADES</span>
         <span style={{ fontFamily: SPG, fontSize: 12, color: '#c79a6a', whiteSpace: 'nowrap' }}>↺ reset at end of level</span>
         <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(255,181,107,0.4), transparent)' }} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
-        {FIELD.map((it, i) => <StoreCard key={i} it={it} />)}
-      </div>
+      {FIELD_GROUPS.map((g, gi) => (
+        <div key={gi} style={{ marginTop: 13 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 9 }}>
+            <CatIcon type={g.cat} />
+            <span style={{ fontFamily: CHK, fontSize: 11.5, fontWeight: 600, letterSpacing: '.18em', color: '#9fb3d6', whiteSpace: 'nowrap' }}>{g.cat}</span>
+            <span style={{ flex: 1, height: 1, background: 'rgba(120,160,230,0.1)' }} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+            {g.items.map((it, i) => <StoreCard key={i} it={it} />)}
+          </div>
+        </div>
+      ))}
 
       {/* ultimates */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '22px 0 13px' }}>
