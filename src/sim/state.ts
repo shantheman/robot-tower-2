@@ -28,7 +28,7 @@ export const SKILL_NODES: SkillNode[] = [
   { key: "pierce", name: "Piercing Shots", cost: 90, desc: "Bullets pierce enemies", prereq: "multi", branch: "CANNON" },
   { key: "explosive", name: "Explosive Rounds", cost: 160, desc: "Hits blast nearby enemies", prereq: "pierce", branch: "CANNON" },
   { key: "guided", name: "Guided Rounds", cost: 220, desc: "Bullets bend toward enemies", prereq: "explosive", branch: "CANNON" },
-  { key: "repair", name: "Repair Bay", cost: 60, desc: "Buy hull repairs in battle", branch: "DEFENSE" },
+  { key: "repair", name: "Repair Bay", cost: 60, desc: "Buy tower repairs in battle", branch: "DEFENSE" },
   { key: "plating", name: "Reinforced Plating", cost: 100, desc: "Buy +max HP in battle", prereq: "repair", branch: "DEFENSE" },
   { key: "shield", name: "Shield Generator", cost: 180, desc: "Layered recharging shield", prereq: "plating", branch: "DEFENSE" },
   { key: "twin", name: "Twin Targeting", cost: 150, desc: "Drone hits 2 enemies", branch: "DRONE" },

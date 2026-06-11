@@ -24,6 +24,8 @@ Mobile via Capacitor and desktop packaging come after the gameplay port.
 - **The game is named "ROBOT TOWER" / "Robot Tower Survival"** — decided by
   Shannon 2026-06-11. Design mocks that say "Core Defender" are placeholders;
   don't re-raise the rename unless he does.
+- **Health verbiage**: the label is "Tower Health" (never "Integrity");
+  numeric stats use the unit "HP" ("+30 HP", "+25 max HP").
 - **Currency is coins, never dollars** — no `$` in any user-visible text.
   Money = gold coin icon; Cores = cyan diamond. Always pair value with icon.
 - State colors are reserved: green = owned/equipped, cyan = available,
