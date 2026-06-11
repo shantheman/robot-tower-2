@@ -71,11 +71,13 @@ describe("economy core (parity with smoke_test.py)", () => {
     g.money = 9_999;                                // hoarded coins must be worthless
     const c0 = g.cores;
     g.wave = 8;                                     // level 2, wave 1 (not boss)
+    g.waveTookDamage = true;                        // suppress the Untouchable bounty
     expect(g.onWaveCleared()).toEqual({ bossWave: false, coresEarned: 2 });
     g.wave = 17;                                    // level 2 boss wave
+    g.waveTookDamage = true;
     const r = g.onWaveCleared();
     expect(r).toEqual({ bossWave: true, coresEarned: 2 + 30 });
-    expect(g.cores).toBe(c0 + 34);
+    expect(g.cores).toBe(c0 + 34);                  // wave pay only — no bounties
     expect(g.level).toBe(3);                        // boss clear advances the level
   });
 
@@ -191,6 +193,15 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(g2.volume).toBeCloseTo(0.4);
     expect(g2.reduceMotion).toBe(true);
     expect(g2.money).toBe(g2.startCash());          // fresh run economy
+  });
+
+  it("achievement bounties pay once, on unlock", () => {
+    const g = fresh();
+    const c0 = g.cores;
+    expect(g.unlockAchievement("boss")).toBe(true);
+    expect(g.cores).toBe(c0 + 10);                  // Boss Slayer bounty
+    expect(g.unlockAchievement("boss")).toBe(false);
+    expect(g.cores).toBe(c0 + 10);                  // never twice
   });
 
   it("achievements unlock on their triggers", () => {
