@@ -205,7 +205,7 @@ export class ShopPanel {
       <footer class="panel-foot">
         ${cleared
         ? `<button class="cta startwave" data-act="next">
-             <span class="play">▶</span>
+             <span class="play">▸&#xFE0E;</span>
              <span class="cta-col"><span class="cta-big">START NEXT WAVE</span>
              <span class="cta-sub2">Wave ${Math.min(wil + 1, total)} of ${total} · [Space]</span></span>
            </button>`

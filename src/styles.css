@@ -263,7 +263,7 @@ body { display: grid; place-items: center; }
 .cta-sub { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
 .cta-col { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
 .cta-sub2 { font-size: 12px; font-weight: 600; color: #0a2436; }
-.cta .play { font-size: 18px; }
+.cta .play { font-size: 22px; line-height: 1; }
 .startwave .cta-big { font-size: 17px; }
 
 .section-head { display: flex; align-items: center; gap: 12px; margin: 20px 0 13px; }
