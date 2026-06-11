@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.5.1 — 2026-06-11
+
+- **The game is now CORE DEFENDER** — Callum picked the name from the design
+  mocks over the working title "Robot Tower". Home screen, browser tab, and
+  all docs updated. Saves are untouched (the storage key is internal).
+
 ## v0.5.0 — 2026-06-11
 
 Two new Drone skills (the branch grows to 4 nodes, tree total 1,880 cores):

@@ -1,7 +1,7 @@
 # Game Mechanics & Balance Reference
 
-The concrete numbers behind Robot Tower Survival — enemy stats, weapon damage,
-upgrades, drops, and the wave/level logic.
+The concrete numbers behind Core Defender (originally Robot Tower Survival) —
+enemy stats, weapon damage, upgrades, drops, and the wave/level logic.
 
 > ⚠️ **KEEP THIS IN SYNC.** Whenever any of these gameplay values or formulas
 > change (in `config.py`, `entities.py`, `waves.py`, or `game.py`), **update this

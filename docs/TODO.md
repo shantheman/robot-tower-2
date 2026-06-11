@@ -1,4 +1,4 @@
-# Robot Tower v2 — Master TODO
+# Core Defender — Master TODO
 
 A running checklist for the rewrite. **Anyone (Callum, Dad, Claude Code) can
 add to this** — drop a `- [ ]` line in the right section. Check things off as

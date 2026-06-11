@@ -1,4 +1,4 @@
-# Robot Tower Survival v2 — notes for Claude Code
+# Core Defender (Robot Tower Survival v2) — notes for Claude Code
 
 The cross-platform rewrite of [robot-tower-survival](https://github.com/TheDemonicChild/robot-tower-survival)
 (Callum's original Python/pygame game, on disk at `~/Code/robot-tower-survival`).
@@ -21,9 +21,9 @@ Mobile via Capacitor and desktop packaging come after the gameplay port.
    gameplay-value change (same rule as the original repo).
 
 ## Conventions
-- **The game is named "ROBOT TOWER" / "Robot Tower Survival"** — decided by
-  Shannon 2026-06-11. Design mocks that say "Core Defender" are placeholders;
-  don't re-raise the rename unless he does.
+- **The game is named "CORE DEFENDER"** — Callum's call, 2026-06-11 (it
+  replaced the working title "Robot Tower"). The original pygame game keeps
+  its old name; only v2 is Core Defender.
 - **Health verbiage**: the label is "Tower Health" (never "Integrity");
   numeric stats use the unit "HP" ("+30 HP", "+25 max HP").
 - **Currency is coins, never dollars** — no `$` in any user-visible text.

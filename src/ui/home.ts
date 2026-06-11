@@ -1,7 +1,7 @@
 /** Home screen — new/returning states per the mobile mocks (Downloads drop,
  * 2026-06-11): portrait stacks full-width controls under the hero; landscape
- * is hero-left / menu-right. Title stays "ROBOT TOWER" (the original app wins
- * on names unless the rename to "Core Defender" is made deliberately). */
+ * is hero-left / menu-right. Title is "CORE DEFENDER" — Callum's call,
+ * 2026-06-11 (renamed from "Robot Tower"). */
 
 import { game } from "../game";
 import { ACHIEVEMENTS, SKILL_NODES } from "../sim/state";
@@ -52,7 +52,7 @@ export class HomeScreen {
             <img class="hero-gun" src="sprites/turret_gun.png" alt="" />
           </div>
           <div class="home-badge">${returning ? "WELCOME BACK, DEFENDER" : "A 360° SURVIVAL DEFENSE"}</div>
-          <h1 class="home-title">ROBOT TOWER</h1>
+          <h1 class="home-title">CORE DEFENDER</h1>
         </div>
         <div class="home-menu">
           ${strip}
