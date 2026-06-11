@@ -5,7 +5,7 @@
 import type { HudState } from "../scenes/BattleScene";
 import { EMP_COOLDOWN, FREEZE_COOLDOWN, LASER_COOLDOWN, WARP_COOLDOWN } from "../config";
 import { game } from "../game";
-import { ITEM_ART, ULT_ICONS } from "./icons";
+import { ULT_ICONS } from "./icons";
 import { isBossWave, levelStartWave } from "../sim/waves";
 
 const ULT_CD_TOTAL: Record<string, number> = {
@@ -72,12 +72,10 @@ export function updateHud(s: HudState): void {
     if (shownUltKey !== u.key) {
       shownUltKey = u.key;
       $("ult-name").textContent = u.name.toUpperCase();
-      // Trying the painterly art in the circle (2026-06-11, may revert to
-      // the monochrome glyphs — those still live in ULT_ICONS).
-      const art = ITEM_ART[u.key];
-      $("ult-icon").innerHTML = art
-        ? `<img class="${u.key}" src="${art}" alt="" draggable="false" />`
-        : ULT_ICONS[u.key] ?? "";
+      // Monochrome glyphs, deliberately — the painterly art was tried and
+      // reverted (2026-06-11): a fire button needs instant read, and the art
+      // only worked muted into wallpaper. Painterly stays in store/tree.
+      $("ult-icon").innerHTML = ULT_ICONS[u.key] ?? "";
     }
     const stateText = u.ready ? "FIRE" : `${Math.ceil(u.cooldown)}s`;
     const st = $("ult-state");
