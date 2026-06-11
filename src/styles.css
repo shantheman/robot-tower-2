@@ -610,3 +610,11 @@ body { display: grid; place-items: center; }
   font-size: 11.5px; font-weight: 600; letter-spacing: 0.18em; color: #9fb3d6;
 }
 .cluster-head .cluster-rule { flex: 1; height: 1px; background: rgba(120, 160, 230, 0.1); }
+
+/* -- Touch devices: no keyboard-shortcut hints; ult chip is the fire button -- */
+html.touch kbd { display: none; }
+#st-ult { pointer-events: auto; cursor: pointer; }
+html.touch #st-ult:not(.cooling) {
+  border-color: rgba(127, 232, 255, 0.55);
+  box-shadow: 0 0 12px rgba(127, 232, 255, 0.25);
+}

@@ -3,7 +3,7 @@
  * only the look. Opens between waves ("cleared") or on Tab ("paused"). */
 
 import * as C from "../config";
-import { game } from "../game";
+import { game, isTouch } from "../game";
 import { play } from "../audio";
 import { waveInLevel, wavesForLevel } from "../sim/waves";
 import { Category, catIcon } from "./icons";
@@ -199,7 +199,9 @@ export class ShopPanel {
 
       ${ults.length === 0 ? "" : `
       <div class="section-head ult"><span class="sh-label">ULTIMATES</span>
-        <span class="sh-note">own many · click to equip · [Space] fires it · reset at end of level</span><span class="sh-rule"></span></div>
+        <span class="sh-note">${isTouch()
+          ? "own many · tap to equip · reset at end of level"
+          : "own many · click to equip · [Space] fires it · reset at end of level"}</span><span class="sh-rule"></span></div>
       <div class="card-grid ult">${ults.map((c) => this.card(c)).join("")}</div>`}
 
       <footer class="panel-foot">
@@ -207,9 +209,9 @@ export class ShopPanel {
         ? `<button class="cta startwave" data-act="next">
              <span class="play">▸&#xFE0E;</span>
              <span class="cta-col"><span class="cta-big">START NEXT WAVE</span>
-             <span class="cta-sub2">Wave ${Math.min(wil + 1, total)} of ${total} · [Space]</span></span>
+             <span class="cta-sub2">Wave ${Math.min(wil + 1, total)} of ${total}${isTouch() ? "" : " · [Space]"}</span></span>
            </button>`
-        : `<span class="foot-hint">[Tab / Esc] Close & resume</span>`}
+        : isTouch() ? "" : `<span class="foot-hint">[Tab / Esc] Close & resume</span>`}
       </footer>`;
 
     // Wire clicks

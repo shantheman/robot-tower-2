@@ -2,7 +2,7 @@
  * STATE, never category: green = owned, cyan = available, dim = locked.
  * Nodes and prices come from GameState (the original app's tree). */
 
-import { game } from "../game";
+import { game, isTouch } from "../game";
 import { play } from "../audio";
 import { SKILL_NODES, SkillNode } from "../sim/state";
 import { catIcon } from "./icons";
@@ -75,7 +75,7 @@ export class SkillsPanel {
         <span class="lg locked"><i></i>LOCKED</span>
       </div>
       <div class="tree-cols">${cols}</div>
-      <div class="tree-foot">Click a node to unlock it.</div>`;
+      <div class="tree-foot">${isTouch() ? "Tap" : "Click"} a node to unlock it.</div>`;
 
     this.root.querySelectorAll<HTMLButtonElement>(".skill-node.available").forEach((el) => {
       el.addEventListener("click", () => {

@@ -9,6 +9,13 @@
 
 import { GameState } from "./sim/state";
 
+/** Touch-primary device (phone/tablet): no hover, coarse pointer. main.ts
+ * sets the html "touch" class from the media query at boot; reading the class
+ * (not the query) keeps every consumer consistent and testable. */
+export function isTouch(): boolean {
+  return document.documentElement.classList.contains("touch");
+}
+
 export type Screen = "home" | "battle" | "shop" | "skills" | "pause" | "dead";
 
 export interface ScreenHooks {
@@ -31,6 +38,7 @@ export class Game {
     resumeWave: () => void;       // unpause after a shop/pause panel closes
     nextWave: () => void;         // leave the between-waves shop
     setPaused: (p: boolean) => void;
+    fireUltimate: () => void;     // the HUD chip taps this on touch devices
   } | null = null;
 
   constructor() {

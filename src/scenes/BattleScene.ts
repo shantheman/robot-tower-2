@@ -124,6 +124,7 @@ export class BattleScene extends Phaser.Scene {
       resumeWave: () => this.setPaused(false),
       nextWave: () => this.nextWave(),
       setPaused: (p) => this.setPaused(p),
+      fireUltimate: () => this.fireUltimate(),
     };
     // Dev/debug handle for the headless QA driver (steps update() manually).
     (window as unknown as Record<string, unknown>).rt2scene = this;

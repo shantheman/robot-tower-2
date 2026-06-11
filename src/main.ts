@@ -14,6 +14,10 @@ import { DeadScreen } from "./ui/dead";
 import { PauseScreen } from "./ui/pause";
 import { SettingsModal } from "./ui/settings";
 
+if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
+  document.documentElement.classList.add("touch");
+}
+
 const stage = document.getElementById("stage")!;
 const panels = document.createElement("div");
 panels.id = "panels";
@@ -54,6 +58,10 @@ queueMicrotask(() => { game.screen = "battle"; game.show("home"); });
 
 // HUD buttons
 document.getElementById("btn-shop")?.addEventListener("click", openPauseShop);
+// The ultimate-ready chip doubles as the fire button (the only way on touch).
+document.getElementById("st-ult")?.addEventListener("click", () => {
+  if (game.screen === "battle") game.battle?.fireUltimate();
+});
 document.getElementById("btn-skills")?.addEventListener("click", openSkills);
 
 function openSkills(): void {
