@@ -55,6 +55,7 @@ export class BattleScene extends Phaser.Scene {
   private towerPos = new Phaser.Math.Vector2(C.WORLD_W / 2, C.WORLD_H / 2);
   private gun!: Phaser.GameObjects.Image;
   private shieldGfx!: Phaser.GameObjects.Graphics;
+  private fxLayer!: Phaser.GameObjects.Layer;
   private drone?: Phaser.GameObjects.Image;
   private droneAngle = 0;
   private droneFireTimer = 0;
@@ -95,6 +96,7 @@ export class BattleScene extends Phaser.Scene {
 
   create() {
     this.drawBackdrop();
+    this.fxLayer = this.add.layer();
     const base = this.add.image(this.towerPos.x, this.towerPos.y, "turret_base")
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y);
     base.setScale((C.TOWER_SIZE * 2.3) / base.width);
@@ -113,7 +115,15 @@ export class BattleScene extends Phaser.Scene {
       nextWave: () => this.nextWave(),
       setPaused: (p) => this.setPaused(p),
     };
+    // Dev/debug handle for the headless QA driver (steps update() manually).
+    (window as unknown as Record<string, unknown>).rt2scene = this;
     this.startBattle();
+  }
+
+  /** Track a transient effect so startBattle can hard-clear leftovers. */
+  private fx<T extends Phaser.GameObjects.GameObject>(obj: T): T {
+    this.fxLayer.add(obj);
+    return obj;
   }
 
   setPaused(p: boolean): void {
@@ -125,6 +135,7 @@ export class BattleScene extends Phaser.Scene {
   startBattle(): void {
     game.gs.resetRun();
     this.clearBoard(true);
+    this.fxLayer.removeAll(true);
     this.over = false;
     this.drone?.destroy();
     this.drone = undefined;
@@ -217,13 +228,13 @@ export class BattleScene extends Phaser.Scene {
       const side = d.clone().rotate(Math.PI / 2).scale(this.muzzleAlt * this.gun.displayWidth * 0.16);
       this.muzzleAlt *= -1;
       const start = this.towerPos.clone().add(d.clone().scale(muzzleDist)).add(side);
-      const dot = this.add.circle(start.x, start.y, gs.playerBulletRadius(), 0xffe9a8);
+      const dot = this.fx(this.add.circle(start.x, start.y, gs.playerBulletRadius(), 0xffe9a8));
       this.bullets.push({
         dot, vx: d.x * C.BULLET_SPEED, vy: d.y * C.BULLET_SPEED,
         damage: gs.playerDamage(), radius: gs.playerBulletRadius(),
         pierce: gs.pierceLevel, guided: gs.guidedOwned, hit: new Set(), alive: true,
       });
-      const flash = this.add.circle(start.x, start.y, 9, 0xfff6da, 0.9);
+      const flash = this.fx(this.add.circle(start.x, start.y, 9, 0xfff6da, 0.9));
       this.tweens.add({ targets: flash, alpha: 0, scale: 1.8, duration: 70, onComplete: () => flash.destroy() });
     }
   }
@@ -264,7 +275,7 @@ export class BattleScene extends Phaser.Scene {
         this.hitEnemy(e, dmg);
       }
     }
-    const ring = this.add.circle(at.x, at.y, 6).setStrokeStyle(3, 0xff9341, 0.9);
+    const ring = this.fx(this.add.circle(at.x, at.y, 6).setStrokeStyle(3, 0xff9341, 0.9));
     this.tweens.add({
       targets: ring, radius: C.EXPLOSIVE_RADIUS, alpha: 0, duration: 280,
       onUpdate: () => ring.setStrokeStyle(2, 0xff9341, ring.alpha * 0.9),
@@ -290,7 +301,7 @@ export class BattleScene extends Phaser.Scene {
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2;
       const r = 30 + Math.random() * 30;
-      const p = this.add.circle(x, y, 3, 0xff9341);
+      const p = this.fx(this.add.circle(x, y, 3, 0xff9341));
       this.tweens.add({
         targets: p, x: x + Math.cos(a) * r, y: y + Math.sin(a) * r,
         alpha: 0, duration: 320, onComplete: () => p.destroy(),
@@ -299,9 +310,9 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private popup(x: number, y: number, text: string, color: string): void {
-    const t = this.add.text(x, y, text, {
+    const t = this.fx(this.add.text(x, y, text, {
       fontFamily: "Chakra Petch", fontSize: "15px", color, stroke: "#04080f", strokeThickness: 3,
-    }).setOrigin(0.5);
+    })).setOrigin(0.5);
     this.tweens.add({ targets: t, y: y - 34, alpha: 0, duration: 800, onComplete: () => t.destroy() });
   }
 
@@ -374,7 +385,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private zap(x1: number, y1: number, x2: number, y2: number, color: number): void {
-    const line = this.add.line(0, 0, x1, y1, x2, y2, color, 0.8).setOrigin(0).setLineWidth(1.5);
+    const line = this.fx(this.add.line(0, 0, x1, y1, x2, y2, color, 0.8)).setOrigin(0).setLineWidth(1.5);
     this.tweens.add({ targets: line, alpha: 0, duration: 90, onComplete: () => line.destroy() });
   }
 
@@ -414,9 +425,9 @@ export class BattleScene extends Phaser.Scene {
     if (aim.lengthSq() === 0) aim.set(0, -1);
     aim.normalize();
     const end = this.towerPos.clone().add(aim.clone().scale(2000));
-    const beam = this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0xffffff, 0.9)
+    const beam = this.fx(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0xffffff, 0.9))
       .setOrigin(0).setLineWidth(C.LASER_WIDTH / 8);
-    const glow = this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0x7fe8ff, 0.35)
+    const glow = this.fx(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0x7fe8ff, 0.35))
       .setOrigin(0).setLineWidth(C.LASER_WIDTH / 3);
     this.time.delayedCall(40, () => { beam.destroy(); glow.destroy(); });
     // Damage every enemy near the beam line.
@@ -434,7 +445,7 @@ export class BattleScene extends Phaser.Scene {
 
   private flashScreen(color: number, alpha: number): void {
     if (game.gs.reduceMotion) return;
-    const r = this.add.rectangle(C.WORLD_W / 2, C.WORLD_H / 2, C.WORLD_W, C.WORLD_H, color, alpha);
+    const r = this.fx(this.add.rectangle(C.WORLD_W / 2, C.WORLD_H / 2, C.WORLD_W, C.WORLD_H, color, alpha));
     this.tweens.add({ targets: r, alpha: 0, duration: 220, onComplete: () => r.destroy() });
   }
 
@@ -518,7 +529,7 @@ export class BattleScene extends Phaser.Scene {
       if (ranged && dist <= ranged.fireRange) {
         e.fireTimer -= enemyDt;
         if (e.fireTimer <= 0 && enemyDt > 0) {
-          const dot = this.add.circle(e.sprite.x, e.sprite.y, C.ENEMY_BULLET_RADIUS, 0xff5238);
+          const dot = this.fx(this.add.circle(e.sprite.x, e.sprite.y, C.ENEMY_BULLET_RADIUS, 0xff5238));
           this.enemyBullets.push({
             dot, vx: (dx / dist) * C.ENEMY_BULLET_SPEED, vy: (dy / dist) * C.ENEMY_BULLET_SPEED,
             damage: ranged.projDamage, alive: true,

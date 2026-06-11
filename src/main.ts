@@ -31,6 +31,9 @@ phaser.scene.add("battle", BattleScene, true, { onHud: updateHud });
 // the entry point in the flow phase.
 game.screen = "battle";
 
+// Dev/debug handle (used by the headless QA driver; harmless in production).
+(window as unknown as Record<string, unknown>).rt2 = game;
+
 // HUD buttons
 document.getElementById("btn-shop")?.addEventListener("click", openPauseShop);
 
