@@ -124,9 +124,11 @@ body { display: grid; place-items: center; }
 }
 
 
-.counters b { font-size: 17px; }
-.counters .money { color: var(--gold); }
-.counters .cores { color: var(--cyan); }
+/* Reserved number widths so the icons don't shuffle on every coin tick
+ * (the panel is right-anchored, so an unreserved digit reflows everything). */
+.counters b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.counters .money { color: var(--gold); min-width: 4ch; text-align: left; }
+.counters .cores { color: var(--cyan); min-width: 3ch; text-align: left; }
 /* Currency art (Shannon's drop, 2026-06-11): single coin inline/price chips,
  * .stack (coin pile) for the corner money displays, crystal core for cores. */
 .coin-icon {
@@ -669,6 +671,11 @@ html.touch kbd { display: none; }
   mask: radial-gradient(closest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
 }
 .ult-icon svg { width: 26px; height: 26px; display: block; }
+.ult-icon img {
+  width: 42px; height: 42px; display: block; border-radius: 50%;
+  object-fit: cover;
+}
+.ult-circle.cooling .ult-icon img { filter: grayscale(0.5) brightness(0.55); }
 .ult-state {
   font-family: "Chakra Petch", sans-serif; font-size: 13px; font-weight: 700;
   letter-spacing: 0.1em; color: #efe6ff;
@@ -684,6 +691,7 @@ html.touch kbd { display: none; }
 @media (max-width: 760px) {
   .ult-circle { width: 76px; height: 76px; }
   .ult-icon svg { width: 22px; height: 22px; }
+  .ult-icon img { width: 36px; height: 36px; }
 }
 
 /* Corner buttons: expanded on desktop, abridged icon squares on mobile */
