@@ -74,7 +74,7 @@ and git).
 
 - [x] **Deploy the web build** — DONE (2026-06-11): GitHub Pages, auto-deploys
       from main on every push (tests must pass first). Live at
-      https://shantheman.github.io/robot-tower-2/
+      https://shantheman.github.io/core-defender/
 - [ ] **PWA pass** — manifest + icons + service worker: installable to the
       home screen, runs offline, fullscreen standalone on iOS. Cheap, and a
       real alternative to app stores for the friend-circle audience.
