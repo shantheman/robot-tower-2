@@ -42,6 +42,10 @@ Any visual change gets verified at ALL THREE ratios before shipping: desktop
 (~1280x900), phone landscape (~812x375), and phone portrait (~375x812 — note
 portrait boots a different world size). Use preview_resize + screenshots.
 
+## Backlog
+`docs/TODO.md` is the master checklist (features / art / code health /
+launch readiness). Keep it current: check off what lands, add what's found.
+
 ## Commands
 - `npm run dev` — Vite dev server (the game is playable in a browser).
 - `npm test` — vitest parity tests. `npm run build` — typecheck + bundle.

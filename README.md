@@ -38,6 +38,8 @@ is the contract; `tests/` pins the math):
 - **Saves** in localStorage (versioned), synthesized **audio** (Web Audio
   port of the original's tone recipes), focus-loss auto-pause.
 
+The master checklist lives in [docs/TODO.md](docs/TODO.md).
+
 ## Not yet ported / next up
 
 Achievements UI (the 12 achievements unlock and persist; no browsing modal
