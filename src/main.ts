@@ -46,7 +46,7 @@ const phaser = new Phaser.Game({
   parent: "game",
   width: game.world.w,
   height: game.world.h,
-  backgroundColor: "#081120",
+  transparent: true, // the page draws the backdrop + grid (full-bleed at any ratio)
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   scene: [],
 });

@@ -499,11 +499,8 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private drawBackdrop(): void {
-    const { w, h } = game.world;
-    const g = this.add.graphics();
-    g.lineStyle(1, 0x6096e6, 0.06);
-    for (let x = 0; x <= w; x += 48) g.lineBetween(x, 0, x, h);
-    for (let y = 0; y <= h; y += 48) g.lineBetween(0, y, w, y);
+    // (The page draws the gradient + grid full-bleed; only the tower-relative
+    // range rings live in-world.)
     for (let i = 1; i <= 5; i++) {
       const ring = this.add.graphics();
       ring.lineStyle(1, 0x3b9dff, 0.10 - i * 0.015);
