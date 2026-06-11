@@ -185,6 +185,7 @@ export class BattleScene extends Phaser.Scene {
     this.clearBoard(false);
     const { bossWave } = game.gs.onWaveCleared();
     if (bossWave) {
+      this.setPaused(true);     // CRITICAL: stop simulating under the Home screen
       game.show("home");        // level complete -> Home (cores banked)
     } else {
       game.shopMode = "cleared"; // between-waves shop (Start Next Wave to go on)

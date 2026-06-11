@@ -118,6 +118,23 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(SKILL_NODES.reduce((a, n) => a + n.cost, 0)).toBe(1430);
   });
 
+  it("a wave can NEVER pay twice (the level-1799 runaway regression)", () => {
+    const g = fresh();
+    g.level = 2;
+    g.resetRun();
+    g.wave = 17;                                    // level 2's boss wave
+    const first = g.onWaveCleared();
+    expect(first.bossWave).toBe(true);
+    expect(g.level).toBe(3);
+    const c = g.cores;
+    // A runaway caller (scene ticking under the Home screen) re-clears it:
+    for (let i = 0; i < 1000; i++) g.onWaveCleared();
+    expect(g.cores).toBe(c);                        // not one core more
+    expect(g.level).toBe(3);                        // not one level more
+    g.resetRun();                                   // next battle clears fresh
+    expect(g.onWaveCleared().coresEarned).toBeGreaterThan(0);
+  });
+
   it("save/load round-trips permanent state only", () => {
     const store = fakeStorage();
     const g = new GameState(store, () => 0.99);

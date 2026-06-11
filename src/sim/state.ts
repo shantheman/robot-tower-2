@@ -100,6 +100,7 @@ export class GameState {
   equippedUltimate: C.UltimateKey | null = null;
   rapidTimer = 0;
   waveTookDamage = false;
+  private lastClearedWave = -1;  // guard: a wave can never pay cores twice
 
   /** Announcements for the UI to drain (popups for cores/achievements/bonuses). */
   events: { kind: string; text: string }[] = [];
@@ -181,12 +182,19 @@ export class GameState {
     this.equippedUltimate = null;
     this.rapidTimer = 0;
     this.waveTookDamage = false;
+    this.lastClearedWave = -1;
     this.hp = this.maxHp();
   }
 
   /** Wave cleared: pay cores (+ level bonus on the boss wave). Returns what
    * happened so the caller can route flow (shop vs level-complete). */
   onWaveCleared(): { bossWave: boolean; coresEarned: number } {
+    // Idempotence guard: a runaway caller (e.g. a scene that keeps ticking
+    // after the level ends) must never double-pay or double-advance.
+    if (this.wave === this.lastClearedWave) {
+      return { bossWave: isBossWave(this.wave), coresEarned: 0 };
+    }
+    this.lastClearedWave = this.wave;
     let earned = C.WAVE_CLEAR_CORES * this.level;
     const bossWave = isBossWave(this.wave);
     if (bossWave) earned += C.LEVEL_CLEAR_CORES * this.level;

@@ -645,3 +645,5 @@ html.touch #st-ult:not(.cooling) {
   .mb-title { font-size: 15px; }
   .home-credit { display: none; } /* no vertical room; credit shows elsewhere */
 }
+
+.set-toggle.danger { color: var(--red); border-color: rgba(255, 82, 56, 0.4); }
