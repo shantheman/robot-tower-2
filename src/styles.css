@@ -601,7 +601,15 @@ body { display: grid; place-items: center; }
   .hs-box label { font-size: 9.5px; letter-spacing: 0.12em; }
   .hs-box b { font-size: 17px; }
   .home-menu { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 13px; }
-  .dead-title { font-size: 44px; }
+  .dead-title { font-size: 40px; }
+  .dead-card { width: 100%; padding: 18px 14px; }
+  .dc-row { flex-direction: column; gap: 10px; }
+  .dc-arrow { transform: rotate(90deg); font-size: 20px; }
+  .dc-val b { font-size: 26px; }
+  .dead-keeps { flex-direction: column; gap: 6px; align-items: center; text-align: center; }
+  .dead-btns { flex-direction: column; width: 100%; gap: 10px; margin-top: 22px; }
+  .dead-btns .cta, .dead-btns .ghost-btn { width: 100%; justify-content: center; display: flex; }
+  .dead-wrap { width: calc(100vw - 32px); }
   .modal-card { padding: 16px 16px; }
   .panel-title-group { flex-direction: column; align-items: center; gap: 2px; }
   .panel-money b { font-size: 17px; }
@@ -622,10 +630,21 @@ body { display: grid; place-items: center; }
 
 /* -- Touch devices: no keyboard-shortcut hints; ult chip is the fire button -- */
 html.touch kbd { display: none; }
-#st-ult { pointer-events: auto; cursor: pointer; }
-html.touch #st-ult:not(.cooling) {
-  border-color: rgba(127, 232, 255, 0.55);
-  box-shadow: 0 0 12px rgba(127, 232, 255, 0.25);
+.ult-btn {
+  pointer-events: auto; cursor: pointer;
+  font-family: "Chakra Petch", sans-serif; font-size: 15px; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--cyan);
+  padding: 14px 30px; border-radius: 14px;
+  background: rgba(8, 14, 28, 0.8); border: 1px solid rgba(127, 232, 255, 0.55);
+  box-shadow: 0 0 16px rgba(127, 232, 255, 0.28);
+}
+.ult-btn.hidden { display: none; }
+.ult-btn.cooling {
+  color: var(--dim); border-color: var(--line); box-shadow: none; cursor: default;
+}
+.ult-btn:not(.cooling):active { transform: scale(0.97); }
+@media (max-width: 760px) {
+  .ult-btn { font-size: 13px; padding: 13px 20px; }
 }
 
 /* -- Phone landscape: hero left, menu right (mock 844x390) -------------------- */
