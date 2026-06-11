@@ -52,8 +52,9 @@ and git).
       temporary ("likely replaced later, possibly animated"). Boss, Shooter,
       and the in-battle drone still use the old pygame-era art, which clashes
       with the new painterly style.
-- [ ] **App icon + favicon** — there is none. Needed for the browser tab,
-      PWA install, and app stores.
+- [ ] **App icon** — favicon DONE (2026-06-11: the crystal core, plus an
+      apple-touch-icon for iOS home screens). Still needed: proper app
+      icon set for the PWA manifest and app stores (512px+, maskable).
 - [ ] **Loading/splash screen** — first load shows a blank stage for a beat;
       a branded splash would cover asset load (also required for Capacitor).
 

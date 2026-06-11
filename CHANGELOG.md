@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.6.1 — 2026-06-11
+
+- **Favicon**: the crystal core in the browser tab, plus an apple-touch-icon
+  (navy-backed) for iOS home screens.
+- **Save durability, pinned by tests**: updates never wipe progress — the
+  loader fills missing fields with defaults, ignores unknown fields, and
+  shrugs off corrupt saves. (Deploys never could touch localStorage; now a
+  schema change can't either.)
+
 ## v0.6.0 — 2026-06-11
 
 Shannon's art drop — the last text-only corners get real paint:

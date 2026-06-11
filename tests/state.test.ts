@@ -246,3 +246,35 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(g.achievements.has("wave10") && g.achievements.has("wave25")).toBe(true);
   });
 });
+
+describe("saves survive game updates (never wipe on schema drift)", () => {
+  it("loads a sparse old-version save, filling new fields with defaults", () => {
+    const st = fakeStorage();
+    // a v0-era save: no save_version, missing every field added since
+    st.data["rts2_save"] = JSON.stringify({ cores: 120, tower_level: 3, skills: ["multi"] });
+    const g = new GameState(st, () => 0.99);
+    expect(g.cores).toBe(120);
+    expect(g.towerLevel).toBe(3);
+    expect(g.skills.has("multi")).toBe(true);
+    expect(g.level).toBe(1);                        // missing -> default, not a wipe
+    expect(g.volume).toBe(1);
+  });
+
+  it("tolerates a future save with unknown fields and version", () => {
+    const st = fakeStorage();
+    st.data["rts2_save"] = JSON.stringify({
+      save_version: 999, cores: 50, level: 4, from_the_future: { shiny: true },
+    });
+    const g = new GameState(st, () => 0.99);
+    expect(g.cores).toBe(50);
+    expect(g.level).toBe(4);
+  });
+
+  it("a corrupt save falls back to defaults without throwing", () => {
+    const st = fakeStorage();
+    st.data["rts2_save"] = "{not json";
+    const g = new GameState(st, () => 0.99);
+    expect(g.cores).toBe(0);
+    expect(g.level).toBe(1);
+  });
+});
