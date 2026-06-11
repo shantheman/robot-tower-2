@@ -691,7 +691,7 @@ html.touch kbd { display: none; }
 }
 /* per-art framing: zoom past the source padding, recenter the subject */
 .ult-icon img.emp    { transform: scale(1.18); }
-.ult-icon img.freeze { transform: scale(1.16) translate(-4%, 0); }
+.ult-icon img.freeze { transform: scale(1.2) translate(-7%, 4%); }
 .ult-icon img.warp   { transform: scale(1.06) translateY(2%); }
 .ult-icon img.laser  { transform: scale(1.06); }
 .ult-icon::after {
