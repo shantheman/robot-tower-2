@@ -18,6 +18,9 @@ of **2026-06-10** (cores-per-wave economy update).
 > - **Level length is capped at 15 waves** (`WAVES_LEVEL_CAP`). The original
 >   grew +5 forever (level 10 = 50 waves). Levels past 3 are all 15 waves and
 >   differentiate by their steeper difficulty ramp instead.
+> - **Explosive Rounds buffed** (original: 12+6/lvl splash in a fixed 60px):
+>   splash **16 + 6/lvl**, radius **100 + 25/lvl** — sparse enemy spacing made
+>   the original blast nearly useless. Splash victims show damage numbers.
 > - **Mid-level checkpoints** (`CHECKPOINT_EVERY` = 5): starting wave 6/11 of a
 >   level snapshots the full loadout (coins, upgrades, ultimates — including
 >   between-wave purchases). Death offers "Retry from wave N": the snapshot is

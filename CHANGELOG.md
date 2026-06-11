@@ -2,6 +2,16 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.3.1 — 2026-06-11
+
+Explosive Rounds actually explode now:
+
+- Blast radius **100px base, +25 per level** (was a fixed 60 — too small for
+  how spread out enemies are). Splash damage **16 base** (one-shots Fast),
+  still +6 per level.
+- Every splash victim shows an orange **damage number**, and the shop card
+  lists the real splash/range numbers per level.
+
 ## v0.3.0 — 2026-06-11
 
 Achievements get their windows back (the system always worked — silently):

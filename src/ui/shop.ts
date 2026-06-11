@@ -72,7 +72,8 @@ export class ShopPanel {
       onBuy: () => gs.tryBuyPierce(),
     });
     if (gs.skills.has("explosive")) cards.push({
-      key: "explosive", cat: "CANNON", name: "Explosive", desc: `Lv ${gs.explosiveLevel} · hits blast`,
+      key: "explosive", cat: "CANNON", name: "Explosive",
+      desc: `Lv ${gs.explosiveLevel} · ${C.EXPLOSIVE_SPLASH_DMG + C.EXPLOSIVE_SPLASH_PER_LEVEL * Math.max(0, gs.explosiveLevel - 1)} splash, ${C.EXPLOSIVE_RADIUS_BASE + C.EXPLOSIVE_RADIUS_PER_LEVEL * Math.max(0, gs.explosiveLevel - 1)} range`,
       cost: gs.explosiveCost(), state: m >= gs.explosiveCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyExplosive(),
     });

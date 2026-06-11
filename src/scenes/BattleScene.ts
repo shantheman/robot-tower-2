@@ -293,20 +293,24 @@ export class BattleScene extends Phaser.Scene {
     if (e.hp <= 0 && e.alive) this.kill(e);
   }
 
-  /** Explosive Rounds: splash around the struck enemy + a visible shockwave. */
+  /** Explosive Rounds: splash around the struck enemy + a visible shockwave.
+   * Radius and damage both grow per level; every victim shows a damage number
+   * so the blast visibly DOES something. */
   private explode(at: Phaser.Math.Vector2, exclude: Enemy): void {
     const gs = game.gs;
     if (gs.explosiveLevel <= 0) return;
     const dmg = C.EXPLOSIVE_SPLASH_DMG + C.EXPLOSIVE_SPLASH_PER_LEVEL * (gs.explosiveLevel - 1);
+    const radius = C.EXPLOSIVE_RADIUS_BASE + C.EXPLOSIVE_RADIUS_PER_LEVEL * (gs.explosiveLevel - 1);
     for (const e of this.enemies) {
       if (e === exclude || !e.alive) continue;
-      if (Math.hypot(e.sprite.x - at.x, e.sprite.y - at.y) <= C.EXPLOSIVE_RADIUS) {
+      if (Math.hypot(e.sprite.x - at.x, e.sprite.y - at.y) <= radius) {
+        this.popup(e.sprite.x, e.sprite.y - 14, `-${dmg}`, "#ff9341");
         this.hitEnemy(e, dmg);
       }
     }
     const ring = this.fx(this.add.circle(at.x, at.y, 6).setStrokeStyle(3, 0xff9341, 0.9));
     this.tweens.add({
-      targets: ring, radius: C.EXPLOSIVE_RADIUS, alpha: 0, duration: 280,
+      targets: ring, radius, alpha: 0, duration: 300,
       onUpdate: () => ring.setStrokeStyle(2, 0xff9341, ring.alpha * 0.9),
       onComplete: () => ring.destroy(),
     });
