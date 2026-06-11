@@ -56,8 +56,10 @@ phaser.scene.add("battle", BattleScene, true, { onHud: updateHud });
 game.screen = "home";
 queueMicrotask(() => { game.screen = "battle"; game.show("home"); });
 
-// Dev/debug handle (used by the headless QA driver; harmless in production).
-(window as unknown as Record<string, unknown>).rt2 = game;
+// Dev/debug handle (used by the headless QA driver) — dev builds only.
+if (import.meta.env.DEV) {
+  (window as unknown as Record<string, unknown>).rt2 = game;
+}
 
 // HUD buttons
 document.getElementById("btn-shop")?.addEventListener("click", openPauseShop);

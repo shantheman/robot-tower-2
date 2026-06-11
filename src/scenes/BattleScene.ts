@@ -130,7 +130,9 @@ export class BattleScene extends Phaser.Scene {
       retryFromCheckpoint: () => this.retryFromCheckpoint(),
     };
     // Dev/debug handle for the headless QA driver (steps update() manually).
-    (window as unknown as Record<string, unknown>).rt2scene = this;
+    if (import.meta.env.DEV) {
+      (window as unknown as Record<string, unknown>).rt2scene = this;
+    }
     this.startBattle();
     // If a menu screen (Home) is up, idle paused until it starts a battle.
     if (game.screen !== "battle") this.setPaused(true);
