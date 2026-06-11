@@ -65,9 +65,7 @@ export class HomeScreen {
             <button class="menu-btn" data-act="settings"><span class="mb-icon">⚙</span>
               <span class="mb-col"><span class="mb-title">SETTINGS</span><span class="mb-sub">Sound & more</span></span></button>
           </div>
-          ${returning
-        ? `<button class="restart-link" data-act="restart">Restart from Level 1 (cores & skills kept)</button>`
-        : `<div class="home-blurb">Defend the core from robots closing in on every side.
+          ${returning ? "" : `<div class="home-blurb">Defend the core from robots closing in on every side.
             Survive waves, earn coins to spend, and bank permanent Cores for every wave you clear.</div>`}
           <div class="home-credit">A game by Callum</div>
         </div>
@@ -81,10 +79,5 @@ export class HomeScreen {
       el.addEventListener("click", () => this.onSkills()));
     this.root.querySelectorAll("[data-act=settings]").forEach((el) =>
       el.addEventListener("click", () => this.onSettings()));
-    this.root.querySelector("[data-act=restart]")?.addEventListener("click", () => {
-      game.gs.level = 1;       // checkpoint back to the start; meta is kept
-      game.gs.save();
-      this.render();
-    });
   }
 }
