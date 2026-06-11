@@ -7,6 +7,8 @@ import { GAME_VERSION } from "../version";
 
 export class SettingsModal {
   private root: HTMLElement;
+  /** Assigned by main.ts — e.g. resume the battle when the modal closes. */
+  onClose: () => void = () => {};
 
   constructor(parent: HTMLElement) {
     this.root = document.createElement("div");
@@ -19,7 +21,11 @@ export class SettingsModal {
   }
 
   show(): void { this.render(); this.root.classList.remove("hidden"); }
-  hide(): void { this.root.classList.add("hidden"); game.gs.save(); }
+  hide(): void {
+    this.root.classList.add("hidden");
+    game.gs.save();
+    this.onClose();
+  }
   get visible(): boolean { return !this.root.classList.contains("hidden"); }
 
   private row(label: string, control: string): string {

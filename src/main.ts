@@ -62,6 +62,16 @@ document.getElementById("btn-shop")?.addEventListener("click", openPauseShop);
 document.getElementById("st-ult")?.addEventListener("click", () => {
   if (game.screen === "battle") game.battle?.fireUltimate();
 });
+// Battle HUD gear: pause and open the same settings modal as the Home screen;
+// closing it resumes the battle (other screens are left as they are).
+document.getElementById("hud-gear")?.addEventListener("click", () => {
+  if (game.screen !== "battle") return;
+  game.battle?.setPaused(true);
+  settings.show();
+});
+settings.onClose = () => {
+  if (game.screen === "battle") game.battle?.resumeWave();
+};
 document.getElementById("btn-skills")?.addEventListener("click", openSkills);
 
 function openSkills(): void {
