@@ -389,7 +389,7 @@ export class BattleScene extends Phaser.Scene {
       const inRange = this.enemies
         .filter((e) => Math.hypot(e.sprite.x - this.drone!.x, e.sprite.y - this.drone!.y) <= range)
         .sort((a, b) => b.maxHp - a.maxHp)
-        .slice(0, gs.skills.has("twin") ? 2 : 1);
+        .slice(0, gs.twinOwned ? 2 : 1);
       if (inRange.length) {
         const dmg = C.DRONE_DAMAGE + C.DRONE_DAMAGE_PER_LEVEL * (gs.droneLevel - 1);
         for (const e of inRange) {

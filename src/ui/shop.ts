@@ -77,6 +77,13 @@ export class ShopPanel {
       cost: gs.explosiveCost(), state: m >= gs.explosiveCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyExplosive(),
     });
+    if (gs.skills.has("twin")) cards.push({
+      key: "twin", cat: "DRONE", name: "Twin Targeting",
+      desc: gs.twinOwned ? "drone hits 2 foes" : "drone hits 2 foes",
+      cost: gs.twinOwned ? null : C.TWIN_COST,
+      state: gs.twinOwned ? "owned" : m >= C.TWIN_COST ? "buy" : "poor",
+      onBuy: () => gs.tryBuyTwin(),
+    });
     if (gs.skills.has("guided")) cards.push({
       key: "guided", cat: "CANNON", name: "Guided", desc: "bullets bend to foes",
       cost: gs.guidedOwned ? null : C.GUIDED_COST,

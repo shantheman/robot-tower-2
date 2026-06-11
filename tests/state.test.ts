@@ -177,6 +177,18 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(g.checkpoint).toBeNull();
   });
 
+  it("Twin Targeting: tree-gated, bought per run, reset like everything else", () => {
+    const g = fresh();
+    g.money = 10_000;
+    expect(g.tryBuyTwin()).toBe(false);             // not in the tree yet
+    g.skills.add("twin");
+    expect(g.tryBuyTwin()).toBe(true);
+    expect(g.twinOwned).toBe(true);
+    expect(g.tryBuyTwin()).toBe(false);             // one-time per run
+    g.resetRun();
+    expect(g.twinOwned).toBe(false);                // resets with the run
+  });
+
   it("save/load round-trips permanent state only", () => {
     const store = fakeStorage();
     const g = new GameState(store, () => 0.99);

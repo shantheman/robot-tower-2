@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.4.1 — 2026-06-11
+
+- **Twin Targeting now follows the rules**: unlock it in the tree, then buy it
+  in-battle (200 coins, once per run) like every other tree power. It was the
+  only node that auto-granted — an inconsistency inherited from the original.
+- Auto-Shooter recategorized under CANNON (it's the tower's auto-turret, not
+  a drone) and untangled from the quadcopter art.
+
 ## v0.4.0 — 2026-06-11
 
 The art update (Claude Design icon drop, docs/design/ICONS-AND-PANELS-SPEC.md):

@@ -99,6 +99,7 @@ export class GameState {
   shieldLevel = 0;
   shield = 0;          // layers remaining right now
   droneLevel = 0;
+  twinOwned = false;   // Twin Targeting (tree-gated, bought once per run)
   ultimatesOwned = new Set<C.UltimateKey>();
   equippedUltimate: C.UltimateKey | null = null;
   rapidTimer = 0;
@@ -183,6 +184,7 @@ export class GameState {
     this.shieldLevel = 0;
     this.shield = 0;
     this.droneLevel = 0;
+    this.twinOwned = false;
     this.ultimatesOwned = new Set();
     this.equippedUltimate = null;
     this.rapidTimer = 0;
@@ -233,7 +235,7 @@ export class GameState {
   private static readonly RUN_FIELDS = [
     "money", "wave", "genLevel", "autoLevel", "turretLevel", "multiLevel",
     "pierceLevel", "explosiveLevel", "guidedOwned", "repairBuys", "platingBuys",
-    "shieldLevel", "droneLevel", "equippedUltimate",
+    "shieldLevel", "droneLevel", "twinOwned", "equippedUltimate",
     // NOTE: paidThroughWave is deliberately NOT snapshotted — it keeps its
     // high-water mark across restores so replayed waves never re-pay cores.
   ] as const;
@@ -409,6 +411,11 @@ export class GameState {
     return true;
   }
   tryBuyDrone(): boolean { return this.spend(this.droneCost()) && ++this.droneLevel > 0; }
+  tryBuyTwin(): boolean {
+    if (!this.skills.has("twin") || this.twinOwned || !this.spend(C.TWIN_COST)) return false;
+    this.twinOwned = true;
+    return true;
+  }
   tryBuyUltimate(key: C.UltimateKey): boolean {
     if (!this.skills.has(key) || this.ultimatesOwned.has(key)) return false;
     if (!this.spend(C.ULTIMATE_COSTS[key])) return false;

@@ -126,6 +126,8 @@ export const SHIELD_RING_BASE = 66;       // innermost ring radius (px)
 export const SHIELD_RING_GAP = 7;         // +radius per extra layer
 
 // Drone
+export const TWIN_COST = 200;   // v2: one-time per-run buy (tree-gated) — the
+                                // original auto-granted it, breaking gate-not-grant
 export const DRONE_RADIUS = 11;
 export const DRONE_SPEED = 300;
 export const DRONE_DAMAGE = 18;
