@@ -7,7 +7,7 @@
 import { game, isTouch } from "../game";
 import { play } from "../audio";
 import { SKILL_NODES, SkillNode } from "../sim/state";
-import { Category, catIcon } from "./icons";
+import { Category, ITEM_ART, catIcon } from "./icons";
 
 const BRANCHES = ["CANNON", "DEFENSE", "DRONE", "ULTIMATES"] as const;
 type NodeState = "owned" | "canbuy" | "cant" | "locked";
@@ -44,9 +44,15 @@ export class SkillsPanel {
       : state === "locked"
         ? `<div class="sn-locked">🔒 <span>needs <b>${prereqName}</b></span></div>`
         : `<div class="sn-price ${state === "cant" ? "cant" : ""}"><span class="core-icon small"></span> ${n.cost}</div>`;
+    const art = ITEM_ART[n.key];
     return `<button class="skill-node ${state}" data-key="${n.key}">
-      <span class="sn-name">${n.name}</span>
-      <span class="sn-desc">${n.desc}</span>
+      <span class="sn-head">
+        ${art ? `<span class="sn-tile"><img src="${art}" alt="" draggable="false" /></span>` : ""}
+        <span class="sn-col">
+          <span class="sn-name">${n.name}</span>
+          <span class="sn-desc">${n.desc}</span>
+        </span>
+      </span>
       ${footer}
     </button>`;
   }

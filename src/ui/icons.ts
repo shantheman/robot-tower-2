@@ -28,3 +28,25 @@ export const ULT_ICONS: Record<string, string> = {
   warp: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12.5" r="8"></circle><path d="M12 8.5V12.5l3 1.8"></path><path d="M4.6 6.2l.5 2.7 2.7-.5"></path></svg>`,
   laser: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5 L14.6 9.4" stroke-width="2.6"></path><path d="M18 3v7M14.5 6.5h7" stroke-width="1.6"></path><path d="M15.5 4l5 5M20.5 4l-5 5" stroke-width="1.1"></path></svg>`,
 };
+
+/** Painterly item art (docs/design/ICONS-AND-PANELS-SPEC.md). Store cards
+ * bleed it in from the right; skill-tree nodes use a compact 46px tile.
+ * Swappable on purpose — these will likely be replaced (possibly animated). */
+export const ITEM_ART: Record<string, string> = {
+  turret: "art/01_main_turret.webp",
+  multi: "art/02_multi_shot.webp",
+  pierce: "art/03_piercing.webp",
+  explosive: "art/04_explosive.webp",
+  guided: "art/05_guided.webp",
+  repair: "art/06_repair.webp",
+  plating: "art/07_plating.webp",
+  shield: "art/08_shield.webp",
+  drone: "art/09_drone.webp",
+  auto: "art/10_auto_shooter.webp",
+  twin: "art/10_auto_shooter.webp",
+  gen: "art/11_generator.webp",
+  emp: "art/12_emp_burst.webp",
+  freeze: "art/13_freeze_bomb.webp",
+  warp: "art/14_time_warp.webp",
+  laser: "art/15_laser_beam.webp",
+};

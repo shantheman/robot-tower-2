@@ -2,6 +2,18 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.4.0 — 2026-06-11
+
+The art update (Claude Design icon drop, docs/design/ICONS-AND-PANELS-SPEC.md):
+
+- **Upgrades store**: every card now carries its painterly icon, bleeding in
+  from the right edge under a legibility scrim — merchandising-style. Grids
+  fixed at 5 / 4 / 2 columns (desktop / landscape / portrait). Unaffordable
+  cards desaturate their art.
+- **Skill tree**: compact 46px icon tiles on every node (deliberately smaller
+  than the store — the tree is a map, the store is a shelf).
+- 15 icons shipped as webp (95KB total, converted from the 240px PNG drop).
+
 ## v0.3.1 — 2026-06-11
 
 Explosive Rounds actually explode now:

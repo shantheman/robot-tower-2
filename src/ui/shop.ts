@@ -6,7 +6,7 @@ import * as C from "../config";
 import { game, isTouch } from "../game";
 import { play } from "../audio";
 import { waveInLevel, wavesForLevel } from "../sim/waves";
-import { Category, catIcon } from "./icons";
+import { Category, ITEM_ART, catIcon } from "./icons";
 
 interface CardSpec {
   key: string;
@@ -134,7 +134,9 @@ export class ShopPanel {
            <span class="coin-icon ${it.state === "poor" ? "dim" : ""}"></span>
            ${it.cost!.toLocaleString("en-US")}
          </div>`;
+    const art = ITEM_ART[it.key];
     return `<button class="store-card ${it.state}" data-key="${it.key}">
+      ${art ? `<img class="card-art" src="${art}" alt="" draggable="false" /><span class="card-scrim"></span>` : ""}
       <span class="card-name">${it.name}</span>
       <span class="card-desc">${it.desc}</span>
       ${priceOrState}
