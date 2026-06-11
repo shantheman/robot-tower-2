@@ -339,18 +339,22 @@ body { display: grid; place-items: center; }
 .core-icon.small { width: 17px; height: 17px; }
 
 /* Floating footer bar (2026-06-11 mocks): currency readout + CTA stay on
- * screen instead of living below the fold. Sticky in the panel's scroller;
- * negative margins un-inset the panel padding so the bar bleeds full width. */
+ * screen instead of living below the fold. NOT sticky — iOS Safari floats
+ * sticky-bottom bars above the real edge inside a padded scroller. Instead
+ * the panel is a fixed column: .panel-scroll scrolls, the bar stays put. */
+#shop, #skills { padding: 0; overflow: hidden; }
+.panel-scroll {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  display: flex; flex-direction: column;
+  padding: var(--pv) var(--ph) 16px;
+}
 .panel-foot {
-  position: sticky; bottom: 0; z-index: 5; margin-top: auto;
-  margin-left: calc(-1 * var(--ph)); margin-right: calc(-1 * var(--ph));
-  margin-bottom: calc(-1 * var(--pb));
+  flex: 0 0 auto; z-index: 5;
   padding: 12px var(--ph) max(12px, env(safe-area-inset-bottom));
   display: flex; align-items: center; gap: 18px;
   background: rgba(5, 10, 20, 0.92);
   border-top: 1px solid rgba(127, 232, 255, 0.16);
   box-shadow: 0 -14px 32px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .panel-foot .cta { flex: 1 1 auto; }
 .foot-bal { display: flex; flex-direction: column; gap: 3px; flex: 0 0 auto; }

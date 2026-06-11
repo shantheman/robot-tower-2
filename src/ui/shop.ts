@@ -175,6 +175,7 @@ export class ShopPanel {
     const ults = this.ultimateCards();
 
     this.root.innerHTML = `
+      <div class="panel-scroll">
       <header class="panel-head">
         <div class="panel-title-group">
           <h1>UPGRADES</h1>
@@ -225,6 +226,7 @@ export class ShopPanel {
           ? "own many · tap to equip · reset at end of level"
           : "own many · click to equip · [Space] fires it · reset at end of level"}</span><span class="sh-rule"></span></div>
       <div class="card-grid ult">${ults.map((c) => this.card(c)).join("")}</div>`}
+      </div>
 
       <footer class="panel-foot">
         <div class="foot-bal"><label>BALANCE</label>
