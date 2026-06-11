@@ -77,6 +77,10 @@ export const LEVEL_CLEAR_CORES = 15; // x level, bonus for the boss wave
 // Turret sprite rig (from the design handoff — pivots took iteration!)
 export const GUN_PIVOT = { x: 0.5, y: 0.79 };   // of turret_gun.png
 export const BASE_SOCKET = { x: 0.5, y: 0.43 }; // of turret_base.png
+// Visual sizes (world px), proportions per the mock: gun height = 0.69 x base.
+export const TURRET_BASE_W = 96;
+export const TURRET_GUN_H = 66;
+export const ENEMY_SPRITE_SCALE = 3.0;          // sprite width = radius x this
 
 // -- In-run upgrade costs (base x growth^level) -------------------------------
 export const GEN_BASE_COST = 50;

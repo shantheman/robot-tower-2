@@ -100,11 +100,11 @@ export class BattleScene extends Phaser.Scene {
     this.fxLayer = this.add.layer();
     const base = this.add.image(this.towerPos.x, this.towerPos.y, "turret_base")
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y);
-    base.setScale((C.TOWER_SIZE * 2.3) / base.width);
+    base.setScale(C.TURRET_BASE_W / base.width);
     this.shieldGfx = this.add.graphics();
     this.gun = this.add.image(this.towerPos.x, this.towerPos.y, "turret_gun")
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y);
-    this.gun.setScale((C.TOWER_SIZE * 2.0) / this.gun.width);
+    this.gun.setScale(C.TURRET_GUN_H / this.gun.height); // mock: gun height = 0.69 x base
 
     this.input.on("pointerdown", () => { this.mouseHeld = true; });
     this.input.on("pointerup", () => { this.mouseHeld = false; });
@@ -195,7 +195,7 @@ export class BattleScene extends Phaser.Scene {
     if (this.bossPending) this.bossPending = false;
     const [x, y] = this.edgePosition();
     const sprite = this.add.image(x, y, type.sprite);
-    sprite.setScale((type.radius * 2.6) / sprite.width);
+    sprite.setScale((type.radius * C.ENEMY_SPRITE_SCALE) / sprite.width);
     const ew = effectiveWave(game.gs.wave);
     const hp = type.levelScaled ? type.hp * (1 + C.HEAVY_HP_RAMP * (ew - 1)) : type.hp;
     this.enemies.push({
