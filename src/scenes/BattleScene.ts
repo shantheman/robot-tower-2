@@ -72,6 +72,9 @@ export class BattleScene extends Phaser.Scene {
   private fireTimer = 0;
   private mouseHeld = false;
   private muzzleAlt = 1;
+  private aimAngle = -Math.PI / 2;                       // current gun heading
+  private joyOrigin: Phaser.Math.Vector2 | null = null;  // touch: floating joystick anchor
+  private joyGfx!: Phaser.GameObjects.Graphics;
   private paused = false;
   private over = false; // tower destroyed; stop simulating
 
@@ -106,8 +109,14 @@ export class BattleScene extends Phaser.Scene {
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y);
     this.gun.setScale(C.TURRET_GUN_H / this.gun.height); // mock: gun height = 0.69 x base
 
-    this.input.on("pointerdown", () => { this.mouseHeld = true; });
-    this.input.on("pointerup", () => { this.mouseHeld = false; });
+    this.joyGfx = this.add.graphics();
+    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
+      this.mouseHeld = true;
+      // Touch: aim is RELATIVE to where the thumb lands (floating joystick) so
+      // the finger never has to cover the tower. Mouse keeps cursor aim.
+      if (p.wasTouch) this.joyOrigin = new Phaser.Math.Vector2(p.worldX, p.worldY);
+    });
+    this.input.on("pointerup", () => { this.mouseHeld = false; this.joyOrigin = null; });
     this.input.keyboard?.on("keydown-SPACE", () => this.fireUltimate());
 
     game.battle = {
@@ -215,11 +224,9 @@ export class BattleScene extends Phaser.Scene {
   }
 
   // -- player fire -----------------------------------------------------------------
-  private fireSpread(pointer: Phaser.Input.Pointer): void {
+  private fireSpread(): void {
     const gs = game.gs;
-    const aim = new Phaser.Math.Vector2(pointer.worldX, pointer.worldY).subtract(this.towerPos);
-    if (aim.lengthSq() === 0) aim.set(0, -1);
-    aim.normalize();
+    const aim = new Phaser.Math.Vector2(Math.cos(this.aimAngle), Math.sin(this.aimAngle));
     // One bullet straight at the cursor, extras fanned symmetrically.
     const n = 1 + gs.multiLevel;
     const angles = [0];
@@ -431,10 +438,7 @@ export class BattleScene extends Phaser.Scene {
   private updateLaser(dt: number): void {
     if (this.laserActive <= 0) return;
     this.laserActive -= dt;
-    const p = this.input.activePointer;
-    const aim = new Phaser.Math.Vector2(p.worldX - this.towerPos.x, p.worldY - this.towerPos.y);
-    if (aim.lengthSq() === 0) aim.set(0, -1);
-    aim.normalize();
+    const aim = new Phaser.Math.Vector2(Math.cos(this.aimAngle), Math.sin(this.aimAngle));
     const end = this.towerPos.clone().add(aim.clone().scale(2000));
     const beam = this.fx(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0xffffff, 0.9))
       .setOrigin(0).setLineWidth(C.LASER_WIDTH / 8);
@@ -452,6 +456,27 @@ export class BattleScene extends Phaser.Scene {
         else this.hitEnemy(e, C.LASER_DPS * dt);
       }
     }
+  }
+
+  /** Touch feedback: anchor ring + drag knob at the thumb, and a faint aim
+   * tracer from the tower (the thumb is far from the action by design). */
+  private drawJoystick(p: Phaser.Input.Pointer): void {
+    this.joyGfx.clear();
+    if (!this.joyOrigin) return;
+    const o = this.joyOrigin;
+    this.joyGfx.lineStyle(2, 0x7fe8ff, 0.28).strokeCircle(o.x, o.y, 26);
+    const d = new Phaser.Math.Vector2(p.worldX - o.x, p.worldY - o.y);
+    const len = Math.min(d.length(), 34);
+    if (len > 2) {
+      const k = d.normalize().scale(len);
+      this.joyGfx.fillStyle(0x7fe8ff, 0.45).fillCircle(o.x + k.x, o.y + k.y, 11);
+    }
+    // Aim tracer from the tower
+    const a = this.aimAngle;
+    this.joyGfx.lineStyle(2, 0x7fe8ff, 0.13).lineBetween(
+      this.towerPos.x + Math.cos(a) * 58, this.towerPos.y + Math.sin(a) * 58,
+      this.towerPos.x + Math.cos(a) * 190, this.towerPos.y + Math.sin(a) * 190,
+    );
   }
 
   private flashScreen(color: number, alpha: number): void {
@@ -518,13 +543,20 @@ export class BattleScene extends Phaser.Scene {
         return;
       }
       const p = this.input.activePointer;
-      const ang = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
-      this.gun.setRotation(ang + Math.PI / 2);
+      if (this.joyOrigin) {
+        const dx = p.worldX - this.joyOrigin.x;
+        const dy = p.worldY - this.joyOrigin.y;
+        if (dx * dx + dy * dy > 14 * 14) this.aimAngle = Math.atan2(dy, dx);
+      } else if (!p.wasTouch) {
+        this.aimAngle = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
+      }
+      this.gun.setRotation(this.aimAngle + Math.PI / 2);
       this.fireTimer -= dt;
       if (this.mouseHeld && this.fireTimer <= 0) {
-        this.fireSpread(p);
+        this.fireSpread();
         this.fireTimer = gs.playerCooldown();
       }
+      this.drawJoystick(p);
       this.updateAutoShooter(dt);
       this.updateDrone(dt, enemyDt);
       this.updateLaser(dt);

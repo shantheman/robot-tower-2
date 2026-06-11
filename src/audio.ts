@@ -55,17 +55,30 @@ function ensureContext(): AudioContext | null {
   return ctx;
 }
 
-// Unlock on the first user gesture (required by autoplay policies).
-for (const ev of ["pointerdown", "keydown"]) {
+// iOS: route audio as "playback" so the physical ring/silent switch doesn't
+// mute the game (Web Audio is treated as ambient by default and silenced).
+try {
+  const session = (navigator as unknown as { audioSession?: { type: string } }).audioSession;
+  if (session) session.type = "playback";
+} catch { /* older iOS / non-iOS */ }
+
+// Unlock on the first user gesture (required by autoplay policies). iOS
+// historically prefers touchend; listen broadly and self-heal on visibility.
+for (const ev of ["pointerdown", "touchend", "keydown"]) {
   window.addEventListener(ev, () => { void ensureContext()?.resume(); }, { once: true });
 }
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && ctx?.state === "suspended") void ctx.resume();
+});
 
 export function play(name: keyof typeof SPECS): void {
   const gs = game.gs;
   if (gs.muted || gs.volume <= 0) return;
   const c = ensureContext();
   const buf = buffers.get(name);
-  if (!c || !buf || c.state !== "running") return;
+  if (!c || !buf) return;
+  if (c.state === "suspended") void c.resume(); // self-heal; this sound is dropped
+  if (c.state !== "running") return;
   try {
     const src = c.createBufferSource();
     src.buffer = buf;
