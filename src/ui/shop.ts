@@ -4,6 +4,7 @@
 
 import * as C from "../config";
 import { game } from "../game";
+import { play } from "../audio";
 import { waveInLevel, wavesForLevel } from "../sim/waves";
 
 interface CardSpec {
@@ -203,11 +204,11 @@ export class ShopPanel {
     this.root.querySelectorAll<HTMLButtonElement>(".store-card").forEach((el) => {
       el.addEventListener("click", () => {
         const spec = all.find((c) => c.key === el.dataset.key);
-        if (spec?.onBuy?.()) this.render();
+        if (spec?.onBuy?.()) { play("buy"); this.render(); }
       });
     });
     this.root.querySelector("[data-act=towerup]")?.addEventListener("click", () => {
-      if (game.gs.tryBuyTowerUpgrade()) this.render();
+      if (game.gs.tryBuyTowerUpgrade()) { play("buy"); this.render(); }
     });
     this.root.querySelector("[data-act=next]")?.addEventListener("click", () => this.startNext());
     this.root.querySelector("[data-act=close]")?.addEventListener("click", () => this.close());

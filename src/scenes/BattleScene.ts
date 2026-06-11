@@ -9,6 +9,7 @@
 import Phaser from "phaser";
 import * as C from "../config";
 import { game } from "../game";
+import { play } from "../audio";
 import {
   chooseEnemyType, effectiveWave, isBossWave, waveInLevel, waveRobotCount,
   waveRobotSpeed, waveSpawnInterval, wavesForLevel,
@@ -226,6 +227,7 @@ export class BattleScene extends Phaser.Scene {
       if (angles.length < n) angles.push(-C.MULTI_SPREAD_DEG * k);
     }
     const muzzleDist = this.gun.displayHeight * C.GUN_PIVOT.y * 0.92;
+    play("shoot");
     for (const deg of angles) {
       const d = aim.clone().rotate(Phaser.Math.DegToRad(deg));
       const side = d.clone().rotate(Math.PI / 2).scale(this.muzzleAlt * this.gun.displayWidth * 0.16);
@@ -290,6 +292,7 @@ export class BattleScene extends Phaser.Scene {
     e.alive = false;
     const boss = e.type === C.BOSS;
     const { gain, bonus } = game.gs.onKill(e.type.reward, boss);
+    play(boss ? "boom" : "kill");
     this.popup(e.sprite.x, e.sprite.y, `+${gain}`, "#ffc94a");
     if (bonus === "cash") this.popup(e.sprite.x, e.sprite.y - 18, `BONUS +${C.DROP_CASH}`, "#ffc94a");
     if (bonus === "heal") this.popup(e.sprite.x, e.sprite.y - 18, `REPAIRED +${C.DROP_HEAL}`, "#46e39a");
@@ -400,6 +403,7 @@ export class BattleScene extends Phaser.Scene {
     if (key === "freeze") {
       this.freezeActive = C.FREEZE_DURATION;
       this.cooldowns.freeze = C.FREEZE_COOLDOWN;
+      play("shield");
       this.flashScreen(0x7fe8ff, 0.18);
     } else if (key === "emp") {
       // Instant damage to EVERYTHING + fries projectiles; brief pulse stun.
@@ -409,14 +413,17 @@ export class BattleScene extends Phaser.Scene {
       for (const e of [...this.enemies]) this.hitEnemy(e, C.EMP_DAMAGE);
       this.stunActive = C.EMP_STUN;
       this.cooldowns.emp = C.EMP_COOLDOWN;
+      play("boom");
       this.flashScreen(0x3b9dff, 0.22);
     } else if (key === "warp") {
       this.warpActive = C.WARP_DURATION;
       this.cooldowns.warp = C.WARP_COOLDOWN;
+      play("buy");
       this.flashScreen(0x46e39a, 0.14);
     } else if (key === "laser") {
       this.laserActive = C.LASER_DURATION;
       this.cooldowns.laser = C.LASER_COOLDOWN;
+      play("laser");
     }
   }
 
@@ -549,6 +556,7 @@ export class BattleScene extends Phaser.Scene {
         let dmg = e.type.contactDamage;
         if (e.type === C.BOSS) dmg = Math.max(dmg, Math.floor(gs.maxHp() * 0.9));
         const res = gs.damageTower(dmg);
+        play(res.layersSpent > 0 ? "shield" : "hit");
         if (!gs.reduceMotion) this.cameras.main.shake(140, res.layersSpent && !res.hpLost ? 0.005 : 0.009);
         e.alive = false;
         e.sprite.destroy(); e.hpBar?.destroy();
@@ -572,6 +580,7 @@ export class BattleScene extends Phaser.Scene {
       const hit = gs.shield > 0 ? dist <= gs.shieldRadius() : dist <= C.TOWER_SIZE / 2 + C.ENEMY_BULLET_RADIUS;
       if (hit) {
         const res = gs.damageTower(eb.damage);
+        play(res.layersSpent > 0 ? "shield" : "hit");
         if (!gs.reduceMotion) this.cameras.main.shake(100, 0.005);
         eb.alive = false; eb.dot.destroy();
         if (res.died) { this.towerDestroyed(); return; }

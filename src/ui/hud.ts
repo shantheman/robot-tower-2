@@ -35,6 +35,26 @@ export function updateHud(s: HudState): void {
     lastShown.hp = s.hp;
   }
 
+  // Status chips: shield layers, equipped ultimate, combo, rapid fire.
+  const chip = (id: string, show: boolean, html?: string) => {
+    const el = $(id);
+    el.classList.toggle("hidden", !show);
+    if (show && html !== undefined && el.innerHTML !== html) el.innerHTML = html;
+  };
+  chip("st-shield", s.shield > 0, `SHIELD <b>${s.shield}</b>`);
+  if (s.ultimate) {
+    const u = s.ultimate;
+    chip("st-ult", true, u.ready
+      ? `${u.name.toUpperCase()} READY <kbd>Space</kbd>`
+      : `${u.name.toUpperCase()} ${u.cooldown.toFixed(0)}s`);
+    $("st-ult").classList.toggle("cooling", !u.ready);
+  } else {
+    chip("st-ult", false);
+  }
+  chip("st-combo", s.combo >= 3,
+    `COMBO x<b>${s.combo}</b> · +${Math.round((s.comboMult - 1) * 100)}% coins`);
+  chip("st-rapid", s.rapid);
+
   // Wave-intro countdown overlay
   const intro = $("wave-intro");
   if (s.intermission > 0) {

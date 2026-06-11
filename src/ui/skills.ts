@@ -3,6 +3,7 @@
  * Nodes and prices come from GameState (the original app's tree). */
 
 import { game } from "../game";
+import { play } from "../audio";
 import { SKILL_NODES, SkillNode } from "../sim/state";
 
 const BRANCHES = ["CANNON", "DEFENSE", "DRONE", "ULTIMATES"] as const;
@@ -77,7 +78,7 @@ export class SkillsPanel {
 
     this.root.querySelectorAll<HTMLButtonElement>(".skill-node.available").forEach((el) => {
       el.addEventListener("click", () => {
-        if (game.gs.tryUnlockSkill(el.dataset.key as SkillNode["key"])) this.render();
+        if (game.gs.tryUnlockSkill(el.dataset.key as SkillNode["key"])) { play("buy"); this.render(); }
       });
     });
     this.root.querySelector("[data-act=back]")?.addEventListener("click", () => this.close());
