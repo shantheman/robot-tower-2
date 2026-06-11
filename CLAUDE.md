@@ -32,6 +32,11 @@ Mobile via Capacitor and desktop packaging come after the gameplay port.
 - The turret rig pivots are load-bearing: gun pivot (50%, 79%), base socket
   (50%, 43%) — see HANDOFF.md "Turret rig".
 
+## Visual testing rule (from Shannon, 2026-06-11)
+Any visual change gets verified at ALL THREE ratios before shipping: desktop
+(~1280x900), phone landscape (~812x375), and phone portrait (~375x812 — note
+portrait boots a different world size). Use preview_resize + screenshots.
+
 ## Commands
 - `npm run dev` — Vite dev server (the game is playable in a browser).
 - `npm test` — vitest parity tests. `npm run build` — typecheck + bundle.
