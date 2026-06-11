@@ -10,8 +10,8 @@ import {
 import { GRUNT, FAST, TOUGH, WAVE_CLEAR_CORES, LEVEL_CLEAR_CORES } from "../src/config";
 
 describe("wave/level math (parity with smoke_test.py)", () => {
-  it("levels have 7/10/15/20/25 waves, +5 each after", () => {
-    expect([1, 2, 3, 4, 5, 6].map(wavesForLevel)).toEqual([7, 10, 15, 20, 25, 30]);
+  it("levels have 7/10/15 waves, then cap at 15 (v2 balance)", () => {
+    expect([1, 2, 3, 4, 5, 10].map(wavesForLevel)).toEqual([7, 10, 15, 15, 15, 15]);
   });
 
   it("level start waves chain correctly", () => {
@@ -27,6 +27,7 @@ describe("wave/level math (parity with smoke_test.py)", () => {
     expect(isBossWave(7)).toBe(true);    // level 1 ends at wave 7
     expect(isBossWave(6)).toBe(false);
     expect(isBossWave(17)).toBe(true);   // level 2 ends at wave 17
+    expect(isBossWave(32)).toBe(true);   // level 3: 18..32 (capped at 15 waves)
   });
 
   it("effective wave resets each level and ramps steeper on later levels", () => {

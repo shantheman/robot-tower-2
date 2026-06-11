@@ -125,6 +125,7 @@ export class BattleScene extends Phaser.Scene {
       nextWave: () => this.nextWave(),
       setPaused: (p) => this.setPaused(p),
       fireUltimate: () => this.fireUltimate(),
+      retryFromCheckpoint: () => this.retryFromCheckpoint(),
     };
     // Dev/debug handle for the headless QA driver (steps update() manually).
     (window as unknown as Record<string, unknown>).rt2scene = this;
@@ -154,6 +155,19 @@ export class BattleScene extends Phaser.Scene {
     this.drone?.destroy();
     this.drone = undefined;
     this.startWave();
+  }
+
+  /** Death-retry from the loadout snapshot (full HP, same gear, same wave). */
+  retryFromCheckpoint(): boolean {
+    if (!game.gs.restoreCheckpoint()) return false;
+    this.clearBoard(true);
+    this.fxLayer.removeAll(true);
+    this.over = false;
+    this.setPaused(false);
+    this.drone?.destroy();
+    this.drone = undefined;
+    this.startWave();
+    return true;
   }
 
   private startWave(): void {

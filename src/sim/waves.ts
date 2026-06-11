@@ -5,14 +5,15 @@
 import {
   BOMBER, DIFF_PER_WAVE, DIFF_WAVE1, EnemyType, FAST, GRUNT, LEVEL_RAMP,
   ROBOT_SPEED, SHOOTER, SPAWN_INTERVAL_BASE, SPAWN_INTERVAL_MIN,
-  SPAWN_INTERVAL_STEP, TANK, TOUGH, WAVES_BY_LEVEL, WAVES_LEVEL_EXTRA,
-  WAVE_BASE_COUNT, WAVE_COUNT_PER_WAVE, WAVE_SPEED_PER_WAVE,
+  SPAWN_INTERVAL_STEP, TANK, TOUGH, WAVES_BY_LEVEL, WAVES_LEVEL_CAP,
+  WAVES_LEVEL_EXTRA, WAVE_BASE_COUNT, WAVE_COUNT_PER_WAVE, WAVE_SPEED_PER_WAVE,
 } from "../config";
 
 export function wavesForLevel(level: number): number {
-  if (level in WAVES_BY_LEVEL) return WAVES_BY_LEVEL[level];
+  // v2 balance: capped (the original grew +5 forever — level 10 was 50 waves).
+  if (level in WAVES_BY_LEVEL) return Math.min(WAVES_LEVEL_CAP, WAVES_BY_LEVEL[level]);
   const top = Math.max(...Object.keys(WAVES_BY_LEVEL).map(Number));
-  return WAVES_BY_LEVEL[top] + (level - top) * WAVES_LEVEL_EXTRA;
+  return Math.min(WAVES_LEVEL_CAP, WAVES_BY_LEVEL[top] + (level - top) * WAVES_LEVEL_EXTRA);
 }
 
 export function levelStartWave(level: number): number {

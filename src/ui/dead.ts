@@ -27,6 +27,7 @@ export class DeadScreen {
     const gs = game.gs;
     const earned = gs.runCores;
     const before = gs.cores - earned;
+    const cpWave = gs.checkpointWaveInLevel();
     this.root.innerHTML = `
       <div class="dead-wrap">
         <div class="dead-title">YOU DIED</div>
@@ -42,11 +43,16 @@ export class DeadScreen {
           </div>
         </div>
         <div class="dead-keeps">
-          <span>↺ resets: <b class="warm">Coins · Upgrades</b></span>
+          ${cpWave !== null && cpWave > 1
+        ? `<span>↺ back to: <b class="warm">your Wave ${cpWave} loadout · full HP</b></span>`
+        : `<span>↺ resets: <b class="warm">Coins · Upgrades</b></span>`}
           <span>✓ kept: <b class="cool">Cores · Tower Level · Skills</b></span>
         </div>
         <div class="dead-btns">
-          <button class="cta" data-act="retry">RETRY LEVEL ${gs.level} ▸</button>
+          ${cpWave !== null && cpWave > 1
+        ? `<button class="cta" data-act="checkpoint">RETRY FROM WAVE ${cpWave} ▸</button>
+           <button class="ghost-btn" data-act="retry">RESTART LEVEL ${gs.level}</button>`
+        : `<button class="cta" data-act="retry">RETRY LEVEL ${gs.level} ▸</button>`}
           <button class="ghost-btn" data-act="home">HOME</button>
         </div>
       </div>`;
@@ -63,6 +69,10 @@ export class DeadScreen {
       if (t >= 1 && this.timer !== null) { clearInterval(this.timer); this.timer = null; }
     }, 40);
 
+    this.root.querySelector("[data-act=checkpoint]")?.addEventListener("click", () => {
+      game.show("battle");
+      game.battle?.retryFromCheckpoint();
+    });
     this.root.querySelector("[data-act=retry]")?.addEventListener("click", () => {
       game.show("battle");
       game.battle?.startBattle();   // retries the SAME level from wave 1

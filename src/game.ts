@@ -39,6 +39,7 @@ export class Game {
     nextWave: () => void;         // leave the between-waves shop
     setPaused: (p: boolean) => void;
     fireUltimate: () => void;     // the HUD chip taps this on touch devices
+    retryFromCheckpoint: () => boolean; // death -> resume at the snapshot wave
   } | null = null;
 
   constructor() {

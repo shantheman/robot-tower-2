@@ -13,6 +13,16 @@ upgrades, drops, and the wave/level logic.
 how they combine (damage, scaling) is in `game.py`. This doc reflects the code as
 of **2026-06-10** (cores-per-wave economy update).
 
+
+> ## v2 balance changes (this port diverges from the original here)
+> - **Level length is capped at 15 waves** (`WAVES_LEVEL_CAP`). The original
+>   grew +5 forever (level 10 = 50 waves). Levels past 3 are all 15 waves and
+>   differentiate by their steeper difficulty ramp instead.
+> - **Mid-level checkpoints** (`CHECKPOINT_EVERY` = 5): starting wave 6/11 of a
+>   level snapshots the full loadout (coins, upgrades, ultimates — including
+>   between-wave purchases). Death offers "Retry from wave N": the snapshot is
+>   restored at full HP. Replayed waves never re-pay cores (high-water mark).
+
 ---
 
 ## Tower (the thing you defend)

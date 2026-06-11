@@ -135,6 +135,46 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(g.onWaveCleared().coresEarned).toBeGreaterThan(0);
   });
 
+  it("checkpoints: snapshot restores the full loadout at full HP; replays never re-pay", () => {
+    const g = fresh();
+    g.level = 3;                                  // 15-wave level: 18..32
+    g.resetRun();
+    g.money = 10_000;
+    g.skills.add("multi").add("emp");
+    // Clear waves 1-5 of level 3 (global 18-22), shopping along the way.
+    for (let i = 0; i < 5; i++) { g.onWaveCleared(); g.startNextWave(); }
+    expect(g.wave).toBe(23);                      // checkpoint wave (6 of 15)
+    g.tryBuyTurret(); g.tryBuyMulti(); g.tryBuyUltimate("emp");
+    g.snapshotCheckpoint();                       // (startNextWave also did this pre-buys; re-snap with buys)
+    const coresAt5 = g.cores;
+    const moneyAtCp = g.money;
+    // Push to wave 8, get hurt, then die.
+    g.onWaveCleared(); g.startNextWave();         // 6 cleared -> 7
+    g.onWaveCleared(); g.startNextWave();         // 7 cleared -> 8
+    const coresAt7 = g.cores;
+    g.damageTower(9_999);
+    expect(g.hp).toBe(0);
+    // Restore: same loadout, same wave, full HP.
+    expect(g.restoreCheckpoint()).toBe(true);
+    expect(g.wave).toBe(23);
+    expect(g.turretLevel).toBe(1);
+    expect(g.multiLevel).toBe(1);
+    expect(g.ultimatesOwned.has("emp")).toBe(true);
+    expect(g.money).toBe(moneyAtCp);
+    expect(g.hp).toBe(g.maxHp());
+    // Re-clearing waves 6-7 pays nothing; wave 8 pays again.
+    g.onWaveCleared();                            // wave 6 replay
+    expect(g.cores).toBe(coresAt7);
+    g.startNextWave(); g.onWaveCleared();         // wave 7 replay
+    expect(g.cores).toBe(coresAt7);
+    g.startNextWave(); g.onWaveCleared();         // wave 8 of the level: new ground
+    expect(g.cores).toBe(coresAt7 + 3);           // level 3 pays 3/wave
+    expect(coresAt5).toBeLessThan(coresAt7);
+    // A fresh run clears the checkpoint.
+    g.resetRun();
+    expect(g.checkpoint).toBeNull();
+  });
+
   it("save/load round-trips permanent state only", () => {
     const store = fakeStorage();
     const g = new GameState(store, () => 0.99);

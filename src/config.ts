@@ -53,6 +53,8 @@ export const ENEMY_BULLET_RADIUS = 6;
 // Waves / difficulty curve
 export const WAVES_BY_LEVEL: Record<number, number> = { 1: 7, 2: 10, 3: 15, 4: 20 };
 export const WAVES_LEVEL_EXTRA = 5;
+export const WAVES_LEVEL_CAP = 15;  // v2 balance: levels never exceed this
+export const CHECKPOINT_EVERY = 5;  // checkpoint at waves 1, 6, 11 of a level
 export const WAVE_BASE_COUNT = 5;
 export const WAVE_COUNT_PER_WAVE = 1;
 export const WAVE_SPEED_PER_WAVE = 4.0;

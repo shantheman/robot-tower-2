@@ -10,7 +10,7 @@
  */
 
 import * as C from "../config";
-import { isBossWave, levelStartWave, wavesForLevel } from "./waves";
+import { isBossWave, levelStartWave, waveInLevel, wavesForLevel } from "./waves";
 
 export type SkillKey =
   | "multi" | "pierce" | "explosive" | "guided"
@@ -101,6 +101,10 @@ export class GameState {
   rapidTimer = 0;
   waveTookDamage = false;
   private lastClearedWave = -1;  // guard: a wave can never pay cores twice
+  private paidThroughWave = 0;   // checkpoint replays never re-pay cores
+  /** Loadout snapshot taken when a checkpoint wave (6, 11, ...) starts.
+   * Death offers "retry from wave N" with exactly this state restored. */
+  checkpoint: Record<string, unknown> | null = null;
 
   /** Announcements for the UI to drain (popups for cores/achievements/bonuses). */
   events: { kind: string; text: string }[] = [];
@@ -183,6 +187,8 @@ export class GameState {
     this.rapidTimer = 0;
     this.waveTookDamage = false;
     this.lastClearedWave = -1;
+    this.paidThroughWave = 0;
+    this.checkpoint = null;
     this.hp = this.maxHp();
   }
 
@@ -195,11 +201,15 @@ export class GameState {
       return { bossWave: isBossWave(this.wave), coresEarned: 0 };
     }
     this.lastClearedWave = this.wave;
-    let earned = C.WAVE_CLEAR_CORES * this.level;
     const bossWave = isBossWave(this.wave);
-    if (bossWave) earned += C.LEVEL_CLEAR_CORES * this.level;
-    this.cores += earned;
-    this.runCores += earned;
+    let earned = 0;
+    if (this.wave > this.paidThroughWave) {
+      earned = C.WAVE_CLEAR_CORES * this.level;
+      if (bossWave) earned += C.LEVEL_CLEAR_CORES * this.level;
+      this.paidThroughWave = this.wave;
+      this.cores += earned;
+      this.runCores += earned;
+    }
     if (!this.waveTookDamage) this.unlockAchievement("perfect");
     if (this.wave > this.bestWave) this.bestWave = this.wave;
     if (bossWave) this.level += 1; // advance the checkpoint
@@ -211,6 +221,52 @@ export class GameState {
     this.wave += 1;
     this.shield = this.shieldCapacity(); // recharges each wave
     this.waveTookDamage = false;
+    // Entering a checkpoint wave (6, 11, ...) snapshots the loadout — shop
+    // purchases made between waves are deliberately included.
+    if ((waveInLevel(this.wave) - 1) % C.CHECKPOINT_EVERY === 0) {
+      this.snapshotCheckpoint();
+    }
+  }
+
+  /** The run fields a checkpoint preserves (everything the shop can change). */
+  private static readonly RUN_FIELDS = [
+    "money", "wave", "genLevel", "autoLevel", "turretLevel", "multiLevel",
+    "pierceLevel", "explosiveLevel", "guidedOwned", "repairBuys", "platingBuys",
+    "shieldLevel", "droneLevel", "equippedUltimate",
+    // NOTE: paidThroughWave is deliberately NOT snapshotted — it keeps its
+    // high-water mark across restores so replayed waves never re-pay cores.
+  ] as const;
+
+  snapshotCheckpoint(): void {
+    const snap: Record<string, unknown> = {};
+    for (const f of GameState.RUN_FIELDS) snap[f] = this[f as keyof this];
+    snap.ultimatesOwned = [...this.ultimatesOwned];
+    this.checkpoint = snap;
+  }
+
+  /** Die -> resume from the checkpoint with the saved loadout at full HP. */
+  restoreCheckpoint(): boolean {
+    const snap = this.checkpoint;
+    if (!snap) return false;
+    Object.assign(this, snap as object);
+    this.ultimatesOwned = new Set(snap.ultimatesOwned as C.UltimateKey[]);
+    this.runCores = 0;
+    this.kills = 0;
+    this.combo = 0;
+    this.comboTimer = 0;
+    this.rapidTimer = 0;
+    this.waveTookDamage = false;
+    this.lastClearedWave = -1;
+    // paidThroughWave keeps its high-water mark (replays never re-pay), and
+    // the checkpoint itself survives so a second death retries here too.
+    this.hp = this.maxHp();              // checkpoints restore a fresh tower
+    this.shield = this.shieldCapacity();
+    return true;
+  }
+
+  /** Which wave a death-retry would resume at (for the death screen button). */
+  checkpointWaveInLevel(): number | null {
+    return this.checkpoint ? waveInLevel(this.checkpoint.wave as number) : null;
   }
 
   // -- economy ----------------------------------------------------------------
