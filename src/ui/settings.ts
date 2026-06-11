@@ -43,7 +43,6 @@ export class SettingsModal {
         ${this.row("Volume", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.volume * 100)}" data-key="volume" />
           <b id="vol-pct">${Math.round(gs.volume * 100)}%</b></span>`)}
         ${this.row("Reduce motion (no shake)", toggle("motion", gs.reduceMotion))}
-        ${this.row("Fullscreen", toggle("fullscreen", !!document.fullscreenElement))}
         ${this.row("Reset progress", `<button class="set-toggle danger" data-key="reset">RESET</button>`)}
         <footer class="modal-foot">
           <span>v${GAME_VERSION} · Made by Callum</span>
@@ -64,10 +63,6 @@ export class SettingsModal {
             el.textContent = "SURE?"; // second tap confirms
           }
           return;
-        }
-        else if (k === "fullscreen") {
-          if (document.fullscreenElement) void document.exitFullscreen();
-          else void document.documentElement.requestFullscreen().catch(() => undefined);
         }
         gs.save();
         this.render();
