@@ -21,6 +21,9 @@ Mobile via Capacitor and desktop packaging come after the gameplay port.
    gameplay-value change (same rule as the original repo).
 
 ## Conventions
+- **The game is named "ROBOT TOWER" / "Robot Tower Survival"** — decided by
+  Shannon 2026-06-11. Design mocks that say "Core Defender" are placeholders;
+  don't re-raise the rename unless he does.
 - **Currency is coins, never dollars** — no `$` in any user-visible text.
   Money = gold coin icon; Cores = cyan diamond. Always pair value with icon.
 - State colors are reserved: green = owned/equipped, cyan = available,
