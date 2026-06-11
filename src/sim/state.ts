@@ -15,7 +15,7 @@ import { isBossWave, levelStartWave, waveInLevel, wavesForLevel } from "./waves"
 export type SkillKey =
   | "multi" | "pierce" | "explosive" | "guided"
   | "repair" | "plating" | "shield"
-  | "twin"
+  | "twin" | "interceptor" | "medic"
   | "emp" | "freeze" | "warp" | "laser";
 
 export interface SkillNode {
@@ -32,6 +32,8 @@ export const SKILL_NODES: SkillNode[] = [
   { key: "plating", name: "Reinforced Plating", cost: 100, desc: "Buy +max HP in battle", prereq: "repair", branch: "DEFENSE" },
   { key: "shield", name: "Shield Generator", cost: 180, desc: "Layered recharging shield", prereq: "plating", branch: "DEFENSE" },
   { key: "twin", name: "Twin Targeting", cost: 150, desc: "Drone hits 2 enemies", branch: "DRONE" },
+  { key: "interceptor", name: "Interceptor", cost: 200, desc: "Drone shoots down enemy projectiles", prereq: "twin", branch: "DRONE" },
+  { key: "medic", name: "Field Medic", cost: 250, desc: "Drone repairs the tower during lulls", prereq: "interceptor", branch: "DRONE" },
   { key: "emp", name: "EMP Burst", cost: 60, desc: "Zap + stun everything", branch: "ULTIMATES" },
   { key: "freeze", name: "Freeze Bomb", cost: 80, desc: "Freezes all enemies", prereq: "emp", branch: "ULTIMATES" },
   { key: "warp", name: "Time Warp", cost: 110, desc: "Slow-motion for enemies", prereq: "freeze", branch: "ULTIMATES" },
@@ -100,6 +102,8 @@ export class GameState {
   shield = 0;          // layers remaining right now
   droneLevel = 0;
   twinOwned = false;   // Twin Targeting (tree-gated, bought once per run)
+  interceptorOwned = false;
+  medicOwned = false;
   ultimatesOwned = new Set<C.UltimateKey>();
   equippedUltimate: C.UltimateKey | null = null;
   rapidTimer = 0;
@@ -185,6 +189,8 @@ export class GameState {
     this.shield = 0;
     this.droneLevel = 0;
     this.twinOwned = false;
+    this.interceptorOwned = false;
+    this.medicOwned = false;
     this.ultimatesOwned = new Set();
     this.equippedUltimate = null;
     this.rapidTimer = 0;
@@ -235,7 +241,8 @@ export class GameState {
   private static readonly RUN_FIELDS = [
     "money", "wave", "genLevel", "autoLevel", "turretLevel", "multiLevel",
     "pierceLevel", "explosiveLevel", "guidedOwned", "repairBuys", "platingBuys",
-    "shieldLevel", "droneLevel", "twinOwned", "equippedUltimate",
+    "shieldLevel", "droneLevel", "twinOwned", "interceptorOwned", "medicOwned",
+    "equippedUltimate",
     // NOTE: paidThroughWave is deliberately NOT snapshotted — it keeps its
     // high-water mark across restores so replayed waves never re-pay cores.
   ] as const;
@@ -414,6 +421,16 @@ export class GameState {
   tryBuyTwin(): boolean {
     if (!this.skills.has("twin") || this.twinOwned || !this.spend(C.TWIN_COST)) return false;
     this.twinOwned = true;
+    return true;
+  }
+  tryBuyInterceptor(): boolean {
+    if (!this.skills.has("interceptor") || this.interceptorOwned || !this.spend(C.INTERCEPTOR_COST)) return false;
+    this.interceptorOwned = true;
+    return true;
+  }
+  tryBuyMedic(): boolean {
+    if (!this.skills.has("medic") || this.medicOwned || !this.spend(C.MEDIC_COST)) return false;
+    this.medicOwned = true;
     return true;
   }
   tryBuyUltimate(key: C.UltimateKey): boolean {

@@ -2,6 +2,18 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.5.0 — 2026-06-11
+
+Two new Drone skills (the branch grows to 4 nodes, tree total 1,880 cores):
+
+- **Interceptor** (200 cores, then 250 coins/run): the drone shoots down
+  enemy projectiles that enter its range — one swat every 0.35s, with a
+  zap + spark so you see every save. The shooter counter.
+- **Field Medic** (250 cores, then 300 coins/run): whenever the drone has
+  no enemy in firing range — flying, repositioning, or a clear field — it
+  repairs the tower at 2 HP/s with a green tether pulse. Offense or
+  sustain: the drone now has a job every second of the wave.
+
 ## v0.4.1 — 2026-06-11
 
 - **Twin Targeting now follows the rules**: unlock it in the tree, then buy it

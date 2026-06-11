@@ -117,7 +117,7 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(g.tryUnlockSkill("pierce")).toBe(false); // needs multi
     expect(g.tryUnlockSkill("multi")).toBe(true);
     expect(g.tryUnlockSkill("pierce")).toBe(true);
-    expect(SKILL_NODES.reduce((a, n) => a + n.cost, 0)).toBe(1430);
+    expect(SKILL_NODES.reduce((a, n) => a + n.cost, 0)).toBe(1880);
   });
 
   it("a wave can NEVER pay twice (the level-1799 runaway regression)", () => {
@@ -187,6 +187,26 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(g.tryBuyTwin()).toBe(false);             // one-time per run
     g.resetRun();
     expect(g.twinOwned).toBe(false);                // resets with the run
+  });
+
+  it("Interceptor + Field Medic: gated chain buys, once per run, reset", () => {
+    const g = fresh();
+    g.money = 10_000;
+    expect(g.tryBuyInterceptor()).toBe(false);      // tree-gated
+    g.skills.add("twin").add("interceptor").add("medic");
+    expect(g.tryBuyInterceptor()).toBe(true);
+    expect(g.tryBuyMedic()).toBe(true);
+    expect(g.tryBuyInterceptor()).toBe(false);      // one-time per run
+    g.resetRun();
+    expect(g.interceptorOwned || g.medicOwned).toBe(false);
+    // Tree chain: interceptor needs twin, medic needs interceptor
+    const g2 = fresh();
+    g2.cores = 10_000;
+    expect(g2.tryUnlockSkill("interceptor")).toBe(false);
+    g2.tryUnlockSkill("twin");
+    expect(g2.tryUnlockSkill("medic")).toBe(false);
+    expect(g2.tryUnlockSkill("interceptor")).toBe(true);
+    expect(g2.tryUnlockSkill("medic")).toBe(true);
   });
 
   it("save/load round-trips permanent state only", () => {

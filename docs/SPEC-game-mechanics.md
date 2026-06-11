@@ -24,6 +24,11 @@ of **2026-06-10** (cores-per-wave economy update).
 > - **Twin Targeting is an in-run purchase** (200 coins, one-time per run,
 >   tree-gated) — the original auto-granted it from the tree, the only node
 >   that broke its own gate-not-grant rule.
+> - **New Drone-branch nodes (v2 content)**: Interceptor (200 cores / 250
+>   coins per run — drone shoots down one enemy projectile in its range every
+>   0.35s) and Field Medic (250 cores / 300 coins — while the drone has no
+>   enemy in firing range it repairs the tower at 2 HP/s). Chain: Twin
+>   Targeting -> Interceptor -> Field Medic.
 > - **Mid-level checkpoints** (`CHECKPOINT_EVERY` = 5): starting wave 6/11 of a
 >   level snapshots the full loadout (coins, upgrades, ultimates — including
 >   between-wave purchases). Death offers "Retry from wave N": the snapshot is

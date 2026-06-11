@@ -126,6 +126,10 @@ export const SHIELD_RING_BASE = 66;       // innermost ring radius (px)
 export const SHIELD_RING_GAP = 7;         // +radius per extra layer
 
 // Drone
+export const INTERCEPTOR_COST = 250;  // in-run, one-time (tree-gated)
+export const INTERCEPT_CD = 0.35;     // seconds between projectile swats
+export const MEDIC_COST = 300;        // in-run, one-time (tree-gated)
+export const MEDIC_HPS = 2;           // HP/sec healed while the field is clear
 export const TWIN_COST = 200;   // v2: one-time per-run buy (tree-gated) — the
                                 // original auto-granted it, breaking gate-not-grant
 export const DRONE_RADIUS = 11;

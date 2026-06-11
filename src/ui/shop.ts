@@ -84,6 +84,20 @@ export class ShopPanel {
       state: gs.twinOwned ? "owned" : m >= C.TWIN_COST ? "buy" : "poor",
       onBuy: () => gs.tryBuyTwin(),
     });
+    if (gs.skills.has("interceptor")) cards.push({
+      key: "interceptor", cat: "DRONE", name: "Interceptor",
+      desc: "drone swats projectiles",
+      cost: gs.interceptorOwned ? null : C.INTERCEPTOR_COST,
+      state: gs.interceptorOwned ? "owned" : m >= C.INTERCEPTOR_COST ? "buy" : "poor",
+      onBuy: () => gs.tryBuyInterceptor(),
+    });
+    if (gs.skills.has("medic")) cards.push({
+      key: "medic", cat: "DRONE", name: "Field Medic",
+      desc: `repairs +${C.MEDIC_HPS} HP/sec in lulls`,
+      cost: gs.medicOwned ? null : C.MEDIC_COST,
+      state: gs.medicOwned ? "owned" : m >= C.MEDIC_COST ? "buy" : "poor",
+      onBuy: () => gs.tryBuyMedic(),
+    });
     if (gs.skills.has("guided")) cards.push({
       key: "guided", cat: "CANNON", name: "Guided", desc: "bullets bend to foes",
       cost: gs.guidedOwned ? null : C.GUIDED_COST,
