@@ -220,7 +220,7 @@ new Phaser.Game({
 // DOM controls.
 // ---------------------------------------------------------------------------
 const SLIDERS: { k: keyof C.EnemyAnim; label: string; min: number; max: number; step: number; pct?: boolean }[] = [
-  { k: "altitude", label: "Altitude (px)", min: 0, max: 30, step: 0.5 },
+  { k: "altitude", label: "Altitude (px)", min: -20, max: 30, step: 0.5 },
   { k: "bobAmp", label: "Hover bob (px)", min: 0, max: 16, step: 0.5 },
   { k: "bobHz", label: "Bob speed (Hz)", min: 0, max: 6, step: 0.1 },
   { k: "breatheAmp", label: "Breathe", min: 0, max: 0.15, step: 0.005, pct: true },

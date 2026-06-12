@@ -82,8 +82,9 @@ export function enemyAnimFrame(o: EnemyAnimFrameOpts): { ox: number; oy: number 
     // Return total offset (bob + altitude) so the caller can undo both next frame.
     return { ox, oy: oy - alt };
   }
-  if (alt && o.shadow) {
-    const altFade = Math.min(1, alt / 40);
+  if (alt !== 0 && o.shadow) {
+    // Negative altitude grounds the unit (shadow tighter); positive lifts it (shadow dims).
+    const altFade = Math.min(1, Math.max(0, alt) / 40);
     o.shadow.setAlpha(C.SHADOW.landAlpha * (1 - altFade * 0.4));
   }
   return { ox: 0, oy: -alt };
