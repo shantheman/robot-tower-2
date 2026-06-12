@@ -111,10 +111,13 @@ on load). The items below are the gaps, most impactful first.
       main.ts, Space lives in Phaser, buttons in each panel, and flow
       flags (shopMode, returnTo, justClearedLevel) are scattered. Fine
       today; consolidate if key rebinding or a new screen ever lands.
-10. - [ ] **Housekeeping batch** — MOSTLY DONE (2026-06-12): version
+10. - [x] **Housekeeping batch** — MOSTLY DONE (2026-06-12): version
       single-sourced from package.json; dead CSS pruned (back-btn,
       cores-lbl, foot-hint); save-key note in state.ts + CLAUDE.md.
-      REMAINING: the CSP meta tag. *(small)* — sync
+      CSP meta DONE too (2026-06-12): injected at deploy build only
+      (vite plugin, GH_PAGES-gated); the ?reset script went external to
+      satisfy script-src 'self'; full battle verified under the policy
+      via `npm run preview:pages`. ALL DONE. — sync
       package.json version (stuck at 0.1.0 vs GAME_VERSION 0.7.1, single-
       source it); prune dead CSS (`.foot-hint` is orphaned post-footer-
       redesign — do a fuller sweep); consider a CSP `<meta>` tag (Pages

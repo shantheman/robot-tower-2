@@ -7,14 +7,8 @@
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="stylesheet" href="/src/styles.css" />
-  <script>
-    // Escape hatch: /?reset wipes the save BEFORE any game module loads
-    // (modules read the save at import time, so this must run first).
-    if (new URLSearchParams(location.search).has("reset")) {
-      localStorage.removeItem("rts2_save");
-      history.replaceState(null, "", location.pathname);
-    }
-  </script>
+  <!-- ?reset save-wipe; external (not inline) so prod CSP stays script-src 'self' -->
+  <script src="/reset.js"></script>
 </head>
 <body>
   <div id="stage">
