@@ -283,8 +283,6 @@ const SLIDERS: { k: keyof C.EnemyAnim; label: string; min: number; max: number; 
   { k: "altitude", label: "Altitude (px)", min: -20, max: 30, step: 0.5 },
   { k: "bobAmp", label: "Hover bob (px)", min: 0, max: 16, step: 0.5 },
   { k: "bobHz", label: "Bob speed (Hz)", min: 0, max: 6, step: 0.1 },
-  { k: "breatheAmp", label: "Breathe", min: 0, max: 0.15, step: 0.005, pct: true },
-  { k: "breatheHz", label: "Breathe speed (Hz)", min: 0, max: 5, step: 0.1 },
   { k: "wobbleDeg", label: "Wobble (deg)", min: 0, max: 20, step: 0.5 },
   { k: "wobbleHz", label: "Wobble speed (Hz)", min: 0, max: 8, step: 0.1 },
 ];
@@ -407,7 +405,6 @@ function buildConfig(): string {
     const parts: string[] = [];
     if (p.altitude) parts.push(`altitude: ${round(p.altitude)}`);
     if (p.bobAmp) { parts.push(`bobAmp: ${round(p.bobAmp)}`); if (p.bobHz) parts.push(`bobHz: ${round(p.bobHz)}`); }
-    if (p.breatheAmp) { parts.push(`breatheAmp: ${round(p.breatheAmp)}`); if (p.breatheHz) parts.push(`breatheHz: ${round(p.breatheHz)}`); }
     if (p.wobbleDeg) { parts.push(`wobbleDeg: ${round(p.wobbleDeg)}`); if (p.wobbleHz) parts.push(`wobbleHz: ${round(p.wobbleHz)}`); }
     if (p.chargeTell) parts.push(`chargeTell: true`);
     return `  ${key}: { ${parts.join(", ")} },`;

@@ -91,9 +91,8 @@ export function enemyAnimFrame(o: EnemyAnimFrameOpts): { ox: number; oy: number 
     o.sprite.setRotation(rot);
     o.shadow?.setRotation(rot);
   }
-  // Idle breathe + ranged charge-tell swell.
+  // Ranged charge-tell swell.
   let scaleMul = 1;
-  if (a?.breatheAmp) scaleMul += a.breatheAmp * Math.sin(t * (a.breatheHz ?? 2) + ph);
   if (a?.chargeTell) scaleMul += o.fireCharge * o.fireCharge * 0.18;
   o.sprite.setScale(o.baseScale * scaleMul);
   // Static altitude: lift the sprite above its logical ground position.

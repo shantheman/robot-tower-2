@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.9 — 2026-06-12
+
+- **Animation retune + breathe removed.** All enemies updated to
+  Shannon's final ENEMY_ANIM values (altitude-based positioning, revised
+  bob/wobble per enemy). The breathe scale-pulse feature is removed —
+  `breatheAmp`/`breatheHz` stripped from the interface, runtime, and
+  playground sliders.
+
 ## v0.8.8 — 2026-06-12
 
 - **Shooter rotation aligned.** Hex-snap faces were offset by 30°, so

@@ -78,14 +78,12 @@ export const ENEMY_BULLET_RADIUS = 6;
 /** Procedural "alive" animation per enemy — cheap transforms on the existing
  * still (no sprite sheets). Top-down robots read as alive from rigid-body
  * motion: a hover bob (air units float, their grounded shadow fades at the
- * top), an idle breathe (scale pulse), a rotational wobble (hover wobble /
- * menace), and a charge-tell swell on ranged units as the shot winds up.
- * Each enemy gets a random phase so they don't pulse in sync. Tune freely. */
+ * top), a rotational wobble, and a charge-tell swell on ranged units as the
+ * shot winds up. Each enemy gets a random phase so they don't pulse in sync.
+ * Tune freely. */
 export interface EnemyAnim {
   bobAmp?: number;     // px of hover float (air units); shadow fades as it rises
   bobHz?: number;      // float cycles/sec
-  breatheAmp?: number; // idle scale pulse, e.g. 0.05 = ±5%
-  breatheHz?: number;
   wobbleDeg?: number;  // rotational sway amplitude (degrees)
   wobbleHz?: number;
   chargeTell?: boolean; // ranged: swell toward the shot (telegraph)
@@ -93,13 +91,13 @@ export interface EnemyAnim {
   hexSnap?: number;    // discrete rotation snapping: N sides (e.g. 6); overrides tower-facing
 }
 export const ENEMY_ANIM: Record<string, EnemyAnim> = {
-  grunt:   { breatheAmp: 0.05, breatheHz: 2.4 },
-  fast:    { bobAmp: 5, bobHz: 3.2, wobbleDeg: 7, wobbleHz: 5 },   // jittery quad
-  tough:   { breatheAmp: 0.045, breatheHz: 1.8 },
-  tank:    { breatheAmp: 0.035, breatheHz: 1.1 },                  // slow, heavy
-  bomber:  { bobAmp: 4, bobHz: 2.8, wobbleDeg: 6, wobbleHz: 4 },   // twitchy swarm
-  boss:    { breatheAmp: 0.05, breatheHz: 1.0 },                   // menacing pulse
-  shooter: { bobAmp: 4, bobHz: 2.2, chargeTell: true, hexSnap: 6 }, // hover + snap rotation
+  grunt:   { altitude: -20, wobbleDeg: 2, wobbleHz: 1.7 },
+  fast:    { altitude: 7.5, bobAmp: 5, bobHz: 2.1, wobbleDeg: 6, wobbleHz: 2.6 },
+  tough:   { altitude: -8 },
+  tank:    { altitude: -7, wobbleDeg: 2.5, wobbleHz: 1 },
+  bomber:  { altitude: 2.5, bobAmp: 4.5, bobHz: 1.4, wobbleDeg: 2, wobbleHz: 0.8 },
+  boss:    { altitude: -16.5, wobbleDeg: 2, wobbleHz: 0.8 },
+  shooter: { altitude: 3.5, bobAmp: 4, bobHz: 2.2, chargeTell: true, hexSnap: 6 },
 };
 
 /** Silhouette shadows — every unit casts its own sprite, black-tinted, under
