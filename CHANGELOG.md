@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.22 — 2026-06-12
+
+- **Grunt dish pivot corrected** to Shannon's marked spot: pivot `0.545,0.475`
+  → `0.506,0.464` (detected from the blue-dot reference, pixel-identical
+  framing to the texture). The dish now swivels about its true mount.
+
 ## v0.8.21 — 2026-06-12
 
 - **Size tweaks:** Tank 20% smaller (radius 34.6 → 27.68), Boss 20% bigger

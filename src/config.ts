@@ -74,7 +74,7 @@ export interface EnemyType {
     shadowAlpha: number; shadowDrop: number };
 }
 export const GRUNT: EnemyType = { key: "grunt", sprite: "enemy_0", radius: 21, hp: 20, speedMult: 1.0, reward: 5, contactDamage: 6, levelScaled: false, healthbar: false,
-  satellite: { texture: "enemy_0_satellite", pivot: [0.545, 0.475], swivelSpeed: 3.0, pauseMin: 0.6, pauseMax: 1.8,
+  satellite: { texture: "enemy_0_satellite", pivot: [0.506, 0.464], swivelSpeed: 3.0, pauseMin: 0.6, pauseMax: 1.8,
     shadowAlpha: 0.35, shadowDrop: 0.08 } };
 export const FAST: EnemyType = { key: "fast", sprite: "enemy_1", radius: 15, hp: 10, speedMult: 1.8, reward: 6, contactDamage: 4, levelScaled: false, healthbar: false, air: true,
   rotors: { texture: "enemy_1_rotor", armReach: 0.70, spinRads: 18 } };
