@@ -28,7 +28,7 @@ export class AchievementsModal {
     const got = (id: string) => gs.achievements.has(id);
     const rows = ACHIEVEMENTS.map((a) => `
       <div class="ach-row ${got(a.id) ? "got" : ""}">
-        <span class="ach-mark">${got(a.id) ? "✓" : "🔒"}</span>
+        <span class="ach-mark">${got(a.id) ? "✓" : `<img class="lock-ico" src="art/lock.webp" alt="locked" />`}</span>
         <span class="ach-col">
           <b class="ach-name">${esc(a.name)}</b>
           <span class="ach-how">${esc(a.how)}</span>

@@ -36,7 +36,7 @@ export class SkillsPanel extends Panel {
     const footer = state === "owned"
       ? `<div class="sn-owned">✓ OWNED</div>`
       : state === "locked"
-        ? `<div class="sn-locked">🔒 <span>needs <b>${esc(prereqName ?? "")}</b></span></div>`
+        ? `<div class="sn-locked"><img class="lock-ico" src="art/lock.webp" alt="locked" /> <span>needs <b>${esc(prereqName ?? "")}</b></span></div>`
         : `<div class="sn-price ${state === "cant" ? "cant" : ""}"><span class="core-icon small"></span> ${n.cost}</div>`;
     const art = ITEM_ART[n.key];
     return `<button class="skill-node ${state}" data-key="${n.key}">

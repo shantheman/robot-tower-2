@@ -147,6 +147,12 @@ body { display: grid; place-items: center; }
   background: url("/art/core.webp") center / contain no-repeat;
   filter: drop-shadow(0 0 5px rgba(127, 232, 255, 0.5));
 }
+/* Locked marker (Shannon's padlock art, replaces the OS 🔒 emoji). */
+.lock-ico {
+  width: 1.15em; height: 1.15em; object-fit: contain;
+  vertical-align: -0.18em;
+  filter: drop-shadow(0 0 4px rgba(127, 232, 255, 0.35));
+}
 .gear {
   width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line);
   background: var(--bg-panel); color: var(--dim); font-size: 23px; cursor: pointer;
