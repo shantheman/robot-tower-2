@@ -26,6 +26,8 @@ export interface HudState {
 
 interface Enemy {
   sprite: Phaser.GameObjects.Image;
+  shadow: Phaser.GameObjects.Image;
+  shadowOff: number;     // y-gap below the sprite (land: at the feet, air: hover height)
   hpBar?: Phaser.GameObjects.Graphics;
   type: C.EnemyType;
   hp: number; maxHp: number; speed: number;
@@ -57,7 +59,9 @@ export class BattleScene extends Phaser.Scene {
   private gun!: Phaser.GameObjects.Image;
   private shieldGfx!: Phaser.GameObjects.Graphics;
   private fxLayer!: Phaser.GameObjects.Layer;
+  private shadowLayer!: Phaser.GameObjects.Layer;
   private drone?: Phaser.GameObjects.Image;
+  private droneShadow?: Phaser.GameObjects.Image;
   private droneAngle = 0;
   private droneFireTimer = 0;
   private interceptTimer = 0;
@@ -102,6 +106,8 @@ export class BattleScene extends Phaser.Scene {
 
   create() {
     this.drawBackdrop();
+    this.makeShadowTexture();
+    this.shadowLayer = this.add.layer(); // every shadow sits under tower/enemies/fx
     this.fxLayer = this.add.layer();
     const base = this.add.image(this.towerPos.x, this.towerPos.y, "turret_base")
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y);
@@ -152,13 +158,29 @@ export class BattleScene extends Phaser.Scene {
   // -- run / wave flow ---------------------------------------------------------
   startBattle(): void {
     game.gs.resetRun();
+    this.applyLevelBackground();
     this.clearBoard(true);
     this.fxLayer.removeAll(true);
     this.over = false;
     this.setPaused(false);
     this.drone?.destroy();
     this.drone = undefined;
+    this.droneShadow?.destroy();
+    this.droneShadow = undefined;
     this.startWave();
+  }
+
+  /** Swap the page-level battlefield image for this level. Alignment is by
+   * construction: tower at world center, canvas FIT+centered, CSS background
+   * cover+centered — so the image's central pad lands exactly under the
+   * tower at any window size (see LEVEL_BACKGROUNDS in config.ts). */
+  private applyLevelBackground(): void {
+    const stage = document.getElementById("stage");
+    if (!stage) return;
+    const name = C.LEVEL_BACKGROUNDS[(game.gs.level - 1) % C.LEVEL_BACKGROUNDS.length];
+    const variant = game.world.w > game.world.h ? "land" : "port";
+    stage.style.backgroundImage = `url(backgrounds/${name}_${variant}.webp)`;
+    stage.classList.add("has-bg");
   }
 
   /** Death-retry from the loadout snapshot (full HP, same gear, same wave). */
@@ -170,6 +192,8 @@ export class BattleScene extends Phaser.Scene {
     this.setPaused(false);
     this.drone?.destroy();
     this.drone = undefined;
+    this.droneShadow?.destroy();
+    this.droneShadow = undefined;
     this.startWave();
     return true;
   }
@@ -194,7 +218,7 @@ export class BattleScene extends Phaser.Scene {
     for (const b of this.bullets) b.dot.destroy();
     this.bullets = [];
     if (everything) {
-      for (const e of this.enemies) { e.sprite.destroy(); e.hpBar?.destroy(); }
+      for (const e of this.enemies) { e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy(); }
       this.enemies = [];
     }
   }
@@ -225,10 +249,18 @@ export class BattleScene extends Phaser.Scene {
     const [x, y] = this.edgePosition();
     const sprite = this.add.image(x, y, type.sprite);
     sprite.setScale((type.radius * C.ENEMY_SPRITE_SCALE) / sprite.width);
+    // Grounding shadow: land units cast tight at their feet; air units cast a
+    // smaller, fainter one well below — the gap reads as altitude.
+    const air = !!type.air;
+    const shadowOff = air ? type.radius * 1.7 + 8 : type.radius * 0.55 + 2;
+    const sw = type.radius * (air ? 2.2 : 2.7);
+    const shadow = this.add.image(x, y + shadowOff, "softshadow")
+      .setDisplaySize(sw, sw * 0.42).setAlpha(air ? 0.45 : 0.62);
+    this.shadowLayer.add(shadow);
     const ew = effectiveWave(game.gs.wave);
     const hp = type.levelScaled ? type.hp * (1 + C.HEAVY_HP_RAMP * (ew - 1)) : type.hp;
     this.enemies.push({
-      sprite, type, hp, maxHp: hp, alive: true, flash: 0,
+      sprite, shadow, shadowOff, type, hp, maxHp: hp, alive: true, flash: 0,
       fireTimer: type.ranged?.fireCd ?? 0,
       speed: waveRobotSpeed(game.gs.wave) * type.speedMult,
     });
@@ -332,6 +364,7 @@ export class BattleScene extends Phaser.Scene {
     this.burst(e.sprite.x, e.sprite.y, boss ? 22 : 8);
     if (!game.gs.reduceMotion) this.cameras.main.shake(boss ? 260 : 90, boss ? 0.012 : 0.004);
     e.sprite.destroy();
+    e.shadow.destroy();
     e.hpBar?.destroy();
   }
 
@@ -361,6 +394,10 @@ export class BattleScene extends Phaser.Scene {
     if (!this.drone) {
       this.drone = this.add.image(this.towerPos.x, this.towerPos.y - C.DRONE_ORBIT_RADIUS, "drone");
       this.drone.setScale((C.DRONE_RADIUS * 2 * 1.76 * 0.8) / this.drone.width);
+      // The drone flies too — same detached air shadow as flying enemies.
+      this.droneShadow = this.add.image(this.drone.x, this.drone.y + C.DRONE_RADIUS * 1.7 + 8, "softshadow")
+        .setDisplaySize(C.DRONE_RADIUS * 2.2, C.DRONE_RADIUS * 0.92).setAlpha(0.45);
+      this.shadowLayer.add(this.droneShadow);
     }
     const range = C.DRONE_BASE_RANGE + C.DRONE_RANGE_PER_LEVEL * (gs.droneLevel - 1);
     // Hunt the strongest enemy; orbit the tower when idle.
@@ -386,6 +423,10 @@ export class BattleScene extends Phaser.Scene {
       this.drone.x += (d.x / dist) * step;
       this.drone.y += (d.y / dist) * step;
       this.drone.setRotation(Math.atan2(d.y, d.x) + Math.PI / 2);
+    }
+    if (this.droneShadow) {
+      this.droneShadow.x = this.drone.x;
+      this.droneShadow.y = this.drone.y + C.DRONE_RADIUS * 1.7 + 8;
     }
     // Fire at up to 1 (or 2 with Twin Targeting) enemies in range.
     this.droneFireTimer -= enemyDt > 0 ? dt : 0; // drone is the player's: real dt
@@ -517,6 +558,22 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: r, alpha: 0, duration: 220, onComplete: () => r.destroy() });
   }
 
+  /** One soft radial-gradient blob, reused (tinted by size/alpha) for every
+   * shadow in the scene. */
+  private makeShadowTexture(): void {
+    if (this.textures.exists("softshadow")) return;
+    const size = 128;
+    const cnv = this.textures.createCanvas("softshadow", size, size)!;
+    const ctx = cnv.context;
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    g.addColorStop(0, "rgba(0,0,0,0.85)");
+    g.addColorStop(0.55, "rgba(0,0,0,0.45)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+    cnv.refresh();
+  }
+
   private drawBackdrop(): void {
     // (The page draws the gradient + grid full-bleed; only the tower-relative
     // range rings live in-world.)
@@ -614,6 +671,7 @@ export class BattleScene extends Phaser.Scene {
         e.sprite.x += (dx / dist) * e.speed * enemyDt;
         e.sprite.y += (dy / dist) * e.speed * enemyDt;
       }
+      e.shadow.setPosition(e.sprite.x, e.sprite.y + e.shadowOff);
       const crashAt = gs.shield > 0 ? gs.shieldRadius() + e.type.radius : e.type.radius + C.TOWER_SIZE / 2;
       if (!ranged && dist <= crashAt) {
         let dmg = e.type.contactDamage;
@@ -622,7 +680,7 @@ export class BattleScene extends Phaser.Scene {
         play(res.layersSpent > 0 ? "shield" : "hit");
         if (!gs.reduceMotion) this.cameras.main.shake(140, res.layersSpent && !res.hpLost ? 0.005 : 0.009);
         e.alive = false;
-        e.sprite.destroy(); e.hpBar?.destroy();
+        e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
         if (res.died) { this.towerDestroyed(); return; }
       }
       if (e.alive && e.type.healthbar) {

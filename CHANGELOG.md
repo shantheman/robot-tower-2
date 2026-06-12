@@ -2,6 +2,22 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.0 — 2026-06-12
+
+The battlefield gets real ground under it:
+
+- **Level backgrounds** (Shannon's art drop): the metal launch deck and the
+  cracked crater, alternating per level — more on the way; the list in
+  config.ts just grows. The pad in the art sits exactly under the tower at
+  any window size or orientation (center-aligned by construction), with a
+  dedicated portrait variant for phones.
+- **Enemy drop shadows**: land robots (grunt, tough, tank, boss) cast a
+  tight dark shadow at their feet; flyers (quadcopter, bombers, the shooter
+  pod) cast a smaller, fainter one offset well below — the gap reads as
+  altitude. The player's drone got one too, so it isn't the only thing
+  flying shadowless.
+- The CSS grid floor retires during battles — the art is the floor now.
+
 ## v0.6.2 — 2026-06-11
 
 - **Floating footer on Upgrades + Skill Tree** (new mocks): the big CTA and

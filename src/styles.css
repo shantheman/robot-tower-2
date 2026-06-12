@@ -66,6 +66,10 @@ body { display: grid; place-items: center; }
   height: 100vh;
   height: 100dvh; /* mobile browsers: exclude collapsing URL bars */
   background: radial-gradient(120% 120% at 50% 50%, #0e1b30 0%, #081120 55%, #04080f 100%);
+  /* Level backgrounds (set via JS as background-image): cover + center keeps
+   * the image's central pad exactly under the tower at any window size. */
+  background-size: cover;
+  background-position: center;
 }
 #stage::before {
   content: ""; position: absolute; inset: -2px; pointer-events: none;
@@ -73,6 +77,7 @@ body { display: grid; place-items: center; }
     linear-gradient(90deg, rgba(96, 150, 230, 0.06) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+#stage.has-bg::before { display: none; } /* the art replaces the grid floor */
 #game { position: absolute; inset: 0; }
 #game canvas { display: block; touch-action: none; } /* hold-drag aiming, no scroll/zoom */
 
