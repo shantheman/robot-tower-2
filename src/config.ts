@@ -86,6 +86,19 @@ export const BOSS: EnemyType = { key: "boss", sprite: "boss", radius: 40, hp: 40
 export const SHOOTER: EnemyType = { key: "shooter", sprite: "shooter", radius: 13, hp: 30, speedMult: 0.8, reward: 16, contactDamage: 8, levelScaled: true, healthbar: false, air: true, ranged: { fireRange: 260, fireCd: 1.6, projDamage: 8 } };
 export const ENEMY_BULLET_SPEED = 240;
 export const ENEMY_BULLET_RADIUS = 6;
+/** Boss covering fire: it lobs projectiles at the tower as it advances (on top
+ * of its melee crash), scaling with the game level — a shot or two of chip
+ * damage at level 1, a faster, harder barrage later. cd and damage are
+ * computed at spawn from gs.level. */
+export const BOSS_FIRE = {
+  baseCd: 6.0,          // level 1: ~1-2 shots across the slow trek
+  cdPerLevel: 0.7,      // fire faster each level...
+  minCd: 0.9,           // ...down to this floor
+  baseDamage: 4,        // level 1: a scratch
+  damagePerLevel: 4,    // +4 damage per level
+  bulletRadius: 9,      // chunkier than a shooter round
+  bulletColor: 0xff7a1a,
+};
 
 /** Procedural "alive" animation per enemy — cheap transforms on the existing
  * still (no sprite sheets). Top-down robots read as alive from rigid-body

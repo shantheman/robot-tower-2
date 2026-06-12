@@ -257,6 +257,12 @@ export class BattleScene extends Phaser.Scene {
       this, this.shadowLayer, type.sprite, x + shadowOffX, y + shadowOffY, sprite.scale, air);
     const ew = effectiveWave(game.gs.wave);
     const hp = type.levelScaled ? type.hp * (1 + C.HEAVY_HP_RAMP * (ew - 1)) : type.hp;
+    // Boss covering fire scales with the game level (computed once at spawn).
+    const lvl = game.gs.level;
+    const fireCd = type === C.BOSS
+      ? Math.max(C.BOSS_FIRE.minCd, C.BOSS_FIRE.baseCd - C.BOSS_FIRE.cdPerLevel * (lvl - 1)) : 0;
+    const fireDamage = type === C.BOSS
+      ? C.BOSS_FIRE.baseDamage + C.BOSS_FIRE.damagePerLevel * (lvl - 1) : 0;
     // Squadron wings render below the leader; create them then lift sprite to top.
     const squadronPhases = type.squadron
       ? type.squadron.offsets.map(() => Math.random() * Math.PI * 2) : [];
@@ -282,7 +288,8 @@ export class BattleScene extends Phaser.Scene {
       : undefined;
     this.enemies.push({
       sprite, shadow, shadowOffX, shadowOffY, type, hp, maxHp: hp, alive: true, flash: 0,
-      fireTimer: type.ranged?.fireCd ?? 0,
+      fireTimer: type.ranged?.fireCd ?? fireCd,  // first boss shot after one cooldown
+      fireCd, fireDamage,
       speed: waveRobotSpeed(game.gs.wave) * type.speedMult,
       animPhase: Math.random() * Math.PI * 2, baseScale: sprite.scale, animOX: 0, animOY: 0,
       rotorAngle: 0,
@@ -705,6 +712,20 @@ export class BattleScene extends Phaser.Scene {
         }
         e.sprite.x += (dx / dist) * e.speed * enemyDt;
         e.sprite.y += (dy / dist) * e.speed * enemyDt;
+      }
+      // Boss covering fire: lobs a round at the tower as it advances (rate +
+      // damage scale with level, seeded at spawn). It still crashes normally.
+      if (e.type === C.BOSS && enemyDt > 0 && dist > 0) {
+        e.fireTimer -= enemyDt;
+        if (e.fireTimer <= 0) {
+          const dot = this.effects.track(this.add.circle(
+            e.sprite.x, e.sprite.y, C.BOSS_FIRE.bulletRadius, C.BOSS_FIRE.bulletColor));
+          this.enemyBullets.push({
+            dot, vx: (dx / dist) * C.ENEMY_BULLET_SPEED, vy: (dy / dist) * C.ENEMY_BULLET_SPEED,
+            damage: e.fireDamage, alive: true,
+          });
+          e.fireTimer = e.fireCd;
+        }
       }
       e.shadow.setPosition(e.sprite.x + e.shadowOffX, e.sprite.y + e.shadowOffY);
       e.shadow.setRotation(e.sprite.rotation);

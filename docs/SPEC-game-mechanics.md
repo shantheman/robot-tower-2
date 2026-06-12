@@ -81,6 +81,11 @@ Notes:
 - **Speed×** multiplies the wave's base speed (see Waves). Base = `ROBOT_SPEED` 70 px/s.
 - **Boss contact damage** is special: it's `max(90, 90% of the tower's max HP)`,
   so it nearly one-shots the tower **no matter how upgraded you are** (`Robot.update`).
+- **Boss covering fire** (v2 addition, not in the original): as it advances the boss
+  also lobs projectiles at the tower, scaling with the **game level** (`BOSS_FIRE`):
+  cooldown `max(0.9, 6.0 − 0.7×(level−1))` s and damage `4 + 4×(level−1)`. Level 1 is
+  a shot or two of chip damage over the slow trek; later levels are a faster, harder
+  barrage. It still crashes the tower normally (the fire is on top of the melee hit).
 - **Shooter** is ranged: it stops **260 px** from the tower (`SHOOTER_RANGE`) and
   fires a projectile every **1.6 s** (`SHOOTER_FIRE_CD`) for **8 dmg** each
   (`SHOOTER_PROJ_DAMAGE`). It **never reaches the tower** — it halts at 260 px

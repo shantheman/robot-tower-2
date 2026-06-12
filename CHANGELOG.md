@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.19 — 2026-06-12
+
+- **New Boss art** (a hulking mech) and **boss covering fire.** The boss now
+  lobs projectiles at the tower as it advances (on top of its melee crash),
+  scaling with the game level: at level 1 just a shot or two of chip damage
+  over its slow trek, ramping to a faster, harder barrage later. Cooldown
+  `max(0.9, 6.0 − 0.7·(level−1))` s, damage `4 + 4·(level−1)` (`BOSS_FIRE`).
+  The drone's interceptor can swat these like any enemy round.
+
 ## v0.8.18 — 2026-06-12
 
 - **Tank is 33% bigger** (radius 26 → 34.6) and re-tuned: sits lower and stops

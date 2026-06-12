@@ -12,7 +12,9 @@ export interface Enemy {
   hpBar?: Phaser.GameObjects.Graphics;
   type: C.EnemyType;
   hp: number; maxHp: number; speed: number;
-  fireTimer: number;     // ranged enemies
+  fireTimer: number;     // ranged enemies + boss covering fire
+  fireCd: number;        // boss: level-scaled cooldown between shots
+  fireDamage: number;    // boss: level-scaled per-shot tower damage
   flash: number;
   alive: boolean;
   // Procedural animation (config ENEMY_ANIM): random phase so units don't
