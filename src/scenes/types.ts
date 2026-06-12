@@ -23,6 +23,8 @@ export interface Enemy {
   baseScale: number;
   animOX: number;
   animOY: number;
+  rotors?: Phaser.GameObjects.Image[];
+  rotorAngle: number;
 }
 
 export interface EnemyBullet {

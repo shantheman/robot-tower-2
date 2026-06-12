@@ -10,7 +10,7 @@
 import Phaser from "phaser";
 import "./styles.css";
 import * as C from "./config";
-import { enemyAnimFrame } from "./scenes/enemyAnim";
+import { enemyAnimFrame, updateEnemyRotors } from "./scenes/enemyAnim";
 import { makeSilhouette, shadowOffset } from "./scenes/shadows";
 import { Effects } from "./scenes/effects";
 
@@ -59,6 +59,8 @@ class PlaygroundScene extends Phaser.Scene {
     fireTimer: number;
     explodeTimer: number;
     visible: boolean;
+    rotors?: Phaser.GameObjects.Image[];
+    rotorAngle: number;
   };
   private shots: { dot: Phaser.GameObjects.Arc; vx: number; vy: number }[] = [];
   private clock = 0;
@@ -70,6 +72,9 @@ class PlaygroundScene extends Phaser.Scene {
     this.load.image("turret_gun", "sprites/turret_gun.png");
     for (const k of ["enemy_0", "enemy_1", "enemy_2", "enemy_3", "enemy_4", "boss", "shooter"]) {
       this.load.image(k, `sprites/${k}.png`);
+    }
+    for (const t of [C.GRUNT, C.FAST, C.TOUGH, C.TANK, C.BOMBER, C.BOSS, C.SHOOTER]) {
+      if (t.rotors) this.load.image(t.rotors.texture, `sprites/${t.rotors.texture}.png`);
     }
   }
 
@@ -89,6 +94,7 @@ class PlaygroundScene extends Phaser.Scene {
   private rebuild(): void {
     this.enemy?.sprite.destroy();
     this.enemy?.shadow.destroy();
+    this.enemy?.rotors?.forEach(r => r.destroy());
     for (const s of this.shots) s.dot.destroy();
     this.shots = [];
     this.rangeRing.clear();
@@ -108,6 +114,11 @@ class PlaygroundScene extends Phaser.Scene {
       fireTimer: type.ranged?.fireCd ?? 0,
       explodeTimer: 0,
       visible: true,
+      rotorAngle: 0,
+      rotors: type.rotors
+        ? [0, 1, 2, 3].map(() =>
+            this.add.image(start.x, start.y, type.rotors!.texture).setScale(baseScale))
+        : undefined,
     };
 
     if (pg.state === "firing" && type.ranged) {
@@ -158,11 +169,13 @@ class PlaygroundScene extends Phaser.Scene {
           this.effects.burst(spr.x, spr.y, e.type === C.BOSS ? 22 : 10);
           e.visible = false;
           spr.setVisible(false); e.shadow.setVisible(false);
+          e.rotors?.forEach(r => r.setVisible(false));
           this.time.delayedCall(700, () => {
             if (!this.enemy) return;
             const s = this.startPos();
             this.enemy.sprite.setPosition(s.x, s.y).setVisible(true);
             this.enemy.shadow.setVisible(true);
+            this.enemy.rotors?.forEach(r => r.setVisible(true));
             this.enemy.visible = true;
           });
         }
@@ -178,6 +191,10 @@ class PlaygroundScene extends Phaser.Scene {
       const off = shadowOffset(e.type.radius, !!e.type.air);
       const z = pg.zoom;
       e.shadow.setPosition(spr.x - ox + off.x * z, spr.y - oy + off.y * z);
+      if (e.rotors && e.type.rotors) {
+        e.rotorAngle += dt * e.type.rotors.spinRads;
+        updateEnemyRotors(spr, e.rotors, e.type.rotors.armReach, e.rotorAngle);
+      }
     }
 
     // Advance shots; despawn at the tower.

@@ -9,6 +9,33 @@
 import Phaser from "phaser";
 import * as C from "../config";
 
+/** Place + rotate the 4 rotor blades for an enemy that has rotors config.
+ * Call AFTER enemyAnimFrame so sprite.x/y/scaleX are already at their
+ * animated values (rotors visually follow bob and breathe). */
+export function updateEnemyRotors(
+  sprite: Phaser.GameObjects.Image,
+  rotors: Phaser.GameObjects.Image[],
+  armReach: number,
+  angle: number,
+): void {
+  const rot = sprite.rotation;
+  // Arm tip offset in each local axis; use current scaleX so rotors follow breathe.
+  const armOff = sprite.scaleX * sprite.width * 0.5 * armReach;
+  const cos = Math.cos(rot), sin = Math.sin(rot);
+  // 4 arm tips in sprite-local space (SE, SW, NW, NE); rotated to world.
+  const lx = [+armOff, -armOff, -armOff, +armOff];
+  const ly = [+armOff, +armOff, -armOff, -armOff];
+  for (let i = 0; i < 4; i++) {
+    rotors[i].setPosition(
+      sprite.x + lx[i] * cos - ly[i] * sin,
+      sprite.y + lx[i] * sin + ly[i] * cos,
+    );
+    rotors[i].setScale(sprite.scaleX);
+    // Even indices CW, odd CCW (opposite diagonal pairs)
+    rotors[i].setRotation(i % 2 === 0 ? angle : -angle);
+  }
+}
+
 export interface EnemyAnimFrameOpts {
   sprite: Phaser.GameObjects.Image;
   shadow?: Phaser.GameObjects.Image;

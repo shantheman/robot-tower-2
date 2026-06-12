@@ -16,7 +16,7 @@ import {
 } from "../sim/waves";
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
-import { enemyAnimFrame } from "./enemyAnim";
+import { enemyAnimFrame, updateEnemyRotors } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
 
@@ -86,6 +86,9 @@ export class BattleScene extends Phaser.Scene {
     this.load.image("drone", "sprites/drone.png");
     for (const k of ["enemy_0", "enemy_1", "enemy_2", "enemy_3", "enemy_4", "boss", "shooter"]) {
       this.load.image(k, `sprites/${k}.png`);
+    }
+    for (const t of [C.GRUNT, C.FAST, C.TOUGH, C.TANK, C.BOMBER, C.BOSS, C.SHOOTER]) {
+      if (t.rotors) this.load.image(t.rotors.texture, `sprites/${t.rotors.texture}.png`);
     }
   }
 
@@ -209,7 +212,7 @@ export class BattleScene extends Phaser.Scene {
     for (const b of this.bullets) b.dot.destroy();
     this.bullets = [];
     if (everything) {
-      for (const e of this.enemies) { e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy(); }
+      for (const e of this.enemies) { e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy(); e.rotors?.forEach(r => r.destroy()); }
       this.enemies = [];
     }
   }
@@ -254,6 +257,11 @@ export class BattleScene extends Phaser.Scene {
       fireTimer: type.ranged?.fireCd ?? 0,
       speed: waveRobotSpeed(game.gs.wave) * type.speedMult,
       animPhase: Math.random() * Math.PI * 2, baseScale: sprite.scale, animOX: 0, animOY: 0,
+      rotorAngle: 0,
+      rotors: type.rotors
+        ? [0, 1, 2, 3].map(() =>
+            this.add.image(x, y, type.rotors!.texture).setScale(sprite.scale))
+        : undefined,
     });
   }
 
@@ -270,8 +278,11 @@ export class BattleScene extends Phaser.Scene {
    * collision on the LOGICAL position, layering feedback-safe transforms:
    * always-face-tower + wobble, breathe/charge scale, and a hover bob whose
    * offset is recorded in animOX/animOY so it's undone before the next move. */
-  private animateEnemy(e: Enemy): void {
-    if (game.gs.reduceMotion) return; // accessibility: static enemies, as before
+  private animateEnemy(e: Enemy, dt: number): void {
+    if (game.gs.reduceMotion) {
+      e.rotors?.forEach(r => r.setVisible(false));
+      return;
+    }
     const charge = e.type.ranged ? 1 - Math.max(0, e.fireTimer) / e.type.ranged.fireCd : 0;
     const { ox, oy } = enemyAnimFrame({
       sprite: e.sprite, shadow: e.shadow, anim: C.ENEMY_ANIM[e.type.key],
@@ -279,6 +290,10 @@ export class BattleScene extends Phaser.Scene {
       fireCharge: charge, towerX: this.towerPos.x, towerY: this.towerPos.y,
     });
     e.animOX = ox; e.animOY = oy;
+    if (e.rotors && e.type.rotors) {
+      e.rotorAngle += dt * e.type.rotors.spinRads;
+      updateEnemyRotors(e.sprite, e.rotors, e.type.rotors.armReach, e.rotorAngle);
+    }
   }
 
   // -- player fire -----------------------------------------------------------------
@@ -372,6 +387,7 @@ export class BattleScene extends Phaser.Scene {
     e.sprite.destroy();
     e.shadow.destroy();
     e.hpBar?.destroy();
+    e.rotors?.forEach(r => r.destroy());
   }
 
   // -- auto-shooter --------------------------------------------------------------
@@ -579,7 +595,7 @@ export class BattleScene extends Phaser.Scene {
         play(res.layersSpent > 0 ? "shield" : "hit");
         if (!gs.reduceMotion) this.cameras.main.shake(140, res.layersSpent && !res.hpLost ? 0.005 : 0.009);
         e.alive = false;
-        e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
+        e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy(); e.rotors?.forEach(r => r.destroy());
         if (res.died) { this.towerDestroyed(); return; }
       }
       if (e.alive && e.type.healthbar) {
@@ -589,7 +605,7 @@ export class BattleScene extends Phaser.Scene {
         e.hpBar.fillStyle(0x0a1424, 0.8).fillRect(e.sprite.x - w / 2, e.sprite.y - e.type.radius - 12, w, 5);
         e.hpBar.fillStyle(0x46e39a, 1).fillRect(e.sprite.x - w / 2, e.sprite.y - e.type.radius - 12, w * Math.max(0, e.hp / e.maxHp), 5);
       }
-      if (e.alive) this.animateEnemy(e);
+      if (e.alive) this.animateEnemy(e, enemyDt);
     }
     this.enemies = this.enemies.filter((e) => e.alive);
 
