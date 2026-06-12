@@ -35,6 +35,11 @@ export function enemyAnimFrame(o: EnemyAnimFrameOpts): { ox: number; oy: number 
   if (a?.breatheAmp) scaleMul += a.breatheAmp * Math.sin(t * (a.breatheHz ?? 2) + ph);
   if (a?.chargeTell) scaleMul += o.fireCharge * o.fireCharge * 0.18;
   o.sprite.setScale(o.baseScale * scaleMul);
+  // Static altitude: lift the sprite above its logical ground position.
+  // The shadow stays at the logical position and dims proportionally.
+  const alt = a?.altitude ?? 0;
+  if (alt) o.sprite.y -= alt;
+
   // Hover bob (air units): float up/down with a little sway; the grounded
   // shadow fades as the unit rises, to sell altitude.
   if (a?.bobAmp) {
@@ -44,8 +49,15 @@ export function enemyAnimFrame(o: EnemyAnimFrameOpts): { ox: number; oy: number 
     const oy = -up * a.bobAmp;
     o.sprite.x += ox;
     o.sprite.y += oy;
-    o.shadow?.setAlpha(C.SHADOW.airAlpha * (1 - ((up + 1) / 2) * 0.35));
-    return { ox, oy };
+    const altFade = Math.min(1, alt / 40);
+    const baseAlpha = C.SHADOW.airAlpha * (1 - altFade * 0.3);
+    o.shadow?.setAlpha(baseAlpha * (1 - ((up + 1) / 2) * 0.35));
+    // Return total offset (bob + altitude) so the caller can undo both next frame.
+    return { ox, oy: oy - alt };
   }
-  return { ox: 0, oy: 0 };
+  if (alt && o.shadow) {
+    const altFade = Math.min(1, alt / 40);
+    o.shadow.setAlpha(C.SHADOW.landAlpha * (1 - altFade * 0.4));
+  }
+  return { ox: 0, oy: -alt };
 }

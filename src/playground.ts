@@ -203,6 +203,7 @@ new Phaser.Game({
 // DOM controls.
 // ---------------------------------------------------------------------------
 const SLIDERS: { k: keyof C.EnemyAnim; label: string; min: number; max: number; step: number; pct?: boolean }[] = [
+  { k: "altitude", label: "Altitude (px)", min: 0, max: 30, step: 0.5 },
   { k: "bobAmp", label: "Hover bob (px)", min: 0, max: 16, step: 0.5 },
   { k: "bobHz", label: "Bob speed (Hz)", min: 0, max: 6, step: 0.1 },
   { k: "breatheAmp", label: "Breathe", min: 0, max: 0.15, step: 0.005, pct: true },
@@ -324,15 +325,14 @@ function render(): void {
 /** Serialize the live params as a pasteable ENEMY_ANIM literal (drops zeros
  * and orphan *Hz with no matching amplitude, to keep the table clean). */
 function buildConfig(): string {
-  const order = ["bobAmp", "bobHz", "breatheAmp", "breatheHz", "wobbleDeg", "wobbleHz"] as const;
   const lines = ENEMIES.map(({ key }) => {
     const p = params[key] ?? {};
     const parts: string[] = [];
+    if (p.altitude) parts.push(`altitude: ${round(p.altitude)}`);
     if (p.bobAmp) { parts.push(`bobAmp: ${round(p.bobAmp)}`); if (p.bobHz) parts.push(`bobHz: ${round(p.bobHz)}`); }
     if (p.breatheAmp) { parts.push(`breatheAmp: ${round(p.breatheAmp)}`); if (p.breatheHz) parts.push(`breatheHz: ${round(p.breatheHz)}`); }
     if (p.wobbleDeg) { parts.push(`wobbleDeg: ${round(p.wobbleDeg)}`); if (p.wobbleHz) parts.push(`wobbleHz: ${round(p.wobbleHz)}`); }
     if (p.chargeTell) parts.push(`chargeTell: true`);
-    void order;
     return `  ${key}: { ${parts.join(", ")} },`;
   });
   return `export const ENEMY_ANIM: Record<string, EnemyAnim> = {\n${lines.join("\n")}\n};`;

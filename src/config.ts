@@ -79,6 +79,7 @@ export interface EnemyAnim {
   wobbleDeg?: number;  // rotational sway amplitude (degrees)
   wobbleHz?: number;
   chargeTell?: boolean; // ranged: swell toward the shot (telegraph)
+  altitude?: number;   // static hover height in px above ground (0 = flat); dims shadow
 }
 export const ENEMY_ANIM: Record<string, EnemyAnim> = {
   grunt:   { breatheAmp: 0.05, breatheHz: 2.4 },
