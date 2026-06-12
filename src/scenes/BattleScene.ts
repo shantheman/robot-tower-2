@@ -381,10 +381,10 @@ export class BattleScene extends Phaser.Scene {
     b.vy = Math.sin(ang) * speed;
   }
 
-  private hitEnemy(e: Enemy, damage: number): void {
+  private hitEnemy(e: Enemy, damage: number, hitPlane?: Phaser.GameObjects.Image): void {
     e.hp -= damage;
     e.flash = game.gs.reduceMotion ? 0 : C.FLASH_TIME;
-    if (e.hp <= 0 && e.alive) this.kill(e);
+    if (e.hp <= 0 && e.alive) this.kill(e, hitPlane);
   }
 
   /** Explosive Rounds: splash around the struck enemy + a visible shockwave.
@@ -410,7 +410,7 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
-  private kill(e: Enemy): void {
+  private kill(e: Enemy, hitPlane?: Phaser.GameObjects.Image): void {
     e.alive = false;
     const boss = e.type === C.BOSS;
     const { gain, bonus } = game.gs.onKill(e.type.reward, boss);
@@ -419,14 +419,37 @@ export class BattleScene extends Phaser.Scene {
     if (bonus === "cash") this.effects.popup(e.sprite.x, e.sprite.y - 18, `BONUS +${C.DROP_CASH}`, "#ffc94a");
     if (bonus === "heal") this.effects.popup(e.sprite.x, e.sprite.y - 18, `REPAIRED +${C.DROP_HEAL}`, "#46e39a");
     if (bonus === "rapid") this.effects.popup(e.sprite.x, e.sprite.y - 18, "RAPID FIRE!", "#ff9341");
-    this.effects.burst(e.sprite.x, e.sprite.y, boss ? 22 : 8);
     if (!game.gs.reduceMotion) this.cameras.main.shake(boss ? 260 : 90, boss ? 0.012 : 0.004);
-    e.sprite.destroy();
-    e.shadow.destroy();
     e.hpBar?.destroy();
-    e.rotors?.forEach(r => r.destroy());
-    e.squadronWings?.forEach(r => r.destroy());
-    e.squadronShadows?.forEach(r => r.destroy());
+
+    const wings = e.squadronWings;
+    if (wings && wings.length > 0 && !game.gs.reduceMotion) {
+      // Cascade: hit plane explodes first, then chain to nearest neighbours.
+      const first = (hitPlane?.active ? hitPlane : undefined) ?? e.sprite;
+      const rest = [e.sprite, ...wings]
+        .filter(p => p !== first)
+        .sort((a, b) => Math.hypot(a.x - first.x, a.y - first.y) - Math.hypot(b.x - first.x, b.y - first.y));
+      const order = [first, ...rest];
+      const shadowMap = new Map<Phaser.GameObjects.Image, Phaser.GameObjects.Image>();
+      shadowMap.set(e.sprite, e.shadow);
+      e.squadronShadows?.forEach((s, i) => { if (wings[i]) shadowMap.set(wings[i], s); });
+      order.forEach((plane, idx) => {
+        this.time.delayedCall(idx * 80, () => {
+          if (!plane.active) return;
+          this.effects.burst(plane.x, plane.y, 8);
+          plane.destroy();
+          shadowMap.get(plane)?.destroy();
+          if (idx === order.length - 1) e.rotors?.forEach(r => r.destroy());
+        });
+      });
+    } else {
+      this.effects.burst(e.sprite.x, e.sprite.y, boss ? 22 : 8);
+      e.sprite.destroy();
+      e.shadow.destroy();
+      e.rotors?.forEach(r => r.destroy());
+      e.squadronWings?.forEach(r => r.destroy());
+      e.squadronShadows?.forEach(r => r.destroy());
+    }
   }
 
   // -- auto-shooter --------------------------------------------------------------
@@ -702,10 +725,20 @@ export class BattleScene extends Phaser.Scene {
       }
       for (const e of this.enemies) {
         if (b.hit.has(e)) continue;
-        const d = Math.hypot(e.sprite.x - b.dot.x, e.sprite.y - b.dot.y);
-        if (d <= e.type.radius + b.radius) {
-          const at = new Phaser.Math.Vector2(e.sprite.x, e.sprite.y);
-          this.hitEnemy(e, b.damage);
+        // Check leader + all wing planes so the full formation is a valid target.
+        let hitPlane: Phaser.GameObjects.Image | undefined;
+        if (Math.hypot(e.sprite.x - b.dot.x, e.sprite.y - b.dot.y) <= e.type.radius + b.radius) {
+          hitPlane = e.sprite;
+        } else if (e.squadronWings) {
+          for (const w of e.squadronWings) {
+            if (Math.hypot(w.x - b.dot.x, w.y - b.dot.y) <= e.type.radius + b.radius) {
+              hitPlane = w; break;
+            }
+          }
+        }
+        if (hitPlane) {
+          const at = new Phaser.Math.Vector2(hitPlane.x, hitPlane.y);
+          this.hitEnemy(e, b.damage, hitPlane);
           this.explode(at, e);
           b.hit.add(e);
           if (b.pierce > 0) { b.pierce -= 1; } else { b.alive = false; b.dot.destroy(); }

@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.7 — 2026-06-12
+
+- **Bomber squadron: full hitbox + cascade explosion.** All 6 planes
+  are now valid bullet targets (previously only the leader counted).
+  They share a single HP pool, so any hit damages the formation. On
+  kill, whichever plane took the killing shot explodes first; the other
+  five chain-react nearest-to-farthest in 80 ms steps — six rapid
+  fireballs rippling through the formation.
+
 ## v0.8.6 — 2026-06-12
 
 - **Shooter rotates like it has a brain.** The hexagonal shooter pod now
