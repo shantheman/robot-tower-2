@@ -67,6 +67,7 @@ class PlaygroundScene extends Phaser.Scene {
     snapSide: number;
     snapTimer: number;
     satellite?: Phaser.GameObjects.Image;
+    satShadow?: Phaser.GameObjects.Image;
     satAngle: number;
     satTarget: number;
     satTimer: number;
@@ -108,6 +109,7 @@ class PlaygroundScene extends Phaser.Scene {
     this.enemy?.squadronWings?.forEach(r => r.destroy());
     this.enemy?.squadronShadows?.forEach(r => r.destroy());
     this.enemy?.satellite?.destroy();
+    this.enemy?.satShadow?.destroy();
     for (const s of this.shots) s.dot.destroy();
     this.shots = [];
     this.rangeRing.clear();
@@ -147,6 +149,11 @@ class PlaygroundScene extends Phaser.Scene {
       squadronWings, squadronShadows, squadronPhases,
       snapSide: Math.floor(Math.random() * 6),
       snapTimer: Math.random() * 1.5,
+      satShadow: type.satellite
+        ? this.add.image(start.x, start.y, type.satellite.texture)
+            .setOrigin(type.satellite.pivot[0], type.satellite.pivot[1])
+            .setScale(baseScale).setTintFill(0x000000).setAlpha(type.satellite.shadowAlpha)
+        : undefined,
       satellite: type.satellite
         ? this.add.image(start.x, start.y, type.satellite.texture)
             .setOrigin(type.satellite.pivot[0], type.satellite.pivot[1])
@@ -221,6 +228,7 @@ class PlaygroundScene extends Phaser.Scene {
           e.squadronWings?.forEach(r => r.setVisible(false));
           e.squadronShadows?.forEach(r => r.setVisible(false));
           e.satellite?.setVisible(false);
+          e.satShadow?.setVisible(false);
           this.time.delayedCall(700, () => {
             if (!this.enemy) return;
             const s = this.startPos();
@@ -230,6 +238,7 @@ class PlaygroundScene extends Phaser.Scene {
             this.enemy.squadronWings?.forEach(r => r.setVisible(true));
             this.enemy.squadronShadows?.forEach(r => r.setVisible(true));
             this.enemy.satellite?.setVisible(true);
+            this.enemy.satShadow?.setVisible(true);
             this.enemy.visible = true;
           });
         }
@@ -287,7 +296,8 @@ class PlaygroundScene extends Phaser.Scene {
         }
       }
       if (e.satellite && e.type.satellite) {
-        placeSatellite(spr, e.satellite, e.type.satellite.pivot, e.satAngle);
+        placeSatellite(spr, e.satellite, e.type.satellite.pivot, e.satAngle,
+          e.satShadow, spr.displayWidth * e.type.satellite.shadowDrop);
       }
     }
 

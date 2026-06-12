@@ -51,11 +51,18 @@ export function placeSatellite(
   sat: Phaser.GameObjects.Image,
   pivot: [number, number],
   swivel: number,
+  shadow?: Phaser.GameObjects.Image,
+  drop = 0,
 ): void {
   const lx = (pivot[0] - 0.5) * base.displayWidth;
   const ly = (pivot[1] - 0.5) * base.displayHeight;
   const r = base.rotation, cos = Math.cos(r), sin = Math.sin(r);
-  sat.setPosition(base.x + lx * cos - ly * sin, base.y + lx * sin + ly * cos);
+  const x = base.x + lx * cos - ly * sin;
+  const y = base.y + lx * sin + ly * cos;
+  // Shadow first (it sits below the dish): same silhouette + swivel, dropped
+  // down-right by a fixed screen offset (light from top-left).
+  shadow?.setPosition(x + drop * 0.6, y + drop).setScale(base.scaleX).setRotation(r + swivel);
+  sat.setPosition(x, y);
   sat.setScale(base.scaleX);
   sat.setRotation(r + swivel);
 }

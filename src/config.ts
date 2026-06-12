@@ -67,10 +67,15 @@ export interface EnemyType {
    * pivot is the swivel axis as a fraction of the overlay texture (= the same
    * point on the base body, since the two share an aligned canvas). It's set
    * as the overlay's origin AND used to plant it on the rotated base. */
-  satellite?: { texture: string; pivot: [number, number]; swivelSpeed: number; pauseMin: number; pauseMax: number };
+  satellite?: { texture: string; pivot: [number, number]; swivelSpeed: number; pauseMin: number; pauseMax: number;
+    /** Drop shadow cast onto the body (like the tower gun's): the dish
+     * silhouette, black at shadowAlpha, dropped down-right by shadowDrop of the
+     * body's display width, drawn between the body and the dish. */
+    shadowAlpha: number; shadowDrop: number };
 }
 export const GRUNT: EnemyType = { key: "grunt", sprite: "enemy_0", radius: 14, hp: 20, speedMult: 1.0, reward: 5, contactDamage: 6, levelScaled: false, healthbar: false,
-  satellite: { texture: "enemy_0_satellite", pivot: [0.545, 0.475], swivelSpeed: 3.0, pauseMin: 0.6, pauseMax: 1.8 } };
+  satellite: { texture: "enemy_0_satellite", pivot: [0.545, 0.475], swivelSpeed: 3.0, pauseMin: 0.6, pauseMax: 1.8,
+    shadowAlpha: 0.35, shadowDrop: 0.08 } };
 export const FAST: EnemyType = { key: "fast", sprite: "enemy_1", radius: 10, hp: 10, speedMult: 1.8, reward: 6, contactDamage: 4, levelScaled: false, healthbar: false, air: true,
   rotors: { texture: "enemy_1_rotor", armReach: 0.70, spinRads: 18 } };
 export const TOUGH: EnemyType = { key: "tough", sprite: "enemy_3", radius: 15, hp: 70, speedMult: 0.9, reward: 14, contactDamage: 14, levelScaled: false, healthbar: false };

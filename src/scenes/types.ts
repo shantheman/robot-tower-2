@@ -33,6 +33,7 @@ export interface Enemy {
   // Swiveling overlay (e.g. grunt radar dish): rotates to satTarget, pauses
   // satTimer seconds on arrival, then picks a new random heading.
   satellite?: Phaser.GameObjects.Image;
+  satShadow?: Phaser.GameObjects.Image;  // dish silhouette cast onto the body
   satAngle: number;   // current swivel offset (rad), relative to the base facing
   satTarget: number;  // heading it's swivelling toward (rad)
   satTimer: number;   // seconds left to dwell once arrived

@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.13 — 2026-06-12
+
+- **Grunt dish casts a drop shadow.** Like the tower gun's, the radar dish now
+  throws a soft black silhouette onto the body — dropped down-right, swiveling
+  with the dish, drawn in the gap between dish and base — so it reads as
+  sitting above the hull. Tunable per enemy (`shadowAlpha`, `shadowDrop`).
+- **New Tough enemy art** (enemy_3, Shannon's drop).
+- **Cleaned a 1px export frame** off the new grunt + tough sprites (a faint
+  semi-transparent border ring the art shipped with); sub-pixel at game size,
+  but now they're clean cutouts.
+
 ## v0.8.12 — 2026-06-12
 
 - **Grunt is a radar tank now.** New two-part art (Shannon's drop): a tank

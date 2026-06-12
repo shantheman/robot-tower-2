@@ -216,7 +216,7 @@ export class BattleScene extends Phaser.Scene {
       for (const e of this.enemies) {
         e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
         e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
-        e.squadronShadows?.forEach(r => r.destroy()); e.satellite?.destroy();
+        e.squadronShadows?.forEach(r => r.destroy()); e.satellite?.destroy(); e.satShadow?.destroy();
       }
       this.enemies = [];
     }
@@ -268,7 +268,13 @@ export class BattleScene extends Phaser.Scene {
       makeSilhouette(this, this.shadowLayer, type.sprite, x + shadowOffX, y + shadowOffY, sprite.scale, air));
     if (squadronWings?.length) this.children.bringToTop(sprite);
     // Swiveling overlay (origin = pivot so it rotates about its mount), layered
-    // above the body. placeSatellite re-positions it every animation frame.
+    // above the body. Its drop shadow is created first so it sits between body
+    // and dish. placeSatellite re-positions both every animation frame.
+    const satShadow = type.satellite
+      ? this.add.image(x, y, type.satellite.texture)
+          .setOrigin(type.satellite.pivot[0], type.satellite.pivot[1])
+          .setScale(sprite.scale).setTintFill(0x000000).setAlpha(type.satellite.shadowAlpha)
+      : undefined;
     const satellite = type.satellite
       ? this.add.image(x, y, type.satellite.texture)
           .setOrigin(type.satellite.pivot[0], type.satellite.pivot[1])
@@ -286,7 +292,7 @@ export class BattleScene extends Phaser.Scene {
             this.add.image(x, y, type.rotors!.texture).setScale(sprite.scale))
         : undefined,
       squadronWings, squadronShadows, squadronPhases,
-      satellite,
+      satellite, satShadow,
       satAngle: Math.random() * Math.PI * 2, satTarget: Math.random() * Math.PI * 2, satTimer: 0,
     });
   }
@@ -309,7 +315,8 @@ export class BattleScene extends Phaser.Scene {
       e.rotors?.forEach(r => r.setVisible(false));
       // Keep the overlay planted on the (statically posed) body, just frozen.
       if (e.satellite && e.type.satellite) {
-        placeSatellite(e.sprite, e.satellite, e.type.satellite.pivot, e.satAngle);
+        placeSatellite(e.sprite, e.satellite, e.type.satellite.pivot, e.satAngle,
+          e.satShadow, e.sprite.displayWidth * e.type.satellite.shadowDrop);
       }
       return;
     }
@@ -361,7 +368,8 @@ export class BattleScene extends Phaser.Scene {
       }
     }
     if (e.satellite && e.type.satellite) {
-      placeSatellite(e.sprite, e.satellite, e.type.satellite.pivot, e.satAngle);
+      placeSatellite(e.sprite, e.satellite, e.type.satellite.pivot, e.satAngle,
+        e.satShadow, e.sprite.displayWidth * e.type.satellite.shadowDrop);
     }
   }
 
@@ -476,7 +484,7 @@ export class BattleScene extends Phaser.Scene {
           this.effects.burst(plane.x, plane.y, 8);
           plane.destroy();
           shadowMap.get(plane)?.destroy();
-          if (idx === order.length - 1) { e.rotors?.forEach(r => r.destroy()); e.satellite?.destroy(); }
+          if (idx === order.length - 1) { e.rotors?.forEach(r => r.destroy()); e.satellite?.destroy(); e.satShadow?.destroy(); }
         });
       });
     } else {
@@ -487,6 +495,7 @@ export class BattleScene extends Phaser.Scene {
       e.squadronWings?.forEach(r => r.destroy());
       e.squadronShadows?.forEach(r => r.destroy());
       e.satellite?.destroy();
+      e.satShadow?.destroy();
     }
   }
 
@@ -709,7 +718,7 @@ export class BattleScene extends Phaser.Scene {
         e.alive = false;
         e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
         e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
-        e.squadronShadows?.forEach(r => r.destroy()); e.satellite?.destroy();
+        e.squadronShadows?.forEach(r => r.destroy()); e.satellite?.destroy(); e.satShadow?.destroy();
         if (res.died) { this.towerDestroyed(); return; }
       }
       if (e.alive && e.type.healthbar) {
