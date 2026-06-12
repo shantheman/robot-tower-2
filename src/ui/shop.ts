@@ -6,6 +6,7 @@ import * as C from "../config";
 import { game, isTouch } from "../game";
 import { play } from "../audio";
 import { waveInLevel, wavesForLevel } from "../sim/waves";
+import { esc } from "./html";
 import { Category, ITEM_ART, catIcon } from "./icons";
 
 interface CardSpec {
@@ -163,8 +164,8 @@ export class ShopPanel {
     const art = ITEM_ART[it.key];
     return `<button class="store-card ${it.state}" data-key="${it.key}">
       ${art ? `<img class="card-art" src="${art}" alt="" draggable="false" /><span class="card-scrim"></span>` : ""}
-      <span class="card-name">${it.name}</span>
-      <span class="card-desc">${it.desc}</span>
+      <span class="card-name">${esc(it.name)}</span>
+      <span class="card-desc">${esc(it.desc)}</span>
       ${priceOrState}
     </button>`;
   }

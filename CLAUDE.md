@@ -34,6 +34,12 @@ Mobile via Capacitor and desktop packaging come after the gameplay port.
   never system fonts.
 - Pure game math lives in `src/sim/` (no Phaser/DOM imports) so it stays
   unit-testable; `tests/` mirrors the original repo's smoke-test assertions.
+- **innerHTML rule**: numbers and config-table strings may interpolate into
+  panel templates; any string that has EVER passed through storage, a URL,
+  or user input goes through `esc()` (src/ui/html.ts). Names/descriptions
+  are wrapped today as the visible habit.
+- The localStorage save key is `rts2_save` **forever** (predates the rename;
+  changing it wipes every player — see the note in src/sim/state.ts).
 - The turret rig pivots are load-bearing: gun pivot (50%, 79%), base socket
   (50%, 43%) — see HANDOFF.md "Turret rig".
 
@@ -52,5 +58,6 @@ launch readiness). Keep it current: check off what lands, add what's found.
 - CI runs test + build on every push.
 
 ## Versioning
-Same scheme as the original repo once releases start: bump version, add a
-CHANGELOG entry, tag. (Pre-1.0 of the port: not yet enforced.)
+package.json `version` is the single source (src/version.ts imports it; the
+Settings footer shows it). Per meaningful change: bump package.json, add a
+CHANGELOG entry, `git tag vX.Y.Z`, push with tags.

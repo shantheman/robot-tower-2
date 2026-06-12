@@ -4,6 +4,7 @@
 
 import { game } from "../game";
 import { ACHIEVEMENTS } from "../sim/state";
+import { esc } from "./html";
 
 export class AchievementsModal {
   private root: HTMLElement;
@@ -29,8 +30,8 @@ export class AchievementsModal {
       <div class="ach-row ${got(a.id) ? "got" : ""}">
         <span class="ach-mark">${got(a.id) ? "✓" : "🔒"}</span>
         <span class="ach-col">
-          <b class="ach-name">${a.name}</b>
-          <span class="ach-how">${a.how}</span>
+          <b class="ach-name">${esc(a.name)}</b>
+          <span class="ach-how">${esc(a.how)}</span>
         </span>
         <span class="ach-bounty ${got(a.id) ? "paid" : ""}">
           <span class="core-icon small"></span>${a.bounty}

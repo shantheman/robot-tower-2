@@ -7,6 +7,7 @@
 import { game, isTouch } from "../game";
 import { play } from "../audio";
 import { SKILL_NODES, SkillNode } from "../sim/state";
+import { esc } from "./html";
 import { Category, ITEM_ART, catIcon } from "./icons";
 
 const BRANCHES = ["CANNON", "DEFENSE", "DRONE", "ULTIMATES"] as const;
@@ -47,15 +48,15 @@ export class SkillsPanel {
     const footer = state === "owned"
       ? `<div class="sn-owned">✓ OWNED</div>`
       : state === "locked"
-        ? `<div class="sn-locked">🔒 <span>needs <b>${prereqName}</b></span></div>`
+        ? `<div class="sn-locked">🔒 <span>needs <b>${esc(prereqName ?? "")}</b></span></div>`
         : `<div class="sn-price ${state === "cant" ? "cant" : ""}"><span class="core-icon small"></span> ${n.cost}</div>`;
     const art = ITEM_ART[n.key];
     return `<button class="skill-node ${state}" data-key="${n.key}">
       <span class="sn-head">
         ${art ? `<span class="sn-tile"><img src="${art}" alt="" draggable="false" /></span>` : ""}
         <span class="sn-col">
-          <span class="sn-name">${n.name}</span>
-          <span class="sn-desc">${n.desc}</span>
+          <span class="sn-name">${esc(n.name)}</span>
+          <span class="sn-desc">${esc(n.desc)}</span>
         </span>
       </span>
       ${footer}

@@ -68,6 +68,9 @@ export interface DamageResult {
   died: boolean;
 }
 
+/** Frozen forever: this predates the Core Defender rename, but changing it
+ * silently wipes every player's progress (localStorage is keyed per-origin).
+ * If a rename is ever truly needed, dual-read (old key -> migrate -> new). */
 const SAVE_KEY = "rts2_save";
 
 export class GameState {

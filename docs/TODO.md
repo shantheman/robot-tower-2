@@ -76,14 +76,17 @@ on load). The items below are the gaps, most impactful first.
       alphas/scales (in 3 places), drone sprite scale (`* 2 * 1.76 * 0.8`),
       muzzle offsets (0.92/0.16), zap widths, popup timings. Hoist into
       config.ts next to their friends so a tuning pass is one-file.
-5. - [ ] **innerHTML discipline** *(security hardening)* — panels build UI
+5. - [x] **innerHTML discipline** — DONE (2026-06-12): esc() in
+      src/ui/html.ts, applied to all name/desc interpolations; rule in
+      CLAUDE.md. *(security hardening)* — panels build UI
       via template-string innerHTML. Today every interpolated value is a
       number or a static config string, so there's no XSS — but that's
       safety by convention, one careless save-field interpolation away
       from breaking (localStorage is attacker-writable via any XSS on the
       shared *.github.io origin). Add a tiny `esc()` helper + a comment
       rule: anything that ever touches storage gets escaped.
-6. - [ ] **CI/Actions hardening** *(security)* — pin actions by commit SHA
+6. - [x] **CI/Actions hardening** — DONE (2026-06-12): SHA-pinned
+      actions + least-privilege permissions in both workflows. *(security)* — pin actions by commit SHA
       instead of `@v4` tags (supply-chain), and add explicit
       `permissions: contents: read` to ci.yml (it currently inherits the
       default token scope; deploy.yml already declares least privilege).
@@ -99,7 +102,10 @@ on load). The items below are the gaps, most impactful first.
       main.ts, Space lives in Phaser, buttons in each panel, and flow
       flags (shopMode, returnTo, justClearedLevel) are scattered. Fine
       today; consolidate if key rebinding or a new screen ever lands.
-10. - [ ] **Housekeeping batch** *(small, do together)* — sync
+10. - [ ] **Housekeeping batch** — MOSTLY DONE (2026-06-12): version
+      single-sourced from package.json; dead CSS pruned (back-btn,
+      cores-lbl, foot-hint); save-key note in state.ts + CLAUDE.md.
+      REMAINING: the CSP meta tag. *(small)* — sync
       package.json version (stuck at 0.1.0 vs GAME_VERSION 0.7.1, single-
       source it); prune dead CSS (`.foot-hint` is orphaned post-footer-
       redesign — do a fuller sweep); consider a CSP `<meta>` tag (Pages

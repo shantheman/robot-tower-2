@@ -222,14 +222,6 @@ body { display: grid; place-items: center; }
 .panel-status { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: var(--dim); white-space: nowrap; }
 .panel-status.ok { color: var(--green); }
 
-.back-btn {
-  display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 11px;
-  cursor: pointer; font-family: "Chakra Petch", sans-serif; font-size: 15px; font-weight: 600;
-  color: #c4d3ee; background: rgba(14, 27, 48, 0.85); border: 1px solid var(--line-strong);
-  z-index: 1;
-}
-.back-btn:hover { border-color: var(--cyan); }
-
 /* Tower-level hero */
 .tower-hero {
   padding: 14px 18px; border-radius: 16px; display: flex; align-items: center;
@@ -367,7 +359,6 @@ body { display: grid; place-items: center; }
 .fb-val { display: flex; align-items: center; gap: 8px; }
 .fb-val b { font-size: 20px; font-weight: 800; color: var(--gold); }
 .fb-val b.cy { color: var(--cyan); }
-.foot-hint { font-size: 14px; color: var(--dim); letter-spacing: 0.06em; }
 
 /* -- Skill tree --------------------------------------------------------------- */
 .tree-legend {
@@ -663,7 +654,6 @@ body { display: grid; place-items: center; }
   .panel-title-group { flex-direction: column; align-items: center; gap: 2px; }
   .fb-val b { font-size: 17px; }
   .panel-foot { gap: 12px; }
-  .back-btn { font-size: 12px; padding: 7px 12px; }
 }
 
 /* -- v3: category icons + clustered store ---------------------------------- */
@@ -817,7 +807,6 @@ html.touch kbd { display: none; }
 .sc-count { display: none; }
 @media (max-width: 760px) {
   .lg-hint { display: none; }
-  .cores-lbl { display: none; } /* just the diamond + number upper-right */
   .tree-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
   .tree-tab {
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
