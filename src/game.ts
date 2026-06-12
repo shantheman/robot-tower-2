@@ -44,6 +44,9 @@ export class Game {
     fireUltimate: () => void;     // the HUD chip taps this on touch devices
     retryFromCheckpoint: () => boolean; // death -> resume at the snapshot wave
   } | null = null;
+  /** Optional global observer, fired after every screen swap (main.ts uses
+   * it to schedule lossless orientation reloads). */
+  onScreenChange: ((s: Screen) => void) | null = null;
 
   constructor() {
     this.gs = new GameState();
@@ -59,6 +62,7 @@ export class Game {
     this.hooks.get(prev)?.onHide?.();
     this.screen = next;
     this.hooks.get(next)?.onShow?.(prev);
+    this.onScreenChange?.(next);
   }
 }
 

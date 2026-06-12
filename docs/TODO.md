@@ -103,11 +103,14 @@ on load). The items below are the gaps, most impactful first.
       hidden-class + render pattern is copy-pasted across 5 panels, and
       the scroll-preservation logic now lives in 2 of them. A small
       `Panel` base would also give new screens the right behavior free.
-8. - [ ] **Orientation live-swap** — world size (960x720 vs 640x1280) is
+8. - [x] **Orientation live-swap** — DONE (2026-06-12): rotation
+      reloads to re-pick the world — instantly on Home (lossless: no run
+      in flight), otherwise deferred until the player next lands on Home.
+      Mid-battle stays letterboxed-but-playable until then. — world size (960x720 vs 640x1280) is
       picked at boot; rotating mid-session letterboxes until reload.
       Decide: live re-world (restart battle on rotate?) or a "rotate
       back" hint.
-9. - [ ] **Input routing consolidation** — keyboard shortcuts live in
+9. - [ ] **Input routing consolidation** *(deferred by design)* — keyboard shortcuts live in
       main.ts, Space lives in Phaser, buttons in each panel, and flow
       flags (shopMode, returnTo, justClearedLevel) are scattered. Fine
       today; consolidate if key rebinding or a new screen ever lands.

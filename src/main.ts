@@ -132,3 +132,21 @@ window.addEventListener("blur", () => {
     game.show("pause");
   }
 });
+
+// Orientation: the world size is picked at boot, so a rotation mid-session
+// letterboxes until reload. Reload to re-pick the world — immediately when
+// it's lossless (Home: no run in flight; permanent progress is saved),
+// otherwise the next time the player lands on Home.
+const bootPortrait = window.innerHeight > window.innerWidth;
+let orientationStale = false;
+function onViewportChange(): void {
+  const portraitNow = window.innerHeight > window.innerWidth;
+  if (portraitNow === bootPortrait) { orientationStale = false; return; }
+  if (game.screen === "home") location.reload();
+  else orientationStale = true;
+}
+window.addEventListener("resize", onViewportChange);
+window.addEventListener("orientationchange", onViewportChange);
+game.onScreenChange = (s) => {
+  if (s === "home" && orientationStale) location.reload();
+};

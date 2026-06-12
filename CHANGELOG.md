@@ -2,6 +2,19 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.2 — 2026-06-12
+
+The code-health pass (player-visible bits listed; the rest is internal):
+
+- **Rotating your phone now sorts itself out**: flip orientation and the
+  game re-fits at the next safe moment — instantly on the Home screen,
+  otherwise when you next return there (mid-battle stays playable
+  letterboxed until then).
+- Under the hood: BattleScene split into focused modules (drone, effects,
+  shadows), a Playwright end-to-end suite that plays the game in CI,
+  vitest 4 (audit clean), SHA-pinned CI actions, a production Content-
+  Security-Policy, HTML-escaping discipline, and assorted housekeeping.
+
 ## v0.7.1 — 2026-06-12
 
 Shadow realism pass (Shannon's review of v0.7.0) + 14 more battlefields:
