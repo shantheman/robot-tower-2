@@ -118,18 +118,20 @@ export class BattleScene extends Phaser.Scene {
     const base = this.add.image(this.towerPos.x, this.towerPos.y, "turret_base")
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y);
     base.setScale(C.TURRET_BASE_W / base.width);
-    const baseShadow = this.add.image(this.towerPos.x + 7, this.towerPos.y + 11, "turret_base")
+    const baseShadow = this.add.image(
+      this.towerPos.x + C.TOWER_SHADOW.base.x, this.towerPos.y + C.TOWER_SHADOW.base.y, "turret_base")
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y).setScale(base.scale)
-      .setTintFill(0x000000).setAlpha(0.42);
+      .setTintFill(0x000000).setAlpha(C.TOWER_SHADOW.base.alpha);
     this.shadowLayer.add(baseShadow);
-    this.gunShadow = this.add.image(this.towerPos.x + 13, this.towerPos.y + 21, "turret_gun")
+    this.gunShadow = this.add.image(
+      this.towerPos.x + C.TOWER_SHADOW.gun.x, this.towerPos.y + C.TOWER_SHADOW.gun.y, "turret_gun")
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y)
-      .setTintFill(0x000000).setAlpha(0.3);
+      .setTintFill(0x000000).setAlpha(C.TOWER_SHADOW.gun.alpha);
     this.shieldGfx = this.add.graphics();
     this.gun = this.add.image(this.towerPos.x, this.towerPos.y, "turret_gun")
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y);
     this.gun.setScale(C.TURRET_GUN_H / this.gun.height); // mock: gun height = 0.69 x base
-    this.gunShadow.setScale(this.gun.scale * 0.95);
+    this.gunShadow.setScale(this.gun.scale * C.TOWER_SHADOW.gun.scale);
 
     this.joyGfx = this.add.graphics();
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
@@ -271,12 +273,13 @@ export class BattleScene extends Phaser.Scene {
     // a small offset rim past their feet; air units a clearly detached one
     // (hover height) that's slightly smaller and fainter.
     const air = !!type.air;
-    const shadowOffX = air ? type.radius * 0.5 + 4 : type.radius * 0.34 + 2;
-    const shadowOffY = air ? type.radius * 1.4 + 10 : type.radius * 0.6 + 4;
+    const off = air ? C.SHADOW.airOff(type.radius) : C.SHADOW.landOff(type.radius);
+    const shadowOffX = off.x;
+    const shadowOffY = off.y;
     const shadow = this.add.image(x + shadowOffX, y + shadowOffY, type.sprite)
-      .setScale(sprite.scale * (air ? 0.92 : 1))
+      .setScale(sprite.scale * (air ? C.SHADOW.airScale : 1))
       .setTintFill(0x000000)
-      .setAlpha(air ? 0.32 : 0.42);
+      .setAlpha(air ? C.SHADOW.airAlpha : C.SHADOW.landAlpha);
     this.shadowLayer.add(shadow);
     const ew = effectiveWave(game.gs.wave);
     const hp = type.levelScaled ? type.hp * (1 + C.HEAVY_HP_RAMP * (ew - 1)) : type.hp;
@@ -307,11 +310,11 @@ export class BattleScene extends Phaser.Scene {
       angles.push(C.MULTI_SPREAD_DEG * k);
       if (angles.length < n) angles.push(-C.MULTI_SPREAD_DEG * k);
     }
-    const muzzleDist = this.gun.displayHeight * C.GUN_PIVOT.y * 0.92;
+    const muzzleDist = this.gun.displayHeight * C.GUN_PIVOT.y * C.MUZZLE_DIST_FACTOR;
     play("shoot");
     for (const deg of angles) {
       const d = aim.clone().rotate(Phaser.Math.DegToRad(deg));
-      const side = d.clone().rotate(Math.PI / 2).scale(this.muzzleAlt * this.gun.displayWidth * 0.16);
+      const side = d.clone().rotate(Math.PI / 2).scale(this.muzzleAlt * this.gun.displayWidth * C.MUZZLE_SIDE_FACTOR);
       this.muzzleAlt *= -1;
       const start = this.towerPos.clone().add(d.clone().scale(muzzleDist)).add(side);
       const dot = this.fx(this.add.circle(start.x, start.y, gs.playerBulletRadius(), 0xffe9a8));
@@ -414,10 +417,10 @@ export class BattleScene extends Phaser.Scene {
     if (gs.droneLevel <= 0) return;
     if (!this.drone) {
       this.drone = this.add.image(this.towerPos.x, this.towerPos.y - C.DRONE_ORBIT_RADIUS, "drone");
-      this.drone.setScale((C.DRONE_RADIUS * 2 * 1.76 * 0.8) / this.drone.width);
+      this.drone.setScale((C.DRONE_RADIUS * 2 * C.DRONE_SPRITE_SCALE) / this.drone.width);
       // The drone flies too — same detached silhouette shadow as flying enemies.
       this.droneShadow = this.add.image(this.drone.x, this.drone.y, "drone")
-        .setScale(this.drone.scale * 0.92).setTintFill(0x000000).setAlpha(0.32);
+        .setScale(this.drone.scale * C.SHADOW.airScale).setTintFill(0x000000).setAlpha(C.SHADOW.airAlpha);
       this.shadowLayer.add(this.droneShadow);
     }
     const range = C.DRONE_BASE_RANGE + C.DRONE_RANGE_PER_LEVEL * (gs.droneLevel - 1);
@@ -446,7 +449,8 @@ export class BattleScene extends Phaser.Scene {
       this.drone.setRotation(Math.atan2(d.y, d.x) + Math.PI / 2);
     }
     if (this.droneShadow) {
-      this.droneShadow.setPosition(this.drone.x + C.DRONE_RADIUS * 0.5 + 4, this.drone.y + C.DRONE_RADIUS * 1.4 + 10);
+      const off = C.SHADOW.airOff(C.DRONE_RADIUS);
+      this.droneShadow.setPosition(this.drone.x + off.x, this.drone.y + off.y);
       this.droneShadow.setRotation(this.drone.rotation);
     }
     // Fire at up to 1 (or 2 with Twin Targeting) enemies in range.

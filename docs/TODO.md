@@ -83,13 +83,15 @@ on load). The items below are the gaps, most impactful first.
       keep being re-learned (dt clamp! unkillable-enemy trick! world vs
       screen coords!). Codify as Playwright tests so CI plays a level
       end-to-end. This is also the safety net the BattleScene split needs.
-3. - [ ] **Upgrade vitest 2 -> 4** *(security)* — `npm audit`: 5 findings
+3. - [x] **Upgrade vitest 2 -> 4** *(security)* — DONE (2026-06-12):
+      vitest 4.1.8, npm audit clean. — `npm audit`: 5 findings
       (1 critical) via vitest 2.1.9's nested vite 5/esbuild 0.21 copies.
       Test-time only (the shipped game and the dev server use the clean
       top-level vite 6.4.3), so real exposure is minimal — but it's audit
       noise that will mask a real finding someday. Likely a 10-minute bump
       (our 27 tests use nothing exotic).
-4. - [ ] **Shadow/juice tunables -> config.ts** *(refactor)* — the values
+4. - [x] **Shadow/juice tunables -> config.ts** — DONE (2026-06-12):
+      SHADOW / TOWER_SHADOW / DRONE_SPRITE_SCALE / MUZZLE_* in config. — the values
       Shannon iterates on most are inline magic numbers: shadow offsets/
       alphas/scales (in 3 places), drone sprite scale (`* 2 * 1.76 * 0.8`),
       muzzle offsets (0.92/0.16), zap widths, popup timings. Hoist into

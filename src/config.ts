@@ -54,6 +54,29 @@ export const SHOOTER: EnemyType = { key: "shooter", sprite: "shooter", radius: 1
 export const ENEMY_BULLET_SPEED = 240;
 export const ENEMY_BULLET_RADIUS = 6;
 
+/** Silhouette shadows — every unit casts its own sprite, black-tinted, under
+ * a fixed top-left light (shadows fall down-right). Offsets derive from the
+ * owner's radius r. Tuned with Shannon 2026-06-12. */
+export const SHADOW = {
+  landOff: (r: number) => ({ x: r * 0.34 + 2, y: r * 0.6 + 4 }),  // rim past the feet
+  airOff: (r: number) => ({ x: r * 0.5 + 4, y: r * 1.4 + 10 }),   // detached: hover height
+  landAlpha: 0.42,
+  airAlpha: 0.32,
+  airScale: 0.92, // flyers' shadows slightly smaller (altitude)
+} as const;
+/** The tower's shadows (hand-tuned px): grounded base rim + the elevated
+ * gun's silhouette, which falls ONTO the base and swivels with the aim. */
+export const TOWER_SHADOW = {
+  base: { x: 7, y: 11, alpha: 0.42 },
+  gun: { x: 13, y: 21, alpha: 0.3, scale: 0.95 },
+} as const;
+/** Drone sprite display width = DRONE_RADIUS * 2 * this (art has padding). */
+export const DRONE_SPRITE_SCALE = 1.408;
+/** Muzzle flash/bullet origin, as fractions of the gun sprite: distance along
+ * the barrel from the pivot, and the alternating left/right barrel offset. */
+export const MUZZLE_DIST_FACTOR = 0.92;
+export const MUZZLE_SIDE_FACTOR = 0.16;
+
 /** Level backgrounds (visual only). Files live at
  * public/backgrounds/<name>_land.webp (960x720-ish worlds) and
  * <name>_port.webp (portrait worlds); the battlefield pad MUST sit at the
