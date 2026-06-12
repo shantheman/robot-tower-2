@@ -2,6 +2,11 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.17 — 2026-06-12
+
+- **New Tank enemy art** (enemy_2, Shannon's drop) — armored hull with a glowing
+  reactor core. Same 1px export frame stripped as the earlier drops.
+
 ## v0.8.16 — 2026-06-12
 
 - **Playground export now keeps `hexSnap`** (dev tool): structural fields that
