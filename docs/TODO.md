@@ -9,15 +9,6 @@ and git).
 
 ## Gameplay & content
 
-- [ ] **Wingman** — the second drone (capstone of the Drone branch, ~300
-      cores / ~400 coins). Picked in the drone brainstorm; needs the drone
-      code refactored from a single sprite to a list.
-- [ ] **Target Painter** — drone marks its target; marked enemies take +20%
-      damage from all sources. Parked from the same brainstorm; needs a
-      clear marked-enemy indicator to read well.
-- [ ] **Enemy legend** — the original had a K-key overlay explaining enemy
-      types. Never ported; mobile needs a tap-friendly equivalent (maybe a
-      panel inside the shop or an info button on the wave intro).
 - [ ] **Second Wind** — pay cores to revive in place, once per run. Parked
       from the death-penalty redesign; adds a cores sink once the tree is
       bought out. Revisit after checkpoint feel is validated.
@@ -36,23 +27,12 @@ and git).
 
 ## Art & assets
 
-- [x] **Auto-Shooter icon** — DONE (2026-06-11): Shannon's auto-target art,
-      shipped as `art/16_auto_shooter.webp`.
-- [x] **Interceptor + Field Medic icons** — DONE (2026-06-11): shipped as
-      `art/17_interceptor.webp` / `art/18_field_medic.webp`.
-- [x] **Currency art** — DONE (2026-06-11): crystal core + gold coins
-      (single inline, stack in corner displays) replace the CSS glyphs.
 - [ ] **Replace the locked icon** — locked skill nodes and achievements
       currently show the generic 🔒 emoji (OS-rendered, so it looks like
       stock clip-art and varies per platform). Doesn't fit the design;
       swap for a custom SVG glyph or painterly art in the game's style.
       Sites: skill-tree locked nodes + legend (`src/ui/skills.ts`),
       achievements modal (`src/ui/achievements.ts`).
-- [x] **More level backgrounds** — DONE (2026-06-12): 16 sets shipped, one
-      per level of a full 15-level run. To add more: drop in
-      public/backgrounds/ (pad at EXACT image center; a landscape-only set
-      is fine — rotate 90° for the portrait variant) and append to
-      LEVEL_BACKGROUNDS in src/config.ts.
 - [ ] **Final enemy sprites** — the HANDOFF marks the current five as
       temporary ("likely replaced later, possibly animated"). Boss, Shooter,
       and the in-battle drone still use the old pygame-era art, which clashes
@@ -132,9 +112,6 @@ on load). The items below are the gaps, most impactful first.
 
 ## Launch readiness
 
-- [x] **Deploy the web build** — DONE (2026-06-11): GitHub Pages, auto-deploys
-      from main on every push (tests must pass first). Live at
-      https://shantheman.github.io/core-defender/
 - [ ] **PWA pass** — manifest + icons + service worker: installable to the
       home screen, runs offline, fullscreen standalone on iOS. Cheap, and a
       real alternative to app stores for the friend-circle audience.
@@ -223,8 +200,8 @@ Families policy), ToS + Privacy Policy live at baumangames.com.
 
 - [ ] Is the original pygame repo now frozen? (v2 has diverged: level cap,
       checkpoints, cores bounties, new drone nodes, explosive buff.) If so,
-      mark its README as superseded and point here.
+      mark its README as superseded and point here. Shannon Note:  YES - it is frozen.  Do as you suggested.
 - [ ] Onboarding: is a tutorial needed, or is the friend-circle audience
       fine learning by dying? (v1 carried this question too.)
 - [ ] Accessibility beyond reduce-motion: colorblind-safe palette and text
-      scaling — worth it pre-launch or post?
+      scaling — worth it pre-launch or post? 
