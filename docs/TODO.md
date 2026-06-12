@@ -65,22 +65,68 @@ and git).
 
 ## Code health
 
-- [ ] **Split BattleScene** — it's ~650 lines and owns combat, drone, juice,
-      ultimates, and wave flow. Carve out drone.ts and effects.ts when it
-      next grows (e.g. Wingman is the natural trigger).
-- [ ] **Gate the debug handles** — `window.rt2` / `window.rt2scene` are
-      exposed unconditionally (the QA driver uses them). Wrap in
-      `if (import.meta.env.DEV)` before any public deploy.
-- [ ] **Scripted E2E harness** — the headless QA pattern (drive
-      `sys.step()`, assert sim state) gets rebuilt ad hoc in the preview
-      console every session. Codify as Playwright tests so CI plays a level
-      end-to-end.
-- [ ] **Orientation live-swap** — the world size (960×720 vs 640×1280) is
-      picked at boot; rotating mid-session letterboxes until reload. Decide:
-      live re-world (restart battle on rotate?) or a "rotate back" hint.
-- [ ] **Input routing consolidation** — keyboard shortcuts live in main.ts,
-      Space lives in Phaser, buttons in each panel. Fine today; consolidate
-      if key rebinding ever lands.
+Rank-ordered (full audit 2026-06-12: refactoring + security). Verdict in
+brief: the sim core is clean and tested, panels are consistent, security
+posture is strong for a static no-backend game (no eval, no external
+requests, fonts self-hosted, debug handles DEV-gated, saves type-coerced
+on load). The items below are the gaps, most impactful first.
+
+1. - [ ] **Split BattleScene** — now 785 lines (was ~650 when first
+      flagged) and still growing with every feature: it owns combat, drone
+      AI, shadows, juice, ultimates, and wave flow. Carve out `drone.ts`,
+      `effects.ts` (zap/burst/popup/flash), and a shadow helper (the
+      silhouette-shadow recipe is duplicated 3x: enemies, drone, tower).
+      Wingman would make it ~900 lines — split BEFORE building Wingman.
+2. - [ ] **Scripted E2E harness (Playwright)** — the headless QA pattern
+      (drive `sys.step()`, freeze enemies, assert sim/screen state) gets
+      rebuilt ad hoc in the preview console every session and the recipes
+      keep being re-learned (dt clamp! unkillable-enemy trick! world vs
+      screen coords!). Codify as Playwright tests so CI plays a level
+      end-to-end. This is also the safety net the BattleScene split needs.
+3. - [ ] **Upgrade vitest 2 -> 4** *(security)* — `npm audit`: 5 findings
+      (1 critical) via vitest 2.1.9's nested vite 5/esbuild 0.21 copies.
+      Test-time only (the shipped game and the dev server use the clean
+      top-level vite 6.4.3), so real exposure is minimal — but it's audit
+      noise that will mask a real finding someday. Likely a 10-minute bump
+      (our 27 tests use nothing exotic).
+4. - [ ] **Shadow/juice tunables -> config.ts** *(refactor)* — the values
+      Shannon iterates on most are inline magic numbers: shadow offsets/
+      alphas/scales (in 3 places), drone sprite scale (`* 2 * 1.76 * 0.8`),
+      muzzle offsets (0.92/0.16), zap widths, popup timings. Hoist into
+      config.ts next to their friends so a tuning pass is one-file.
+5. - [ ] **innerHTML discipline** *(security hardening)* — panels build UI
+      via template-string innerHTML. Today every interpolated value is a
+      number or a static config string, so there's no XSS — but that's
+      safety by convention, one careless save-field interpolation away
+      from breaking (localStorage is attacker-writable via any XSS on the
+      shared *.github.io origin). Add a tiny `esc()` helper + a comment
+      rule: anything that ever touches storage gets escaped.
+6. - [ ] **CI/Actions hardening** *(security)* — pin actions by commit SHA
+      instead of `@v4` tags (supply-chain), and add explicit
+      `permissions: contents: read` to ci.yml (it currently inherits the
+      default token scope; deploy.yml already declares least privilege).
+7. - [ ] **Panel base class** *(refactor)* — the root-div + register +
+      hidden-class + render pattern is copy-pasted across 5 panels, and
+      the scroll-preservation logic now lives in 2 of them. A small
+      `Panel` base would also give new screens the right behavior free.
+8. - [ ] **Orientation live-swap** — world size (960x720 vs 640x1280) is
+      picked at boot; rotating mid-session letterboxes until reload.
+      Decide: live re-world (restart battle on rotate?) or a "rotate
+      back" hint.
+9. - [ ] **Input routing consolidation** — keyboard shortcuts live in
+      main.ts, Space lives in Phaser, buttons in each panel, and flow
+      flags (shopMode, returnTo, justClearedLevel) are scattered. Fine
+      today; consolidate if key rebinding or a new screen ever lands.
+10. - [ ] **Housekeeping batch** *(small, do together)* — sync
+      package.json version (stuck at 0.1.0 vs GAME_VERSION 0.7.1, single-
+      source it); prune dead CSS (`.foot-hint` is orphaned post-footer-
+      redesign — do a fuller sweep); consider a CSP `<meta>` tag (Pages
+      can't send headers; a meta CSP still narrows XSS blast radius);
+      document that the save key stays `rts2_save` forever (renaming
+      wipes everyone — if ever needed, dual-read migration).
+- [x] **Gate the debug handles** — DONE (2026-06-11, with the Pages
+      deploy): `window.rt2` / `window.rt2scene` are `import.meta.env.DEV`
+      only.
 
 ## Launch readiness
 
