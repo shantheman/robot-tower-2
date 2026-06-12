@@ -5,7 +5,7 @@
 import "./crash"; // FIRST: the crash banner must catch module-init errors below
 import Phaser from "phaser";
 import { WORLD_AR_MAX, WORLD_AR_MIN, WORLD_H, WORLD_PORTRAIT_W } from "./config";
-import { game } from "./game";
+import { game, isTouch } from "./game";
 import { installKeyboardRouting } from "./input";
 import { BattleScene } from "./scenes/BattleScene";
 import { updateHud } from "./ui/hud";
@@ -43,18 +43,18 @@ pause.onSettings = () => settings.show();
 // axis is fixed (height in landscape, width in portrait) to keep the tower a
 // constant on-screen size; the other axis stretches to the screen, clamped so
 // extreme ratios don't make an absurd arena.
-{
+function computeWorld(): { w: number; h: number } {
   const winW = Math.max(1, window.innerWidth);
   const winH = Math.max(1, window.innerHeight);
   const clamp = (v: number) => Math.min(WORLD_AR_MAX, Math.max(WORLD_AR_MIN, v));
   if (winH > winW) {
     const ar = clamp(winH / winW); // portrait: tall arena
-    game.world = { w: WORLD_PORTRAIT_W, h: Math.round(WORLD_PORTRAIT_W * ar) };
-  } else {
-    const ar = clamp(winW / winH); // landscape: wide arena
-    game.world = { w: Math.round(WORLD_H * ar), h: WORLD_H };
+    return { w: WORLD_PORTRAIT_W, h: Math.round(WORLD_PORTRAIT_W * ar) };
   }
+  const ar = clamp(winW / winH); // landscape: wide arena
+  return { w: Math.round(WORLD_H * ar), h: WORLD_H };
 }
+game.world = computeWorld();
 
 const phaser = new Phaser.Game({
   type: Phaser.AUTO,
@@ -123,20 +123,33 @@ window.addEventListener("blur", () => {
   }
 });
 
-// Orientation: the world size is picked at boot, so a rotation mid-session
-// letterboxes until reload. Reload to re-pick the world — immediately when
-// it's lossless (Home: no run in flight; permanent progress is saved),
-// otherwise the next time the player lands on Home.
-const bootPortrait = window.innerHeight > window.innerWidth;
-let orientationStale = false;
-function onViewportChange(): void {
-  const portraitNow = window.innerHeight > window.innerWidth;
-  if (portraitNow === bootPortrait) { orientationStale = false; return; }
+// Re-fit when the window's shape changes enough that the boot-time world no
+// longer matches it (a rotation, OR a desktop window resize). We re-fit by
+// reloading to re-pick the world — but ONLY at Home, the one lossless moment
+// (run state lives in memory; reloading mid-run would drop the run). So a
+// mid-run resize is flagged and re-fits the next time the player lands on
+// Home, which every level does on completion.
+let refitPending = false;
+let refitTimer = 0;
+function checkViewport(): void {
+  const target = computeWorld();
+  const flipped = target.w > target.h !== game.world.w > game.world.h;
+  // Touch devices only react to a real rotation: mobile URL-bar show/hide
+  // changes innerHeight and must NOT trigger a reload. Desktop has no such
+  // jitter, so there we also re-fit a meaningful within-orientation resize.
+  const desktopResized = !isTouch() &&
+    (Math.abs(target.w - game.world.w) > 80 || Math.abs(target.h - game.world.h) > 80);
+  if (!flipped && !desktopResized) return;
   if (game.screen === "home") location.reload();
-  else orientationStale = true;
+  else refitPending = true;
+}
+function onViewportChange(): void {
+  // Debounce: a drag-resize fires many events; act once it settles.
+  clearTimeout(refitTimer);
+  refitTimer = window.setTimeout(checkViewport, 350);
 }
 window.addEventListener("resize", onViewportChange);
 window.addEventListener("orientationchange", onViewportChange);
 game.onScreenChange = (s) => {
-  if (s === "home" && orientationStale) location.reload();
+  if (s === "home" && refitPending) location.reload();
 };

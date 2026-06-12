@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.6 — 2026-06-12
+
+- **Resizing the window re-fits the arena.** The playfield was sized once at
+  load; now any shape change — a desktop window resize as well as a phone
+  rotation — re-fits the arena to fill the new screen. It applies at the
+  next Home screen (every level ends there), so an in-progress run is never
+  interrupted or lost. Phones still only react to real rotations, not the
+  address-bar showing/hiding.
+
 ## v0.7.5 — 2026-06-12
 
 - **Enemies enter from the true screen edges now.** The arena was a fixed
