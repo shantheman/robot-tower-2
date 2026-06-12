@@ -27,7 +27,8 @@ export interface HudState {
 interface Enemy {
   sprite: Phaser.GameObjects.Image;
   shadow: Phaser.GameObjects.Image;
-  shadowOff: number;     // y-gap below the sprite (land: at the feet, air: hover height)
+  shadowOffX: number;    // fixed light direction: shadows fall down-right
+  shadowOffY: number;    // land: a small rim past the feet; air: hover height
   hpBar?: Phaser.GameObjects.Graphics;
   type: C.EnemyType;
   hp: number; maxHp: number; speed: number;
@@ -57,6 +58,7 @@ export class BattleScene extends Phaser.Scene {
 
   private towerPos = new Phaser.Math.Vector2(game.world.w / 2, game.world.h / 2);
   private gun!: Phaser.GameObjects.Image;
+  private gunShadow!: Phaser.GameObjects.Image;
   private shieldGfx!: Phaser.GameObjects.Graphics;
   private fxLayer!: Phaser.GameObjects.Layer;
   private shadowLayer!: Phaser.GameObjects.Layer;
@@ -106,16 +108,27 @@ export class BattleScene extends Phaser.Scene {
 
   create() {
     this.drawBackdrop();
-    this.makeShadowTexture();
     this.shadowLayer = this.add.layer(); // every shadow sits under tower/enemies/fx
     this.fxLayer = this.add.layer();
+    // Tower shadows (same language as the units): the grounded base casts a
+    // tight "land" rim into shadowLayer; the elevated gun casts a detached
+    // "air" silhouette ONTO the base (created between base and gun so it
+    // draws above the base art), swiveling with the aim.
     const base = this.add.image(this.towerPos.x, this.towerPos.y, "turret_base")
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y);
     base.setScale(C.TURRET_BASE_W / base.width);
+    const baseShadow = this.add.image(this.towerPos.x + 7, this.towerPos.y + 11, "turret_base")
+      .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y).setScale(base.scale)
+      .setTintFill(0x000000).setAlpha(0.42);
+    this.shadowLayer.add(baseShadow);
+    this.gunShadow = this.add.image(this.towerPos.x + 13, this.towerPos.y + 21, "turret_gun")
+      .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y)
+      .setTintFill(0x000000).setAlpha(0.3);
     this.shieldGfx = this.add.graphics();
     this.gun = this.add.image(this.towerPos.x, this.towerPos.y, "turret_gun")
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y);
     this.gun.setScale(C.TURRET_GUN_H / this.gun.height); // mock: gun height = 0.69 x base
+    this.gunShadow.setScale(this.gun.scale * 0.95);
 
     this.joyGfx = this.add.graphics();
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
@@ -158,6 +171,7 @@ export class BattleScene extends Phaser.Scene {
   // -- run / wave flow ---------------------------------------------------------
   startBattle(): void {
     game.gs.resetRun();
+    game.justClearedLevel = null;  // the celebration was seen; back to normal Home copy
     this.applyLevelBackground();
     this.clearBoard(true);
     this.fxLayer.removeAll(true);
@@ -228,6 +242,7 @@ export class BattleScene extends Phaser.Scene {
     const { bossWave } = game.gs.onWaveCleared();
     if (bossWave) {
       this.setPaused(true);     // CRITICAL: stop simulating under the Home screen
+      game.justClearedLevel = game.gs.level - 1; // onWaveCleared advanced it
       game.show("home");        // level complete -> Home (cores banked)
     } else {
       game.shopMode = "cleared"; // between-waves shop (Start Next Wave to go on)
@@ -249,18 +264,22 @@ export class BattleScene extends Phaser.Scene {
     const [x, y] = this.edgePosition();
     const sprite = this.add.image(x, y, type.sprite);
     sprite.setScale((type.radius * C.ENEMY_SPRITE_SCALE) / sprite.width);
-    // Grounding shadow: land units cast tight at their feet; air units cast a
-    // smaller, fainter one well below — the gap reads as altitude.
+    // Grounding shadow: the unit's own silhouette (top-down view — a blob
+    // would read side-on), cast down-right by a fixed light. Land units get
+    // a small offset rim past their feet; air units a clearly detached one
+    // (hover height) that's slightly smaller and fainter.
     const air = !!type.air;
-    const shadowOff = air ? type.radius * 1.7 + 8 : type.radius * 0.55 + 2;
-    const sw = type.radius * (air ? 2.2 : 2.7);
-    const shadow = this.add.image(x, y + shadowOff, "softshadow")
-      .setDisplaySize(sw, sw * 0.42).setAlpha(air ? 0.45 : 0.62);
+    const shadowOffX = air ? type.radius * 0.5 + 4 : type.radius * 0.34 + 2;
+    const shadowOffY = air ? type.radius * 1.4 + 10 : type.radius * 0.6 + 4;
+    const shadow = this.add.image(x + shadowOffX, y + shadowOffY, type.sprite)
+      .setScale(sprite.scale * (air ? 0.92 : 1))
+      .setTintFill(0x000000)
+      .setAlpha(air ? 0.32 : 0.42);
     this.shadowLayer.add(shadow);
     const ew = effectiveWave(game.gs.wave);
     const hp = type.levelScaled ? type.hp * (1 + C.HEAVY_HP_RAMP * (ew - 1)) : type.hp;
     this.enemies.push({
-      sprite, shadow, shadowOff, type, hp, maxHp: hp, alive: true, flash: 0,
+      sprite, shadow, shadowOffX, shadowOffY, type, hp, maxHp: hp, alive: true, flash: 0,
       fireTimer: type.ranged?.fireCd ?? 0,
       speed: waveRobotSpeed(game.gs.wave) * type.speedMult,
     });
@@ -394,9 +413,9 @@ export class BattleScene extends Phaser.Scene {
     if (!this.drone) {
       this.drone = this.add.image(this.towerPos.x, this.towerPos.y - C.DRONE_ORBIT_RADIUS, "drone");
       this.drone.setScale((C.DRONE_RADIUS * 2 * 1.76 * 0.8) / this.drone.width);
-      // The drone flies too — same detached air shadow as flying enemies.
-      this.droneShadow = this.add.image(this.drone.x, this.drone.y + C.DRONE_RADIUS * 1.7 + 8, "softshadow")
-        .setDisplaySize(C.DRONE_RADIUS * 2.2, C.DRONE_RADIUS * 0.92).setAlpha(0.45);
+      // The drone flies too — same detached silhouette shadow as flying enemies.
+      this.droneShadow = this.add.image(this.drone.x, this.drone.y, "drone")
+        .setScale(this.drone.scale * 0.92).setTintFill(0x000000).setAlpha(0.32);
       this.shadowLayer.add(this.droneShadow);
     }
     const range = C.DRONE_BASE_RANGE + C.DRONE_RANGE_PER_LEVEL * (gs.droneLevel - 1);
@@ -425,8 +444,8 @@ export class BattleScene extends Phaser.Scene {
       this.drone.setRotation(Math.atan2(d.y, d.x) + Math.PI / 2);
     }
     if (this.droneShadow) {
-      this.droneShadow.x = this.drone.x;
-      this.droneShadow.y = this.drone.y + C.DRONE_RADIUS * 1.7 + 8;
+      this.droneShadow.setPosition(this.drone.x + C.DRONE_RADIUS * 0.5 + 4, this.drone.y + C.DRONE_RADIUS * 1.4 + 10);
+      this.droneShadow.setRotation(this.drone.rotation);
     }
     // Fire at up to 1 (or 2 with Twin Targeting) enemies in range.
     this.droneFireTimer -= enemyDt > 0 ? dt : 0; // drone is the player's: real dt
@@ -558,22 +577,6 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: r, alpha: 0, duration: 220, onComplete: () => r.destroy() });
   }
 
-  /** One soft radial-gradient blob, reused (tinted by size/alpha) for every
-   * shadow in the scene. */
-  private makeShadowTexture(): void {
-    if (this.textures.exists("softshadow")) return;
-    const size = 128;
-    const cnv = this.textures.createCanvas("softshadow", size, size)!;
-    const ctx = cnv.context;
-    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    g.addColorStop(0, "rgba(0,0,0,0.85)");
-    g.addColorStop(0.55, "rgba(0,0,0,0.45)");
-    g.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, size, size);
-    cnv.refresh();
-  }
-
   private drawBackdrop(): void {
     // (The page draws the gradient + grid full-bleed; only the tower-relative
     // range rings live in-world.)
@@ -637,6 +640,7 @@ export class BattleScene extends Phaser.Scene {
         this.aimAngle = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
       }
       this.gun.setRotation(this.aimAngle + Math.PI / 2);
+      this.gunShadow.setRotation(this.gun.rotation);
       this.fireTimer -= dt;
       if (this.mouseHeld && this.fireTimer <= 0) {
         this.fireSpread();
@@ -671,7 +675,8 @@ export class BattleScene extends Phaser.Scene {
         e.sprite.x += (dx / dist) * e.speed * enemyDt;
         e.sprite.y += (dy / dist) * e.speed * enemyDt;
       }
-      e.shadow.setPosition(e.sprite.x, e.sprite.y + e.shadowOff);
+      e.shadow.setPosition(e.sprite.x + e.shadowOffX, e.sprite.y + e.shadowOffY);
+      e.shadow.setRotation(e.sprite.rotation);
       const crashAt = gs.shield > 0 ? gs.shieldRadius() + e.type.radius : e.type.radius + C.TOWER_SIZE / 2;
       if (!ranged && dist <= crashAt) {
         let dmg = e.type.contactDamage;

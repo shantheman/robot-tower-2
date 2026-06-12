@@ -51,15 +51,17 @@ export class HomeScreen {
             <img class="hero-base" src="sprites/turret_base.png" alt="" />
             <img class="hero-gun" src="sprites/turret_gun.png" alt="" />
           </div>
-          <div class="home-badge">${returning ? "WELCOME BACK, DEFENDER" : "A 360° SURVIVAL DEFENSE"}</div>
+          <div class="home-badge">${game.justClearedLevel
+            ? `LEVEL ${game.justClearedLevel} COMPLETE — CORES BANKED`
+            : returning ? "WELCOME BACK, DEFENDER" : "A 360° SURVIVAL DEFENSE"}</div>
           <h1 class="home-title">CORE DEFENDER</h1>
         </div>
         <div class="home-menu">
           ${strip}
           <button class="menu-btn primary" data-act="play">
             <span class="mb-icon">▸&#xFE0E;</span>
-            <span class="mb-col"><span class="mb-title">${returning ? "CONTINUE" : "NEW GAME"}</span>
-            <span class="mb-sub">${returning ? `Jump back in · Level ${gs.level} · Wave 1` : "Begin at Level 1 · Wave 1"}</span></span>
+            <span class="mb-col"><span class="mb-title">${game.justClearedLevel ? "NEXT LEVEL" : returning ? "CONTINUE" : "NEW GAME"}</span>
+            <span class="mb-sub">${returning ? `${game.justClearedLevel ? "Onward" : "Jump back in"} · Level ${gs.level} · Wave 1` : "Begin at Level 1 · Wave 1"}</span></span>
           </button>
           <div class="menu-row">
             <button class="menu-btn green" data-act="skills"><span class="mb-icon">⏣</span>

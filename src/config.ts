@@ -60,8 +60,12 @@ export const ENEMY_BULLET_RADIUS = 6;
  * exact image center — the tower is at world center, the canvas is
  * FIT+centered, and the CSS bg is cover+centered, so centers align by
  * construction. Levels cycle through this list; to add art, drop both
- * variants in and append the name here. */
-export const LEVEL_BACKGROUNDS = ["bg1", "bg2"];
+ * variants in and append the name here. (A landscape-only set works too:
+ * the pipeline rotates it 90° for portrait — fine for radial compositions.) */
+export const LEVEL_BACKGROUNDS = [
+  "bg1", "bg2", "bg3", "bg4", "bg5", "bg6", "bg7", "bg8",
+  "bg9", "bg10", "bg11", "bg12", "bg13", "bg14", "bg15", "bg16",
+];
 
 // Waves / difficulty curve
 export const WAVES_BY_LEVEL: Record<number, number> = { 1: 7, 2: 10, 3: 15, 4: 20 };

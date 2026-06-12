@@ -48,11 +48,11 @@ and git).
       swap for a custom SVG glyph or painterly art in the game's style.
       Sites: skill-tree locked nodes + legend (`src/ui/skills.ts`),
       achievements modal (`src/ui/achievements.ts`).
-- [ ] **More level backgrounds** — two shipped (2026-06-12: metal deck +
-      cracked crater); Shannon generating more. Contract: both variants
-      (landscape ~16:9, portrait ~9:16) with the battlefield pad at the
-      EXACT image center, drop in public/backgrounds/, append the name to
-      LEVEL_BACKGROUNDS in src/config.ts. Levels cycle the list in order.
+- [x] **More level backgrounds** — DONE (2026-06-12): 16 sets shipped, one
+      per level of a full 15-level run. To add more: drop in
+      public/backgrounds/ (pad at EXACT image center; a landscape-only set
+      is fine — rotate 90° for the portrait variant) and append to
+      LEVEL_BACKGROUNDS in src/config.ts.
 - [ ] **Final enemy sprites** — the HANDOFF marks the current five as
       temporary ("likely replaced later, possibly animated"). Boss, Shooter,
       and the in-battle drone still use the old pygame-era art, which clashes

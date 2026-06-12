@@ -31,6 +31,9 @@ export class Game {
   world = { w: 960, h: 720 };
   /** Why the shop is open: between waves (cleared) or a mid-wave Tab pause. */
   shopMode: "cleared" | "paused" = "paused";
+  /** One-shot: set when a boss clear sends the player home, so the Home
+   * screen can celebrate the level instead of saying "welcome back". */
+  justClearedLevel: number | null = null;
   private hooks = new Map<Screen, ScreenHooks>();
   /** The battle scene registers these so DOM panels can drive it. */
   battle: {

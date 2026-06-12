@@ -2,6 +2,24 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.1 — 2026-06-12
+
+Shadow realism pass (Shannon's review of v0.7.0) + 14 more battlefields:
+
+- **Shadows are silhouettes now**: every unit casts its own shape, tinted
+  black — a top-down view demands it (the old soft ellipse read like the
+  unit was standing on its side). Shadows rotate with their owner.
+- **Light from the top-left**: all shadows fall down-right, consistently.
+  Land units show a visible rim past their feet; flyers stay detached.
+- **The tower casts shadows too**: a grounded rim under the base, and the
+  swiveling gun throws its silhouette onto the base as you aim.
+- **Backgrounds 3–16**: a full 15-level run never repeats a battlefield.
+  Sets 6+ are landscape-only; their portrait variant is a 90° rotation
+  (radial compositions make this safe).
+- **Home knows why you're there**: clearing a level now greets you with
+  "LEVEL N COMPLETE — CORES BANKED" and a NEXT LEVEL button instead of
+  "welcome back, defender".
+
 ## v0.7.0 — 2026-06-12
 
 The battlefield gets real ground under it:
