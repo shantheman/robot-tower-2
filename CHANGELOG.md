@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.4 — 2026-06-12
+
+- **Bomber is now a squadron.** enemy_4 replaced with a sleek top-down
+  fighter jet (bomber-v2.png); six copies fly in a tight V-formation toward
+  the tower. Each wing plane drifts independently (per-plane sine phase) while
+  the group bobs and wobbles as one unit — giving a living, undulating swarm
+  feel without any extra assets.
+
 ## v0.7.8 — 2026-06-12
 
 - **Animation Playground** (dev tool, Settings → Animation playground): a

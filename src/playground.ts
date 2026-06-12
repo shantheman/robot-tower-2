@@ -10,7 +10,7 @@
 import Phaser from "phaser";
 import "./styles.css";
 import * as C from "./config";
-import { enemyAnimFrame, updateEnemyRotors } from "./scenes/enemyAnim";
+import { enemyAnimFrame, updateEnemyRotors, updateSquadron } from "./scenes/enemyAnim";
 import { makeSilhouette, shadowOffset } from "./scenes/shadows";
 import { Effects } from "./scenes/effects";
 
@@ -61,6 +61,8 @@ class PlaygroundScene extends Phaser.Scene {
     visible: boolean;
     rotors?: Phaser.GameObjects.Image[];
     rotorAngle: number;
+    squadronWings?: Phaser.GameObjects.Image[];
+    squadronPhases: number[];
   };
   private shots: { dot: Phaser.GameObjects.Arc; vx: number; vy: number }[] = [];
   private clock = 0;
@@ -95,6 +97,7 @@ class PlaygroundScene extends Phaser.Scene {
     this.enemy?.sprite.destroy();
     this.enemy?.shadow.destroy();
     this.enemy?.rotors?.forEach(r => r.destroy());
+    this.enemy?.squadronWings?.forEach(r => r.destroy());
     for (const s of this.shots) s.dot.destroy();
     this.shots = [];
     this.rangeRing.clear();
@@ -107,6 +110,14 @@ class PlaygroundScene extends Phaser.Scene {
     const baseScale = gameScale * pg.zoom;
     sprite.setScale(baseScale);
     const shadow = makeSilhouette(this, this.shadowLayer, type.sprite, start.x, start.y, baseScale, air);
+    // Squadron wings render below the leader; create them then lift sprite to top.
+    const squadronPhases = type.squadron
+      ? type.squadron.offsets.map(() => Math.random() * Math.PI * 2) : [];
+    const squadronWings = type.squadron
+      ? type.squadron.offsets.map(() =>
+          this.add.image(start.x, start.y, type.sprite).setScale(baseScale))
+      : undefined;
+    if (squadronWings?.length) this.children.bringToTop(sprite);
     this.enemy = {
       sprite, shadow, type, baseScale,
       phase: Math.random() * Math.PI * 2,
@@ -119,6 +130,7 @@ class PlaygroundScene extends Phaser.Scene {
         ? [0, 1, 2, 3].map(() =>
             this.add.image(start.x, start.y, type.rotors!.texture).setScale(baseScale))
         : undefined,
+      squadronWings, squadronPhases,
     };
 
     if (pg.state === "firing" && type.ranged) {
@@ -170,12 +182,14 @@ class PlaygroundScene extends Phaser.Scene {
           e.visible = false;
           spr.setVisible(false); e.shadow.setVisible(false);
           e.rotors?.forEach(r => r.setVisible(false));
+          e.squadronWings?.forEach(r => r.setVisible(false));
           this.time.delayedCall(700, () => {
             if (!this.enemy) return;
             const s = this.startPos();
             this.enemy.sprite.setPosition(s.x, s.y).setVisible(true);
             this.enemy.shadow.setVisible(true);
             this.enemy.rotors?.forEach(r => r.setVisible(true));
+            this.enemy.squadronWings?.forEach(r => r.setVisible(true));
             this.enemy.visible = true;
           });
         }
@@ -194,6 +208,10 @@ class PlaygroundScene extends Phaser.Scene {
       if (e.rotors && e.type.rotors) {
         e.rotorAngle += dt * e.type.rotors.spinRads;
         updateEnemyRotors(spr, e.rotors, e.type.rotors.armReach, e.rotorAngle);
+      }
+      if (e.squadronWings && e.type.squadron) {
+        const sq = e.type.squadron;
+        updateSquadron(spr, e.squadronWings, sq.offsets, sq.driftAmp, sq.driftHz, this.clock, e.squadronPhases);
       }
     }
 

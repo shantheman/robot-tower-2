@@ -12,6 +12,35 @@ import * as C from "../config";
 /** Place + rotate the 4 rotor blades for an enemy that has rotors config.
  * Call AFTER enemyAnimFrame so sprite.x/y/scaleX are already at their
  * animated values (rotors visually follow bob and breathe). */
+/** Place all wing planes for a squadron enemy each frame. Wings drift
+ * independently in local space (sinusoidal per-plane phase offsets) while
+ * following the leader's position (which already has the group bob). */
+export function updateSquadron(
+  sprite: Phaser.GameObjects.Image,
+  wings: Phaser.GameObjects.Image[],
+  offsets: [number, number][],
+  driftAmp: number,
+  driftHz: number,
+  clock: number,
+  phases: number[],
+): void {
+  const rot = sprite.rotation;
+  const cos = Math.cos(rot), sin = Math.sin(rot);
+  for (let i = 0; i < wings.length; i++) {
+    const [lx, ly] = offsets[i];
+    const ph = phases[i];
+    const dx = driftAmp * Math.sin(clock * driftHz + ph);
+    const dy = driftAmp * 0.5 * Math.cos(clock * driftHz * 0.7 + ph + 1.3);
+    const wx = lx + dx, wy = ly + dy;
+    wings[i].setPosition(
+      sprite.x + wx * cos - wy * sin,
+      sprite.y + wx * sin + wy * cos,
+    );
+    wings[i].setScale(sprite.scale);
+    wings[i].setRotation(rot);
+  }
+}
+
 export function updateEnemyRotors(
   sprite: Phaser.GameObjects.Image,
   rotors: Phaser.GameObjects.Image[],

@@ -16,7 +16,7 @@ import {
 } from "../sim/waves";
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
-import { enemyAnimFrame, updateEnemyRotors } from "./enemyAnim";
+import { enemyAnimFrame, updateEnemyRotors, updateSquadron } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
 
@@ -212,7 +212,10 @@ export class BattleScene extends Phaser.Scene {
     for (const b of this.bullets) b.dot.destroy();
     this.bullets = [];
     if (everything) {
-      for (const e of this.enemies) { e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy(); e.rotors?.forEach(r => r.destroy()); }
+      for (const e of this.enemies) {
+        e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
+        e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
+      }
       this.enemies = [];
     }
   }
@@ -252,6 +255,14 @@ export class BattleScene extends Phaser.Scene {
       this, this.shadowLayer, type.sprite, x + shadowOffX, y + shadowOffY, sprite.scale, air);
     const ew = effectiveWave(game.gs.wave);
     const hp = type.levelScaled ? type.hp * (1 + C.HEAVY_HP_RAMP * (ew - 1)) : type.hp;
+    // Squadron wings render below the leader; create them then lift sprite to top.
+    const squadronPhases = type.squadron
+      ? type.squadron.offsets.map(() => Math.random() * Math.PI * 2) : [];
+    const squadronWings = type.squadron
+      ? type.squadron.offsets.map(() =>
+          this.add.image(x, y, type.sprite).setScale(sprite.scale))
+      : undefined;
+    if (squadronWings?.length) this.children.bringToTop(sprite);
     this.enemies.push({
       sprite, shadow, shadowOffX, shadowOffY, type, hp, maxHp: hp, alive: true, flash: 0,
       fireTimer: type.ranged?.fireCd ?? 0,
@@ -262,6 +273,7 @@ export class BattleScene extends Phaser.Scene {
         ? [0, 1, 2, 3].map(() =>
             this.add.image(x, y, type.rotors!.texture).setScale(sprite.scale))
         : undefined,
+      squadronWings, squadronPhases,
     });
   }
 
@@ -293,6 +305,10 @@ export class BattleScene extends Phaser.Scene {
     if (e.rotors && e.type.rotors) {
       e.rotorAngle += dt * e.type.rotors.spinRads;
       updateEnemyRotors(e.sprite, e.rotors, e.type.rotors.armReach, e.rotorAngle);
+    }
+    if (e.squadronWings && e.type.squadron) {
+      const sq = e.type.squadron;
+      updateSquadron(e.sprite, e.squadronWings, sq.offsets, sq.driftAmp, sq.driftHz, this.animClock, e.squadronPhases);
     }
   }
 
@@ -388,6 +404,7 @@ export class BattleScene extends Phaser.Scene {
     e.shadow.destroy();
     e.hpBar?.destroy();
     e.rotors?.forEach(r => r.destroy());
+    e.squadronWings?.forEach(r => r.destroy());
   }
 
   // -- auto-shooter --------------------------------------------------------------
@@ -564,8 +581,14 @@ export class BattleScene extends Phaser.Scene {
       // position (the bob is re-applied at the end, post-collision).
       e.sprite.x -= e.animOX; e.sprite.y -= e.animOY;
       e.animOX = 0; e.animOY = 0;
-      if (e.flash > 0) { e.flash -= dt; e.sprite.setTintFill(0xffffff); }
-      else e.sprite.clearTint();
+      if (e.flash > 0) {
+        e.flash -= dt;
+        e.sprite.setTintFill(0xffffff);
+        e.squadronWings?.forEach(w => w.setTintFill(0xffffff));
+      } else {
+        e.sprite.clearTint();
+        e.squadronWings?.forEach(w => w.clearTint());
+      }
       const dx = this.towerPos.x - e.sprite.x;
       const dy = this.towerPos.y - e.sprite.y;
       const dist = Math.hypot(dx, dy);
@@ -595,7 +618,8 @@ export class BattleScene extends Phaser.Scene {
         play(res.layersSpent > 0 ? "shield" : "hit");
         if (!gs.reduceMotion) this.cameras.main.shake(140, res.layersSpent && !res.hpLost ? 0.005 : 0.009);
         e.alive = false;
-        e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy(); e.rotors?.forEach(r => r.destroy());
+        e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
+        e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
         if (res.died) { this.towerDestroyed(); return; }
       }
       if (e.alive && e.type.healthbar) {
