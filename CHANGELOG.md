@@ -2,6 +2,11 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.21 — 2026-06-12
+
+- **Size tweaks:** Tank 20% smaller (radius 34.6 → 27.68), Boss 20% bigger
+  (radius 40 → 48). Radius is also the hitbox, so it scales with each.
+
 ## v0.8.20 — 2026-06-12
 
 - **Boss faces the right way + fires from its turret.** The boss art was
