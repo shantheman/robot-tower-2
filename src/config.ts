@@ -68,8 +68,8 @@ export const FAST: EnemyType = { key: "fast", sprite: "enemy_1", radius: 10, hp:
   rotors: { texture: "enemy_1_rotor", armReach: 0.70, spinRads: 18 } };
 export const TOUGH: EnemyType = { key: "tough", sprite: "enemy_3", radius: 15, hp: 70, speedMult: 0.9, reward: 14, contactDamage: 14, levelScaled: false, healthbar: false };
 export const TANK: EnemyType = { key: "tank", sprite: "enemy_2", radius: 26, hp: 160, speedMult: 0.5, reward: 30, contactDamage: 34, levelScaled: true, healthbar: true };
-export const BOMBER: EnemyType = { key: "bomber", sprite: "enemy_4", radius: 16, hp: 40, speedMult: 1.4, reward: 12, contactDamage: 26, levelScaled: true, healthbar: false, air: true,
-  squadron: { offsets: [[-30, 20], [30, 20], [-60, 42], [60, 42], [0, 62]], driftAmp: 4, driftHz: 0.5 } };
+export const BOMBER: EnemyType = { key: "bomber", sprite: "enemy_4", radius: 10, hp: 40, speedMult: 1.4, reward: 12, contactDamage: 26, levelScaled: true, healthbar: false, air: true,
+  squadron: { offsets: [[-22, 14], [22, 14], [-42, 28], [42, 28], [0, 42]], driftAmp: 2.5, driftHz: 0.5 } };
 export const BOSS: EnemyType = { key: "boss", sprite: "boss", radius: 40, hp: 400, speedMult: 0.35, reward: 150, contactDamage: 90, levelScaled: true, healthbar: true };
 export const SHOOTER: EnemyType = { key: "shooter", sprite: "shooter", radius: 13, hp: 30, speedMult: 0.8, reward: 16, contactDamage: 8, levelScaled: true, healthbar: false, air: true, ranged: { fireRange: 260, fireCd: 1.6, projDamage: 8 } };
 export const ENEMY_BULLET_SPEED = 240;

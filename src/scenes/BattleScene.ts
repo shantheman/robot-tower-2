@@ -215,6 +215,7 @@ export class BattleScene extends Phaser.Scene {
       for (const e of this.enemies) {
         e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
         e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
+        e.squadronShadows?.forEach(r => r.destroy());
       }
       this.enemies = [];
     }
@@ -262,6 +263,8 @@ export class BattleScene extends Phaser.Scene {
       ? type.squadron.offsets.map(() =>
           this.add.image(x, y, type.sprite).setScale(sprite.scale))
       : undefined;
+    const squadronShadows = squadronWings?.map(() =>
+      makeSilhouette(this, this.shadowLayer, type.sprite, x + shadowOffX, y + shadowOffY, sprite.scale, air));
     if (squadronWings?.length) this.children.bringToTop(sprite);
     this.enemies.push({
       sprite, shadow, shadowOffX, shadowOffY, type, hp, maxHp: hp, alive: true, flash: 0,
@@ -273,7 +276,7 @@ export class BattleScene extends Phaser.Scene {
         ? [0, 1, 2, 3].map(() =>
             this.add.image(x, y, type.rotors!.texture).setScale(sprite.scale))
         : undefined,
-      squadronWings, squadronPhases,
+      squadronWings, squadronShadows, squadronPhases,
     });
   }
 
@@ -405,6 +408,7 @@ export class BattleScene extends Phaser.Scene {
     e.hpBar?.destroy();
     e.rotors?.forEach(r => r.destroy());
     e.squadronWings?.forEach(r => r.destroy());
+    e.squadronShadows?.forEach(r => r.destroy());
   }
 
   // -- auto-shooter --------------------------------------------------------------
@@ -620,6 +624,7 @@ export class BattleScene extends Phaser.Scene {
         e.alive = false;
         e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
         e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
+        e.squadronShadows?.forEach(r => r.destroy());
         if (res.died) { this.towerDestroyed(); return; }
       }
       if (e.alive && e.type.healthbar) {
@@ -629,7 +634,18 @@ export class BattleScene extends Phaser.Scene {
         e.hpBar.fillStyle(0x0a1424, 0.8).fillRect(e.sprite.x - w / 2, e.sprite.y - e.type.radius - 12, w, 5);
         e.hpBar.fillStyle(0x46e39a, 1).fillRect(e.sprite.x - w / 2, e.sprite.y - e.type.radius - 12, w * Math.max(0, e.hp / e.maxHp), 5);
       }
-      if (e.alive) this.animateEnemy(e, enemyDt);
+      if (e.alive) {
+        this.animateEnemy(e, enemyDt);
+        if (e.squadronWings && e.squadronShadows) {
+          const a = e.shadow.alpha * 0.85;
+          for (let i = 0; i < e.squadronWings.length; i++) {
+            e.squadronShadows[i].setPosition(
+              e.squadronWings[i].x + e.shadowOffX,
+              e.squadronWings[i].y + e.shadowOffY,
+            ).setRotation(e.squadronWings[i].rotation).setAlpha(a);
+          }
+        }
+      }
     }
     this.enemies = this.enemies.filter((e) => e.alive);
 

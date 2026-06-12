@@ -2,6 +2,18 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.5 — 2026-06-12
+
+- **Particle explosions.** `burst()` now uses Phaser's particle emitter system
+  with three soft radial-gradient textures generated at runtime (no new assets):
+  fire (additive blend — glows orange against dark backgrounds), smoke (expands
+  as it drifts upward), and sparks (fast outward, additive). The flash and
+  shockwave ring are kept as crisp geometry. Looks like a real game explosion.
+
+- **Bomber fixes.** Planes scaled down (radius 10 → was 16), formation offsets
+  tightened. Each wing plane now casts its own shadow, forming a mini V-shadow
+  below the main formation.
+
 ## v0.8.4 — 2026-06-12
 
 - **Bomber is now a squadron.** enemy_4 replaced with a sleek top-down

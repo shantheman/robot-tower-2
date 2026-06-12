@@ -26,6 +26,7 @@ export interface Enemy {
   rotors?: Phaser.GameObjects.Image[];
   rotorAngle: number;
   squadronWings?: Phaser.GameObjects.Image[];
+  squadronShadows?: Phaser.GameObjects.Image[];
   squadronPhases: number[];
 }
 
