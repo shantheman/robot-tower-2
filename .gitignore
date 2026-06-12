@@ -9,3 +9,5 @@ Thumbs.db
 
 # Local captures
 renders/
+test-results/
+playwright-report/

@@ -51,7 +51,11 @@ posture is strong for a static no-backend game (no eval, no external
 requests, fonts self-hosted, debug handles DEV-gated, saves type-coerced
 on load). The items below are the gaps, most impactful first.
 
-1. - [ ] **Split BattleScene** — now 785 lines (was ~650 when first
+1. - [x] **Split BattleScene** — DONE (2026-06-12): drone.ts
+      (DroneController: move/fire/intercept/medic), effects.ts (zap/burst/
+      popup/flash + the fx layer), shadows.ts (silhouette helper), types.ts.
+      BattleScene 785 -> 633 lines; behavior verified by both suites + a
+      live drone exercise (move/fire/kills/medic 2 HP/s exact). — now 785 lines (was ~650 when first
       flagged) and still growing with every feature: it owns combat, drone
       AI, shadows, juice, ultimates, and wave flow. Carve out `drone.ts`,
       `effects.ts` (zap/burst/popup/flash), and a shadow helper (the

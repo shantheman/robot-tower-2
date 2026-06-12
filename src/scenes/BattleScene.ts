@@ -14,6 +14,10 @@ import {
   chooseEnemyType, effectiveWave, isBossWave, waveInLevel, waveRobotCount,
   waveRobotSpeed, waveSpawnInterval, wavesForLevel,
 } from "../sim/waves";
+import { DroneController } from "./drone";
+import { Effects } from "./effects";
+import { makeSilhouette, shadowOffset } from "./shadows";
+import type { Enemy, EnemyBullet } from "./types";
 
 export interface HudState {
   level: number; waveInLevel: number; wavesInLevel: number;
@@ -22,19 +26,6 @@ export interface HudState {
   intermission: number;
   ultimate: { key: C.UltimateKey; name: string; ready: boolean; cooldown: number } | null;
   rapid: boolean;
-}
-
-interface Enemy {
-  sprite: Phaser.GameObjects.Image;
-  shadow: Phaser.GameObjects.Image;
-  shadowOffX: number;    // fixed light direction: shadows fall down-right
-  shadowOffY: number;    // land: a small rim past the feet; air: hover height
-  hpBar?: Phaser.GameObjects.Graphics;
-  type: C.EnemyType;
-  hp: number; maxHp: number; speed: number;
-  fireTimer: number;     // ranged enemies
-  flash: number;
-  alive: boolean;
 }
 
 interface Bullet {
@@ -47,12 +38,6 @@ interface Bullet {
   alive: boolean;
 }
 
-interface EnemyBullet {
-  dot: Phaser.GameObjects.Arc;
-  vx: number; vy: number; damage: number;
-  alive: boolean;
-}
-
 export class BattleScene extends Phaser.Scene {
   private onHud!: (s: HudState) => void;
 
@@ -60,14 +45,9 @@ export class BattleScene extends Phaser.Scene {
   private gun!: Phaser.GameObjects.Image;
   private gunShadow!: Phaser.GameObjects.Image;
   private shieldGfx!: Phaser.GameObjects.Graphics;
-  private fxLayer!: Phaser.GameObjects.Layer;
+  private effects!: Effects;
   private shadowLayer!: Phaser.GameObjects.Layer;
-  private drone?: Phaser.GameObjects.Image;
-  private droneShadow?: Phaser.GameObjects.Image;
-  private droneAngle = 0;
-  private droneFireTimer = 0;
-  private interceptTimer = 0;
-  private medicPulse = 0;
+  private droneCtl!: DroneController;
   private autoFireTimer = 0;
 
   private enemies: Enemy[] = [];
@@ -110,7 +90,10 @@ export class BattleScene extends Phaser.Scene {
   create() {
     this.drawBackdrop();
     this.shadowLayer = this.add.layer(); // every shadow sits under tower/enemies/fx
-    this.fxLayer = this.add.layer();
+    this.effects = new Effects(this);    // fx layer created here: above shadows, under the tower
+    this.droneCtl = new DroneController(
+      this, this.effects, this.shadowLayer, this.towerPos,
+      (e, dmg) => this.hitEnemy(e, dmg));
     // Tower shadows (same language as the units): the grounded base casts a
     // tight "land" rim into shadowLayer; the elevated gun casts a detached
     // "air" silhouette ONTO the base (created between base and gun so it
@@ -160,12 +143,6 @@ export class BattleScene extends Phaser.Scene {
     if (game.screen !== "battle") this.setPaused(true);
   }
 
-  /** Track a transient effect so startBattle can hard-clear leftovers. */
-  private fx<T extends Phaser.GameObjects.GameObject>(obj: T): T {
-    this.fxLayer.add(obj);
-    return obj;
-  }
-
   setPaused(p: boolean): void {
     this.paused = p;
     this.mouseHeld = false;
@@ -177,13 +154,10 @@ export class BattleScene extends Phaser.Scene {
     game.justClearedLevel = null;  // the celebration was seen; back to normal Home copy
     this.applyLevelBackground();
     this.clearBoard(true);
-    this.fxLayer.removeAll(true);
+    this.effects.clear();
     this.over = false;
     this.setPaused(false);
-    this.drone?.destroy();
-    this.drone = undefined;
-    this.droneShadow?.destroy();
-    this.droneShadow = undefined;
+    this.droneCtl.reset();
     this.startWave();
   }
 
@@ -204,13 +178,10 @@ export class BattleScene extends Phaser.Scene {
   retryFromCheckpoint(): boolean {
     if (!game.gs.restoreCheckpoint()) return false;
     this.clearBoard(true);
-    this.fxLayer.removeAll(true);
+    this.effects.clear();
     this.over = false;
     this.setPaused(false);
-    this.drone?.destroy();
-    this.drone = undefined;
-    this.droneShadow?.destroy();
-    this.droneShadow = undefined;
+    this.droneCtl.reset();
     this.startWave();
     return true;
   }
@@ -269,18 +240,11 @@ export class BattleScene extends Phaser.Scene {
     const sprite = this.add.image(x, y, type.sprite);
     sprite.setScale((type.radius * C.ENEMY_SPRITE_SCALE) / sprite.width);
     // Grounding shadow: the unit's own silhouette (top-down view — a blob
-    // would read side-on), cast down-right by a fixed light. Land units get
-    // a small offset rim past their feet; air units a clearly detached one
-    // (hover height) that's slightly smaller and fainter.
+    // would read side-on). Land: a small rim past the feet; air: detached.
     const air = !!type.air;
-    const off = air ? C.SHADOW.airOff(type.radius) : C.SHADOW.landOff(type.radius);
-    const shadowOffX = off.x;
-    const shadowOffY = off.y;
-    const shadow = this.add.image(x + shadowOffX, y + shadowOffY, type.sprite)
-      .setScale(sprite.scale * (air ? C.SHADOW.airScale : 1))
-      .setTintFill(0x000000)
-      .setAlpha(air ? C.SHADOW.airAlpha : C.SHADOW.landAlpha);
-    this.shadowLayer.add(shadow);
+    const { x: shadowOffX, y: shadowOffY } = shadowOffset(type.radius, air);
+    const shadow = makeSilhouette(
+      this, this.shadowLayer, type.sprite, x + shadowOffX, y + shadowOffY, sprite.scale, air);
     const ew = effectiveWave(game.gs.wave);
     const hp = type.levelScaled ? type.hp * (1 + C.HEAVY_HP_RAMP * (ew - 1)) : type.hp;
     this.enemies.push({
@@ -317,13 +281,13 @@ export class BattleScene extends Phaser.Scene {
       const side = d.clone().rotate(Math.PI / 2).scale(this.muzzleAlt * this.gun.displayWidth * C.MUZZLE_SIDE_FACTOR);
       this.muzzleAlt *= -1;
       const start = this.towerPos.clone().add(d.clone().scale(muzzleDist)).add(side);
-      const dot = this.fx(this.add.circle(start.x, start.y, gs.playerBulletRadius(), 0xffe9a8));
+      const dot = this.effects.track(this.add.circle(start.x, start.y, gs.playerBulletRadius(), 0xffe9a8));
       this.bullets.push({
         dot, vx: d.x * C.BULLET_SPEED, vy: d.y * C.BULLET_SPEED,
         damage: gs.playerDamage(), radius: gs.playerBulletRadius(),
         pierce: gs.pierceLevel, guided: gs.guidedOwned, hit: new Set(), alive: true,
       });
-      const flash = this.fx(this.add.circle(start.x, start.y, 9, 0xfff6da, 0.9));
+      const flash = this.effects.track(this.add.circle(start.x, start.y, 9, 0xfff6da, 0.9));
       this.tweens.add({ targets: flash, alpha: 0, scale: 1.8, duration: 70, onComplete: () => flash.destroy() });
     }
   }
@@ -364,11 +328,11 @@ export class BattleScene extends Phaser.Scene {
     for (const e of this.enemies) {
       if (e === exclude || !e.alive) continue;
       if (Math.hypot(e.sprite.x - at.x, e.sprite.y - at.y) <= radius) {
-        this.popup(e.sprite.x, e.sprite.y - 14, `-${dmg}`, "#ff9341");
+        this.effects.popup(e.sprite.x, e.sprite.y - 14, `-${dmg}`, "#ff9341");
         this.hitEnemy(e, dmg);
       }
     }
-    const ring = this.fx(this.add.circle(at.x, at.y, 6).setStrokeStyle(3, 0xff9341, 0.9));
+    const ring = this.effects.track(this.add.circle(at.x, at.y, 6).setStrokeStyle(3, 0xff9341, 0.9));
     this.tweens.add({
       targets: ring, radius, alpha: 0, duration: 300,
       onUpdate: () => ring.setStrokeStyle(2, 0xff9341, ring.alpha * 0.9),
@@ -381,111 +345,18 @@ export class BattleScene extends Phaser.Scene {
     const boss = e.type === C.BOSS;
     const { gain, bonus } = game.gs.onKill(e.type.reward, boss);
     play(boss ? "boom" : "kill");
-    this.popup(e.sprite.x, e.sprite.y, `+${gain}`, "#ffc94a");
-    if (bonus === "cash") this.popup(e.sprite.x, e.sprite.y - 18, `BONUS +${C.DROP_CASH}`, "#ffc94a");
-    if (bonus === "heal") this.popup(e.sprite.x, e.sprite.y - 18, `REPAIRED +${C.DROP_HEAL}`, "#46e39a");
-    if (bonus === "rapid") this.popup(e.sprite.x, e.sprite.y - 18, "RAPID FIRE!", "#ff9341");
-    this.burst(e.sprite.x, e.sprite.y, boss ? 22 : 8);
+    this.effects.popup(e.sprite.x, e.sprite.y, `+${gain}`, "#ffc94a");
+    if (bonus === "cash") this.effects.popup(e.sprite.x, e.sprite.y - 18, `BONUS +${C.DROP_CASH}`, "#ffc94a");
+    if (bonus === "heal") this.effects.popup(e.sprite.x, e.sprite.y - 18, `REPAIRED +${C.DROP_HEAL}`, "#46e39a");
+    if (bonus === "rapid") this.effects.popup(e.sprite.x, e.sprite.y - 18, "RAPID FIRE!", "#ff9341");
+    this.effects.burst(e.sprite.x, e.sprite.y, boss ? 22 : 8);
     if (!game.gs.reduceMotion) this.cameras.main.shake(boss ? 260 : 90, boss ? 0.012 : 0.004);
     e.sprite.destroy();
     e.shadow.destroy();
     e.hpBar?.destroy();
   }
 
-  private burst(x: number, y: number, n: number): void {
-    for (let i = 0; i < n; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const r = 30 + Math.random() * 30;
-      const p = this.fx(this.add.circle(x, y, 3, 0xff9341));
-      this.tweens.add({
-        targets: p, x: x + Math.cos(a) * r, y: y + Math.sin(a) * r,
-        alpha: 0, duration: 320, onComplete: () => p.destroy(),
-      });
-    }
-  }
-
-  private popup(x: number, y: number, text: string, color: string): void {
-    const t = this.fx(this.add.text(x, y, text, {
-      fontFamily: "Chakra Petch", fontSize: "15px", color, stroke: "#04080f", strokeThickness: 3,
-    })).setOrigin(0.5);
-    this.tweens.add({ targets: t, y: y - 34, alpha: 0, duration: 800, onComplete: () => t.destroy() });
-  }
-
-  // -- drone + auto-shooter ----------------------------------------------------
-  private updateDrone(dt: number, enemyDt: number): void {
-    const gs = game.gs;
-    if (gs.droneLevel <= 0) return;
-    if (!this.drone) {
-      this.drone = this.add.image(this.towerPos.x, this.towerPos.y - C.DRONE_ORBIT_RADIUS, "drone");
-      this.drone.setScale((C.DRONE_RADIUS * 2 * C.DRONE_SPRITE_SCALE) / this.drone.width);
-      // The drone flies too — same detached silhouette shadow as flying enemies.
-      this.droneShadow = this.add.image(this.drone.x, this.drone.y, "drone")
-        .setScale(this.drone.scale * C.SHADOW.airScale).setTintFill(0x000000).setAlpha(C.SHADOW.airAlpha);
-      this.shadowLayer.add(this.droneShadow);
-    }
-    const range = C.DRONE_BASE_RANGE + C.DRONE_RANGE_PER_LEVEL * (gs.droneLevel - 1);
-    // Hunt the strongest enemy; orbit the tower when idle.
-    let target: Enemy | null = null;
-    for (const e of this.enemies) if (!target || e.maxHp > target.maxHp) target = e;
-    let want: Phaser.Math.Vector2;
-    if (target) {
-      const toT = new Phaser.Math.Vector2(target.sprite.x - this.towerPos.x, target.sprite.y - this.towerPos.y).normalize();
-      const sideway = new Phaser.Math.Vector2(-toT.y, toT.x).scale(C.DRONE_STANDOFF);
-      want = new Phaser.Math.Vector2(target.sprite.x, target.sprite.y)
-        .subtract(toT.clone().scale(C.DRONE_STANDOFF)).add(sideway.scale(0.4));
-    } else {
-      this.droneAngle += Phaser.Math.DegToRad(C.DRONE_ORBIT_SPEED) * dt;
-      want = new Phaser.Math.Vector2(
-        this.towerPos.x + Math.cos(this.droneAngle) * C.DRONE_ORBIT_RADIUS,
-        this.towerPos.y + Math.sin(this.droneAngle) * C.DRONE_ORBIT_RADIUS,
-      );
-    }
-    const d = want.clone().subtract(new Phaser.Math.Vector2(this.drone.x, this.drone.y));
-    const dist = d.length();
-    const step = Math.min(dist, C.DRONE_SPEED * dt);
-    if (dist > 1) {
-      this.drone.x += (d.x / dist) * step;
-      this.drone.y += (d.y / dist) * step;
-      this.drone.setRotation(Math.atan2(d.y, d.x) + Math.PI / 2);
-    }
-    if (this.droneShadow) {
-      const off = C.SHADOW.airOff(C.DRONE_RADIUS);
-      this.droneShadow.setPosition(this.drone.x + off.x, this.drone.y + off.y);
-      this.droneShadow.setRotation(this.drone.rotation);
-    }
-    // Fire at up to 1 (or 2 with Twin Targeting) enemies in range.
-    this.droneFireTimer -= enemyDt > 0 ? dt : 0; // drone is the player's: real dt
-    if (this.droneFireTimer <= 0) {
-      const inRange = this.enemies
-        .filter((e) => Math.hypot(e.sprite.x - this.drone!.x, e.sprite.y - this.drone!.y) <= range)
-        .sort((a, b) => b.maxHp - a.maxHp)
-        .slice(0, gs.twinOwned ? 2 : 1);
-      if (inRange.length) {
-        const dmg = C.DRONE_DAMAGE + C.DRONE_DAMAGE_PER_LEVEL * (gs.droneLevel - 1);
-        for (const e of inRange) {
-          this.zap(this.drone.x, this.drone.y, e.sprite.x, e.sprite.y, 0x7fe8ff);
-          this.hitEnemy(e, dmg);
-        }
-        this.droneFireTimer = C.DRONE_BASE_CD * Math.pow(C.DRONE_CD_FACTOR, gs.droneLevel - 1);
-      }
-    }
-    // Field Medic: while the drone has nothing in firing range (flying,
-    // repositioning, or a clear field), it patches the tower instead.
-    if (gs.medicOwned && gs.hp < gs.maxHp()) {
-      const dr = this.drone;
-      const nearestE = this.enemies.reduce((d, e) =>
-        Math.min(d, Math.hypot(e.sprite.x - dr.x, e.sprite.y - dr.y)), Infinity);
-      if (nearestE > range) {
-        gs.hp = Math.min(gs.maxHp(), gs.hp + C.MEDIC_HPS * dt);
-        this.medicPulse -= dt;
-        if (this.medicPulse <= 0) {
-          this.zap(this.drone.x, this.drone.y, this.towerPos.x, this.towerPos.y, 0x46e39a);
-          this.medicPulse = 0.5;
-        }
-      }
-    }
-  }
-
+  // -- auto-shooter --------------------------------------------------------------
   private updateAutoShooter(dt: number): void {
     const gs = game.gs;
     if (gs.autoLevel <= 0) return;
@@ -498,14 +369,9 @@ export class BattleScene extends Phaser.Scene {
       if (d < bestD) { bestD = d; best = e; }
     }
     if (!best) return;
-    this.zap(this.towerPos.x, this.towerPos.y, best.sprite.x, best.sprite.y, 0xffc94a);
+    this.effects.zap(this.towerPos.x, this.towerPos.y, best.sprite.x, best.sprite.y, 0xffc94a);
     this.hitEnemy(best, C.AUTO_BULLET_DAMAGE);
     this.autoFireTimer = C.AUTO_BASE_COOLDOWN / gs.autoLevel;
-  }
-
-  private zap(x1: number, y1: number, x2: number, y2: number, color: number): void {
-    const line = this.fx(this.add.line(0, 0, x1, y1, x2, y2, color, 0.8)).setOrigin(0).setLineWidth(1.5);
-    this.tweens.add({ targets: line, alpha: 0, duration: 90, onComplete: () => line.destroy() });
   }
 
   // -- ultimates ------------------------------------------------------------------
@@ -517,7 +383,7 @@ export class BattleScene extends Phaser.Scene {
       this.freezeActive = C.FREEZE_DURATION;
       this.cooldowns.freeze = C.FREEZE_COOLDOWN;
       play("shield");
-      this.flashScreen(0x7fe8ff, 0.18);
+      this.effects.flashScreen(0x7fe8ff, 0.18);
     } else if (key === "emp") {
       // Instant damage to EVERYTHING + fries projectiles; brief pulse stun.
       if (this.enemyBullets.length >= 5) gs.unlockAchievement("emp_fry");
@@ -527,12 +393,12 @@ export class BattleScene extends Phaser.Scene {
       this.stunActive = C.EMP_STUN;
       this.cooldowns.emp = C.EMP_COOLDOWN;
       play("boom");
-      this.flashScreen(0x3b9dff, 0.22);
+      this.effects.flashScreen(0x3b9dff, 0.22);
     } else if (key === "warp") {
       this.warpActive = C.WARP_DURATION;
       this.cooldowns.warp = C.WARP_COOLDOWN;
       play("buy");
-      this.flashScreen(0x46e39a, 0.14);
+      this.effects.flashScreen(0x46e39a, 0.14);
     } else if (key === "laser") {
       this.laserActive = C.LASER_DURATION;
       this.cooldowns.laser = C.LASER_COOLDOWN;
@@ -545,9 +411,9 @@ export class BattleScene extends Phaser.Scene {
     this.laserActive -= dt;
     const aim = new Phaser.Math.Vector2(Math.cos(this.aimAngle), Math.sin(this.aimAngle));
     const end = this.towerPos.clone().add(aim.clone().scale(2000));
-    const beam = this.fx(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0xffffff, 0.9))
+    const beam = this.effects.track(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0xffffff, 0.9))
       .setOrigin(0).setLineWidth(C.LASER_WIDTH / 8);
-    const glow = this.fx(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0x7fe8ff, 0.35))
+    const glow = this.effects.track(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0x7fe8ff, 0.35))
       .setOrigin(0).setLineWidth(C.LASER_WIDTH / 3);
     this.time.delayedCall(40, () => { beam.destroy(); glow.destroy(); });
     // Damage every enemy near the beam line.
@@ -575,12 +441,6 @@ export class BattleScene extends Phaser.Scene {
       const k = d.normalize().scale(len);
       this.joyGfx.fillStyle(0x7fe8ff, 0.45).fillCircle(o.x + k.x, o.y + k.y, 11);
     }
-  }
-
-  private flashScreen(color: number, alpha: number): void {
-    if (game.gs.reduceMotion) return;
-    const r = this.fx(this.add.rectangle(game.world.w / 2, game.world.h / 2, game.world.w, game.world.h, color, alpha));
-    this.tweens.add({ targets: r, alpha: 0, duration: 220, onComplete: () => r.destroy() });
   }
 
   private drawBackdrop(): void {
@@ -659,7 +519,7 @@ export class BattleScene extends Phaser.Scene {
       }
       this.drawJoystick(p);
       this.updateAutoShooter(dt);
-      this.updateDrone(dt, enemyDt);
+      this.droneCtl.update(dt, enemyDt, this.enemies);
       this.updateLaser(dt);
     }
 
@@ -674,7 +534,7 @@ export class BattleScene extends Phaser.Scene {
       if (ranged && dist <= ranged.fireRange) {
         e.fireTimer -= enemyDt;
         if (e.fireTimer <= 0 && enemyDt > 0) {
-          const dot = this.fx(this.add.circle(e.sprite.x, e.sprite.y, C.ENEMY_BULLET_RADIUS, 0xff5238));
+          const dot = this.effects.track(this.add.circle(e.sprite.x, e.sprite.y, C.ENEMY_BULLET_RADIUS, 0xff5238));
           this.enemyBullets.push({
             dot, vx: (dx / dist) * C.ENEMY_BULLET_SPEED, vy: (dy / dist) * C.ENEMY_BULLET_SPEED,
             damage: ranged.projDamage, alive: true,
@@ -710,23 +570,7 @@ export class BattleScene extends Phaser.Scene {
     this.enemies = this.enemies.filter((e) => e.alive);
 
     // Interceptor: the drone swats projectiles that enter its range.
-    if (this.drone && gs.interceptorOwned && this.enemyBullets.length) {
-      this.interceptTimer -= dt;
-      if (this.interceptTimer <= 0) {
-        const range = C.DRONE_BASE_RANGE + C.DRONE_RANGE_PER_LEVEL * (gs.droneLevel - 1);
-        const target = this.enemyBullets.find((eb) =>
-          eb.alive && Math.hypot(eb.dot.x - this.drone!.x, eb.dot.y - this.drone!.y) <= range);
-        if (target) {
-          this.zap(this.drone.x, this.drone.y, target.dot.x, target.dot.y, 0x7fe8ff);
-          const flash = this.fx(this.add.circle(target.dot.x, target.dot.y, 7, 0xffe9a8, 0.9));
-          this.tweens.add({ targets: flash, alpha: 0, scale: 1.6, duration: 120, onComplete: () => flash.destroy() });
-          target.alive = false;
-          target.dot.destroy();
-          play("shoot");
-          this.interceptTimer = C.INTERCEPT_CD;
-        }
-      }
-    }
+    this.droneCtl.intercept(dt, this.enemyBullets);
 
     // Enemy projectiles -> shield ring or tower.
     for (const eb of this.enemyBullets) {
