@@ -451,6 +451,9 @@ function buildConfig(): string {
     if (p.bobAmp) { parts.push(`bobAmp: ${round(p.bobAmp)}`); if (p.bobHz) parts.push(`bobHz: ${round(p.bobHz)}`); }
     if (p.wobbleDeg) { parts.push(`wobbleDeg: ${round(p.wobbleDeg)}`); if (p.wobbleHz) parts.push(`wobbleHz: ${round(p.wobbleHz)}`); }
     if (p.chargeTell) parts.push(`chargeTell: true`);
+    // Structural (non-slider) fields carried straight from config so a
+    // round-trip paste doesn't silently drop them.
+    if (p.hexSnap) parts.push(`hexSnap: ${round(p.hexSnap)}`);
     return `  ${key}: { ${parts.join(", ")} },`;
   });
   return `export const ENEMY_ANIM: Record<string, EnemyAnim> = {\n${lines.join("\n")}\n};`;

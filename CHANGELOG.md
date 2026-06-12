@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.16 — 2026-06-12
+
+- **Playground export now keeps `hexSnap`** (dev tool): structural fields that
+  have no slider (currently just the shooter's `hexSnap: 6`) are carried
+  straight from config into the Copy-config output, so pasting a full
+  ENEMY_ANIM block round-trips without silently dropping them.
+
 ## v0.8.15 — 2026-06-12
 
 - **Tough now hovers** (Shannon's tune): altitude 0.5, a 10px hover bob at
