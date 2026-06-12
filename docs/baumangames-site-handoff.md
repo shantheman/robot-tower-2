@@ -1,4 +1,4 @@
-# Handoff: add Core Defender to baumangames.com
+# Handoff: add Mech Tide to baumangames.com
 
 For the Claude Code session that manages the **baumangames.com** repo.
 You're adding a new game to the marketing pages and updating the legal
@@ -7,7 +7,7 @@ know is in this file — the game's repo is separate and you don't need it.
 
 ## The game (facts to draw from)
 
-- **Name:** Core Defender (working title was "Robot Tower" — don't use that).
+- **Name:** Mech Tide (working title was "Robot Tower" — don't use that).
 - **What it is:** a 360° tower-defense survival game. You aim a central
   turret against waves of robots closing in from every side; earn coins
   in-run for upgrades, bank permanent "Cores" to grow a skill tree across
@@ -17,9 +17,9 @@ know is in this file — the game's repo is separate and you don't need it.
   In-game credit reads "A game by Bauman Games"; copyright line is
   "© 2026 Callum Bauman / Bauman Games."
 - **Play now (free, browser, desktop + mobile):**
-  https://shantheman.github.io/core-defender/
+  https://shantheman.github.io/mech-tide/
 - **Platforms:** web today; iOS/Android via app stores planned (Capacitor
-  wrap, bundle ID `com.baumangames.coredefender`). PWA install likely
+  wrap, bundle ID `com.baumangames.mechtide`). PWA install likely
   before that.
 - **Price/monetization:** free. No ads, no in-app purchases, no accounts.
 - **Audience/rating:** general audience, declared 13+ for store purposes;
@@ -33,7 +33,7 @@ placeholder and note it — Shannon will export assets from the game
 
 ## 1) Marketing pages
 
-Add Core Defender wherever the site lists/showcases games (follow the
+Add Mech Tide wherever the site lists/showcases games (follow the
 existing pattern used for the other titles, e.g. Chimera):
 
 - Game card/entry: name, one-line hook, short description, "Play free in
@@ -46,7 +46,7 @@ existing pattern used for the other titles, e.g. Chimera):
 
 ## 2) terms.html (Terms of Service)
 
-- Add Core Defender to whatever enumeration/definition of covered
+- Add Mech Tide to whatever enumeration/definition of covered
   products/games the ToS uses (or confirm the ToS is written generically
   enough to cover "all Bauman Games titles" — if so, just say so back to
   Shannon and change nothing).
@@ -57,7 +57,7 @@ existing pattern used for the other titles, e.g. Chimera):
 
 Current truth (state it plainly if the policy is per-product):
 
-- **Core Defender collects no personal data.** No accounts, no analytics,
+- **Mech Tide collects no personal data.** No accounts, no analytics,
   no ads, no tracking, no server — game progress is saved only in the
   player's own browser (localStorage) and never leaves their device.
 
@@ -68,11 +68,11 @@ diagnostic data (stack traces, device model/OS version) collected on app
 crashes, used solely to fix bugs, not linked to identity, not used for
 tracking or advertising, retained per the vendor's standard window.
 Shannon will send a follow-up when it's time; you can leave an HTML
-comment near the Core Defender section as a breadcrumb.
+comment near the Mech Tide section as a breadcrumb.
 
 ## Tone/consistency notes
 
-- The game's name is always "Core Defender" (two words, title case).
+- The game's name is always "Mech Tide" (two words, title case).
 - In-game currencies are "coins" (in-run) and "Cores" (permanent) — only
   relevant if the marketing copy describes gameplay; never use "$".
 - Callum is a kid — keep any bio/credit line to "Callum" or
@@ -80,7 +80,7 @@ comment near the Core Defender section as a breadcrumb.
 
 ## Done looks like
 
-- [ ] Core Defender listed on the marketing page(s) with the play link
+- [ ] Mech Tide listed on the marketing page(s) with the play link
 - [ ] ToS covers the game (explicitly or generically — report which)
 - [ ] Privacy policy covers the game with the "collects no data" truth
 - [ ] Breadcrumb comment for the future crash-reporting disclosure

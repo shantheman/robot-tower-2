@@ -1,11 +1,11 @@
-# Core Defender
+# Mech Tide
 
 The cross-platform rewrite of [Robot Tower Survival](https://github.com/TheDemonicChild/robot-tower-survival)
-— Callum's tower-defense game, renamed **Core Defender** for v2 — in
+— Callum's tower-defense game, renamed **Mech Tide** for v2 — in
 **TypeScript + Phaser 3**, with all UI as real HTML/CSS. Targets: **browser** (always, during development), then
 **iOS / Android** via Capacitor and **macOS / Windows** desktop builds.
 
-**Play it now:** https://shantheman.github.io/core-defender/ (auto-deploys
+**Play it now:** https://shantheman.github.io/mech-tide/ (auto-deploys
 from main).
 
 ## Run it

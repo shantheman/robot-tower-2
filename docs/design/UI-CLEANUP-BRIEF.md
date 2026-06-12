@@ -1,4 +1,4 @@
-# Core Defender — UI Cleanup Brief (for Claude Code / Pygame)
+# Mech Tide — UI Cleanup Brief (for Claude Code / Pygame)
 
 The screens work, but they look unpolished next to the design mockups. The problems are almost all **typography, spacing, and alignment** — not new features. Below are concrete, do-this-exactly fixes. Functionality is still your source of truth; this is purely visual.
 

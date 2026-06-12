@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.24 — 2026-06-12
+
+- **The game is now MECH TIDE** — Callum's pick (renamed from "Core Defender").
+  The name was conflict-checked across Steam, the Apple App Store, and Google
+  Play before committing. Home screen, browser tab, repo, and the live URL all
+  updated; the repo/Pages address moves to
+  **https://shantheman.github.io/mech-tide/** (the old `/core-defender/` URL
+  retires). Saves are untouched — the storage key is internal and frozen.
+
 ## v0.8.23 — 2026-06-12
 
 - **Hid the Animation Playground link** from Settings. The playground page is

@@ -1,4 +1,4 @@
-# Core Defender — Master TODO
+# Mech Tide — Master TODO
 
 A running checklist for the rewrite. **Anyone (Callum, Dad, Claude Code) can
 add to this** — drop a `- [ ]` line in the right section. Check things off as
@@ -55,11 +55,11 @@ major system.
       keep it; DNS = CNAME record -> shantheman.github.io for a subdomain,
       or A/AAAA records for an apex; HTTPS is automatic via Let's Encrypt;
       also "verify" the domain on the GitHub account to block takeovers).
-      Availability checked 2026-06-12: **coredefender.com is AVAILABLE**,
-      as are coredefender.io / .gg / .app and playcoredefender.com (only
-      coredefendergame.com is taken). Zero-cost alternative: a subdomain
-      of baumangames.com (play.baumangames.com). Code change is tiny: the
-      Pages base path becomes "/" instead of /core-defender/, and GitHub
+      Domain availability for "mechtide" was NOT checked — Shannon doesn't
+      care about the domain (the name was vetted only for Steam / App Store /
+      Google Play conflicts). Zero-cost option remains a subdomain of
+      baumangames.com (play.baumangames.com). Code change is tiny: the
+      Pages base path becomes "/" instead of /mech-tide/, and GitHub
       auto-redirects the old github.io URL to the new domain.
       ⚠️ **Do this EARLY**: localStorage saves are per-origin, so the move
       orphans every existing save — cheap now, painful after launch (or
@@ -70,7 +70,7 @@ major system.
       Blocked on the app icon (Art section).
 - [ ] **Capacitor wrap (iOS/Android)** — the real-app path: haptics, app
       icon, splash, store listing. Publishing under **Bauman Games LLC**
-      (Apple org account exists). Bundle ID: **com.baumangames.coredefender**
+      (Apple org account exists). Bundle ID: **com.baumangames.mechtide**
       (matches the com.baumangames.chimera convention).
 - [ ] **Desktop packaging decision** — Tauri/Electron, or is "it runs in any
       browser" enough for desktop? (Leaning: browser is enough until proven
@@ -105,7 +105,7 @@ major system.
 ### Store submission checklist (Apple + Google Play)
 
 Context decided 2026-06-12: publisher **Bauman Games LLC**, bundle ID
-**com.baumangames.coredefender**, target audience **13+** (avoids kids/
+**com.baumangames.mechtide**, target audience **13+** (avoids kids/
 Families policy), ToS + Privacy Policy live at baumangames.com.
 
 **Legal / policy**
@@ -125,7 +125,7 @@ Families policy), ToS + Privacy Policy live at baumangames.com.
       accounts skip the personal-account rule of 12 testers x 14 days,
       but require a D-U-N-S number — the LLC has one if Apple org
       enrollment is done).
-- [ ] Reserve the "Core Defender" name in App Store Connect early (name
+- [ ] Reserve the "Mech Tide" name in App Store Connect early (name
       collisions are common).
 - [ ] Android signing: enroll in Play App Signing (Google keeps the key).
 - [ ] TestFlight internal -> friend-circle external test before release;

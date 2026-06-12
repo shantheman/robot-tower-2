@@ -1,4 +1,4 @@
-# Core Defender — Visual Design Handoff
+# Mech Tide — Visual Design Handoff
 
 This package is a **visual design reference** built in HTML/CSS/React purely for mockup purposes. You are **rebuilding the app from scratch in a new tech stack** — so none of this code is meant to be reused directly. Treat it as a **visual spec** to reimplement.
 

@@ -1,7 +1,7 @@
 /** Home screen — new/returning states per the mobile mocks (Downloads drop,
  * 2026-06-11): portrait stacks full-width controls under the hero; landscape
- * is hero-left / menu-right. Title is "CORE DEFENDER" — Callum's call,
- * 2026-06-11 (renamed from "Robot Tower"). */
+ * is hero-left / menu-right. Title is "MECH TIDE" — Callum's call, renamed
+ * 2026-06-12 (was "Core Defender"; original working title "Robot Tower"). */
 
 import { game } from "../game";
 import { ACHIEVEMENTS, SKILL_NODES } from "../sim/state";
@@ -47,7 +47,7 @@ export class HomeScreen extends Panel {
           <div class="home-badge">${game.justClearedLevel
             ? `LEVEL ${game.justClearedLevel} COMPLETE — CORES BANKED`
             : returning ? "WELCOME BACK, DEFENDER" : "A 360° SURVIVAL DEFENSE"}</div>
-          <h1 class="home-title">CORE DEFENDER</h1>
+          <h1 class="home-title">MECH TIDE</h1>
         </div>
         <div class="home-menu">
           ${strip}

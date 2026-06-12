@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 
-// GitHub Pages serves the site at /core-defender/ — the deploy workflow sets
+// GitHub Pages serves the site at /mech-tide/ — the deploy workflow sets
 // GH_PAGES=1 so local dev keeps serving from /.
 //
 // The CSP <meta> is injected at deploy build only (Pages can't send headers;
@@ -18,7 +18,7 @@ const CSP = [
 ].join("; ");
 
 export default defineConfig({
-  base: process.env.GH_PAGES ? "/core-defender/" : "/",
+  base: process.env.GH_PAGES ? "/mech-tide/" : "/",
   // Two pages: the game (index.html) and the dev Animation Playground
   // (playground.html), linked from Settings. Remove the playground entry to
   // drop it from the build.

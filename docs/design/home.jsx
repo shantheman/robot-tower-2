@@ -32,7 +32,7 @@ function HomeShell({ children, badge }) {
       <div style={{ position: 'absolute', top: 300, left: 0, right: 0, textAlign: 'center' }}>
         <div style={{ fontSize: 14, letterSpacing: '.5em', color: '#7fc7a0', marginBottom: 6 }}>{badge}</div>
         <h1 style={{ margin: 0, fontSize: 60, fontWeight: 800, letterSpacing: '.02em', lineHeight: 1,
-          color: '#eaf4ff', textShadow: '0 0 40px rgba(95,182,255,0.4)' }}>CORE DEFENDER</h1>
+          color: '#eaf4ff', textShadow: '0 0 40px rgba(95,182,255,0.4)' }}>MECH TIDE</h1>
       </div>
       {children}
     </div>

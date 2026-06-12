@@ -68,7 +68,7 @@ export interface DamageResult {
   died: boolean;
 }
 
-/** Frozen forever: this predates the Core Defender rename, but changing it
+/** Frozen forever: this predates the game's renames, but changing it
  * silently wipes every player's progress (localStorage is keyed per-origin).
  * If a rename is ever truly needed, dual-read (old key -> migrate -> new).
  * (Exported for the Settings save-code transfer + reset.) */
