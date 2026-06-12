@@ -19,6 +19,14 @@ const CSP = [
 
 export default defineConfig({
   base: process.env.GH_PAGES ? "/core-defender/" : "/",
+  // Two pages: the game (index.html) and the dev Animation Playground
+  // (playground.html), linked from Settings. Remove the playground entry to
+  // drop it from the build.
+  build: {
+    rollupOptions: {
+      input: { main: "index.html", playground: "playground.html" },
+    },
+  },
   plugins: [
     {
       name: "csp-meta",

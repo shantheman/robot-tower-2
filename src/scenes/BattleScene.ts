@@ -16,6 +16,7 @@ import {
 } from "../sim/waves";
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
+import { enemyAnimFrame } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
 
@@ -271,32 +272,13 @@ export class BattleScene extends Phaser.Scene {
    * offset is recorded in animOX/animOY so it's undone before the next move. */
   private animateEnemy(e: Enemy): void {
     if (game.gs.reduceMotion) return; // accessibility: static enemies, as before
-    const a = C.ENEMY_ANIM[e.type.key];
-    const t = this.animClock;
-    const ph = e.animPhase;
-    // Face the tower (centralized here; ranged units already kept this facing).
-    let rot = Math.atan2(this.towerPos.y - e.sprite.y, this.towerPos.x - e.sprite.x) + Math.PI / 2;
-    if (a?.wobbleDeg) rot += Phaser.Math.DegToRad(a.wobbleDeg) * Math.sin(t * (a.wobbleHz ?? 3) + ph);
-    e.sprite.setRotation(rot);
-    e.shadow.setRotation(rot);
-    // Idle breathe + ranged charge-tell (swell as the shot nears, snap on fire).
-    let scaleMul = 1;
-    if (a?.breatheAmp) scaleMul += a.breatheAmp * Math.sin(t * (a.breatheHz ?? 2) + ph);
-    if (a?.chargeTell && e.type.ranged) {
-      const charge = 1 - Math.max(0, e.fireTimer) / e.type.ranged.fireCd; // 0..1
-      scaleMul += charge * charge * 0.18;
-    }
-    e.sprite.setScale(e.baseScale * scaleMul);
-    // Hover bob: sprite floats up/down with a little sway; the grounded shadow
-    // fades at the top of the rise to sell altitude.
-    if (a?.bobAmp) {
-      const hz = a.bobHz ?? 2.5;
-      const up = Math.sin(t * hz + ph);                 // -1 (low) .. 1 (high)
-      e.animOX = Math.cos(t * hz * 0.6 + ph) * a.bobAmp * 0.35;
-      e.animOY = -up * a.bobAmp;
-      e.sprite.x += e.animOX; e.sprite.y += e.animOY;
-      e.shadow.setAlpha(C.SHADOW.airAlpha * (1 - ((up + 1) / 2) * 0.35));
-    }
+    const charge = e.type.ranged ? 1 - Math.max(0, e.fireTimer) / e.type.ranged.fireCd : 0;
+    const { ox, oy } = enemyAnimFrame({
+      sprite: e.sprite, shadow: e.shadow, anim: C.ENEMY_ANIM[e.type.key],
+      clock: this.animClock, phase: e.animPhase, baseScale: e.baseScale,
+      fireCharge: charge, towerX: this.towerPos.x, towerY: this.towerPos.y,
+    });
+    e.animOX = ox; e.animOY = oy;
   }
 
   // -- player fire -----------------------------------------------------------------

@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.8 — 2026-06-12
+
+- **Animation Playground** (dev tool, Settings → Animation playground): a
+  standalone page to view each enemy in its states (idle / moving / firing /
+  explode) and tune the procedural-animation values live, then copy them
+  into config. Uses the exact same animation code as the game, so what you
+  tune is what you get. Harmless if the link leaks.
+
 ## v0.7.7 — 2026-06-12
 
 - **Enemies feel alive (procedural animation, prototype).** No new art — the
