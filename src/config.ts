@@ -5,8 +5,19 @@
  * here change, update docs/SPEC-game-mechanics.md in the same commit.
  */
 
+// World size is picked at boot to MATCH the window's aspect ratio, so the
+// Phaser canvas fills the screen (FIT-scaled) with no pillarbox — enemies
+// then spawn from the true screen edges, not an inset 4:3 box. One axis is
+// fixed (the "reference") so the on-screen tower size stays constant; the
+// other extends to the screen. WORLD_W/H below are the legacy 4:3 reference
+// (still the landscape values on a 4:3 monitor).
 export const WORLD_W = 960;
-export const WORLD_H = 720;
+export const WORLD_H = 720;               // landscape reference HEIGHT (tower scale)
+export const WORLD_PORTRAIT_W = 640;      // portrait reference WIDTH (tower scale)
+// Clamp the long:short ratio so an ultrawide/ultratall screen doesn't get an
+// absurd arena (extreme ratios keep a small pillarbox; normal screens fill).
+export const WORLD_AR_MIN = 1.2;
+export const WORLD_AR_MAX = 2.4;
 
 // Tower
 export const TOWER_SIZE = 48;

@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.5 — 2026-06-12
+
+- **Enemies enter from the true screen edges now.** The arena was a fixed
+  4:3 box letterboxed onto wider screens, so on desktop enemies appeared
+  to spawn well inside the playfield (the dead space showed background).
+  The world now matches your window's shape, filling it edge to edge —
+  the tower stays the same on-screen size, the arena just gets as wide
+  (or tall) as your screen. Worst-affected was desktop; phones improve too.
+
 ## v0.7.4 — 2026-06-12
 
 Balance: **Repair and Plating are once per level now** (Shannon's call —

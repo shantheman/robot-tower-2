@@ -4,7 +4,7 @@
 
 import "./crash"; // FIRST: the crash banner must catch module-init errors below
 import Phaser from "phaser";
-import { WORLD_H, WORLD_W } from "./config";
+import { WORLD_AR_MAX, WORLD_AR_MIN, WORLD_H, WORLD_PORTRAIT_W } from "./config";
 import { game } from "./game";
 import { installKeyboardRouting } from "./input";
 import { BattleScene } from "./scenes/BattleScene";
@@ -38,10 +38,23 @@ home.onSettings = () => settings.show();
 home.onAchievements = () => achievements.show();
 pause.onSettings = () => settings.show();
 
-// Portrait screens get a tall arena (640x1280); landscape keeps the classic
-// 960x720. Same mechanics — the battlefield just matches the glass.
-if (window.innerHeight > window.innerWidth) game.world = { w: 640, h: 1280 };
-else game.world = { w: WORLD_W, h: WORLD_H };
+// Size the world to the window's aspect ratio so the canvas fills the screen
+// (no FIT pillarbox) — enemies then enter from the real edges. The reference
+// axis is fixed (height in landscape, width in portrait) to keep the tower a
+// constant on-screen size; the other axis stretches to the screen, clamped so
+// extreme ratios don't make an absurd arena.
+{
+  const winW = Math.max(1, window.innerWidth);
+  const winH = Math.max(1, window.innerHeight);
+  const clamp = (v: number) => Math.min(WORLD_AR_MAX, Math.max(WORLD_AR_MIN, v));
+  if (winH > winW) {
+    const ar = clamp(winH / winW); // portrait: tall arena
+    game.world = { w: WORLD_PORTRAIT_W, h: Math.round(WORLD_PORTRAIT_W * ar) };
+  } else {
+    const ar = clamp(winW / winH); // landscape: wide arena
+    game.world = { w: Math.round(WORLD_H * ar), h: WORLD_H };
+  }
+}
 
 const phaser = new Phaser.Game({
   type: Phaser.AUTO,
