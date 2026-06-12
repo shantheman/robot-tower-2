@@ -15,6 +15,14 @@ export interface Enemy {
   fireTimer: number;     // ranged enemies
   flash: number;
   alive: boolean;
+  // Procedural animation (config ENEMY_ANIM): random phase so units don't
+  // pulse in sync; baseScale is the spawn scale the breathe pulse multiplies;
+  // animOX/animOY are last frame's hover offset, undone before each move so
+  // the bob never compounds into the movement integrator.
+  animPhase: number;
+  baseScale: number;
+  animOX: number;
+  animOY: number;
 }
 
 export interface EnemyBullet {

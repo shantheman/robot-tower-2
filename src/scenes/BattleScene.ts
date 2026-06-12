@@ -56,6 +56,7 @@ export class BattleScene extends Phaser.Scene {
   private toSpawn = 0;
   private spawnTimer = 0;
   private clearedLinger = 0;
+  private animClock = 0; // drives enemy idle animation; advances with enemyDt (freeze stops it, warp slows it)
   private bossPending = false;
   private intermission = C.INTERMISSION_TIME;
   private fireTimer = 0;
@@ -251,6 +252,7 @@ export class BattleScene extends Phaser.Scene {
       sprite, shadow, shadowOffX, shadowOffY, type, hp, maxHp: hp, alive: true, flash: 0,
       fireTimer: type.ranged?.fireCd ?? 0,
       speed: waveRobotSpeed(game.gs.wave) * type.speedMult,
+      animPhase: Math.random() * Math.PI * 2, baseScale: sprite.scale, animOX: 0, animOY: 0,
     });
   }
 
@@ -261,6 +263,40 @@ export class BattleScene extends Phaser.Scene {
     if (side === 1) return [Math.random() * w, h + C.SPAWN_MARGIN];
     if (side === 2) return [-C.SPAWN_MARGIN, Math.random() * h];
     return [w + C.SPAWN_MARGIN, Math.random() * h];
+  }
+
+  /** Procedural "alive" pass (config ENEMY_ANIM) — runs after movement +
+   * collision on the LOGICAL position, layering feedback-safe transforms:
+   * always-face-tower + wobble, breathe/charge scale, and a hover bob whose
+   * offset is recorded in animOX/animOY so it's undone before the next move. */
+  private animateEnemy(e: Enemy): void {
+    if (game.gs.reduceMotion) return; // accessibility: static enemies, as before
+    const a = C.ENEMY_ANIM[e.type.key];
+    const t = this.animClock;
+    const ph = e.animPhase;
+    // Face the tower (centralized here; ranged units already kept this facing).
+    let rot = Math.atan2(this.towerPos.y - e.sprite.y, this.towerPos.x - e.sprite.x) + Math.PI / 2;
+    if (a?.wobbleDeg) rot += Phaser.Math.DegToRad(a.wobbleDeg) * Math.sin(t * (a.wobbleHz ?? 3) + ph);
+    e.sprite.setRotation(rot);
+    e.shadow.setRotation(rot);
+    // Idle breathe + ranged charge-tell (swell as the shot nears, snap on fire).
+    let scaleMul = 1;
+    if (a?.breatheAmp) scaleMul += a.breatheAmp * Math.sin(t * (a.breatheHz ?? 2) + ph);
+    if (a?.chargeTell && e.type.ranged) {
+      const charge = 1 - Math.max(0, e.fireTimer) / e.type.ranged.fireCd; // 0..1
+      scaleMul += charge * charge * 0.18;
+    }
+    e.sprite.setScale(e.baseScale * scaleMul);
+    // Hover bob: sprite floats up/down with a little sway; the grounded shadow
+    // fades at the top of the rise to sell altitude.
+    if (a?.bobAmp) {
+      const hz = a.bobHz ?? 2.5;
+      const up = Math.sin(t * hz + ph);                 // -1 (low) .. 1 (high)
+      e.animOX = Math.cos(t * hz * 0.6 + ph) * a.bobAmp * 0.35;
+      e.animOY = -up * a.bobAmp;
+      e.sprite.x += e.animOX; e.sprite.y += e.animOY;
+      e.shadow.setAlpha(C.SHADOW.airAlpha * (1 - ((up + 1) / 2) * 0.35));
+    }
   }
 
   // -- player fire -----------------------------------------------------------------
@@ -481,6 +517,7 @@ export class BattleScene extends Phaser.Scene {
 
     const frozen = this.freezeActive > 0 || this.stunActive > 0;
     const enemyDt = frozen ? 0 : dt * (this.warpActive > 0 ? C.WARP_FACTOR : 1);
+    this.animClock += enemyDt; // freeze pauses enemy animation; warp slows it
 
     if (this.intermission > 0) {
       this.intermission -= dt;
@@ -525,6 +562,10 @@ export class BattleScene extends Phaser.Scene {
 
     // Enemies advance; crash on the shield ring (or the tower itself).
     for (const e of this.enemies) {
+      // Undo last frame's hover offset so movement integrates the LOGICAL
+      // position (the bob is re-applied at the end, post-collision).
+      e.sprite.x -= e.animOX; e.sprite.y -= e.animOY;
+      e.animOX = 0; e.animOY = 0;
       if (e.flash > 0) { e.flash -= dt; e.sprite.setTintFill(0xffffff); }
       else e.sprite.clearTint();
       const dx = this.towerPos.x - e.sprite.x;
@@ -566,6 +607,7 @@ export class BattleScene extends Phaser.Scene {
         e.hpBar.fillStyle(0x0a1424, 0.8).fillRect(e.sprite.x - w / 2, e.sprite.y - e.type.radius - 12, w, 5);
         e.hpBar.fillStyle(0x46e39a, 1).fillRect(e.sprite.x - w / 2, e.sprite.y - e.type.radius - 12, w * Math.max(0, e.hp / e.maxHp), 5);
       }
+      if (e.alive) this.animateEnemy(e);
     }
     this.enemies = this.enemies.filter((e) => e.alive);
 

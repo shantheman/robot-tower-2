@@ -65,6 +65,31 @@ export const SHOOTER: EnemyType = { key: "shooter", sprite: "shooter", radius: 1
 export const ENEMY_BULLET_SPEED = 240;
 export const ENEMY_BULLET_RADIUS = 6;
 
+/** Procedural "alive" animation per enemy — cheap transforms on the existing
+ * still (no sprite sheets). Top-down robots read as alive from rigid-body
+ * motion: a hover bob (air units float, their grounded shadow fades at the
+ * top), an idle breathe (scale pulse), a rotational wobble (hover wobble /
+ * menace), and a charge-tell swell on ranged units as the shot winds up.
+ * Each enemy gets a random phase so they don't pulse in sync. Tune freely. */
+export interface EnemyAnim {
+  bobAmp?: number;     // px of hover float (air units); shadow fades as it rises
+  bobHz?: number;      // float cycles/sec
+  breatheAmp?: number; // idle scale pulse, e.g. 0.05 = ±5%
+  breatheHz?: number;
+  wobbleDeg?: number;  // rotational sway amplitude (degrees)
+  wobbleHz?: number;
+  chargeTell?: boolean; // ranged: swell toward the shot (telegraph)
+}
+export const ENEMY_ANIM: Record<string, EnemyAnim> = {
+  grunt:   { breatheAmp: 0.05, breatheHz: 2.4 },
+  fast:    { bobAmp: 5, bobHz: 3.2, wobbleDeg: 7, wobbleHz: 5 },   // jittery quad
+  tough:   { breatheAmp: 0.045, breatheHz: 1.8 },
+  tank:    { breatheAmp: 0.035, breatheHz: 1.1 },                  // slow, heavy
+  bomber:  { bobAmp: 4, bobHz: 2.8, wobbleDeg: 6, wobbleHz: 4 },   // twitchy swarm
+  boss:    { breatheAmp: 0.05, breatheHz: 1.0 },                   // menacing pulse
+  shooter: { bobAmp: 4, bobHz: 2.2, chargeTell: true },            // hover + windup
+};
+
 /** Silhouette shadows — every unit casts its own sprite, black-tinted, under
  * a fixed top-left light (shadows fall down-right). Offsets derive from the
  * owner's radius r. Tuned with Shannon 2026-06-12. */

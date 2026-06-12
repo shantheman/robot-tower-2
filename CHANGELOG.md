@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.7 — 2026-06-12
+
+- **Enemies feel alive (procedural animation, prototype).** No new art — the
+  existing sprites now breathe (idle scale pulse), flyers hover with a
+  bobbing float and a fading ground shadow, twitchy units wobble, and the
+  shooter swells as it charges a shot (a readable telegraph). All tunable
+  per enemy in config; freeze pauses it and slow-mo slows it. Honors the
+  Reduce-motion setting (those players keep static enemies).
+
 ## v0.7.6 — 2026-06-12
 
 - **Resizing the window re-fits the arena.** The playfield was sized once at
