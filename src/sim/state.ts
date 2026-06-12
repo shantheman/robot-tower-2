@@ -70,8 +70,9 @@ export interface DamageResult {
 
 /** Frozen forever: this predates the Core Defender rename, but changing it
  * silently wipes every player's progress (localStorage is keyed per-origin).
- * If a rename is ever truly needed, dual-read (old key -> migrate -> new). */
-const SAVE_KEY = "rts2_save";
+ * If a rename is ever truly needed, dual-read (old key -> migrate -> new).
+ * (Exported for the Settings save-code transfer + reset.) */
+export const SAVE_KEY = "rts2_save";
 
 export class GameState {
   // -- permanent progression (persisted) -----------------------------------

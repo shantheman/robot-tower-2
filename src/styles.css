@@ -147,6 +147,16 @@ body { display: grid; place-items: center; }
   background: url("/art/core.webp") center / contain no-repeat;
   filter: drop-shadow(0 0 5px rgba(127, 232, 255, 0.5));
 }
+/* Save-code transfer rows in Settings */
+.set-pair { display: flex; gap: 8px; }
+.save-io { gap: 8px; }
+.save-io.hidden { display: none; }
+.save-io input {
+  flex: 1; min-width: 0; padding: 9px 11px; border-radius: 8px;
+  border: 1px solid var(--line-strong); background: rgba(8, 14, 28, 0.85);
+  color: #c4d3ee; font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 /* Locked marker (Shannon's padlock art, replaces the OS 🔒 emoji). */
 .lock-ico {
   width: 1.15em; height: 1.15em; object-fit: contain;

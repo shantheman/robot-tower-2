@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.3 — 2026-06-12
+
+- **Transfer your save**: Settings → Transfer save. EXPORT copies a save
+  code; IMPORT loads one (with a SURE? confirm — it replaces the current
+  progress). Carry progress between phone and desktop, and across the
+  upcoming domain move.
+- **Crash safety net**: if the game ever breaks, a friendly banner with a
+  RELOAD button appears (progress is saved) instead of a silent freeze.
+
 ## v0.7.2 — 2026-06-12
 
 The code-health pass (player-visible bits listed; the rest is internal):

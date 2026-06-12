@@ -2,6 +2,7 @@
  * The Game controller (src/game.ts) owns flow; this file wires the pieces
  * and the global keyboard routing. */
 
+import "./crash"; // FIRST: the crash banner must catch module-init errors below
 import Phaser from "phaser";
 import { WORLD_H, WORLD_W } from "./config";
 import { game } from "./game";

@@ -75,12 +75,15 @@ major system.
 - [ ] **Desktop packaging decision** — Tauri/Electron, or is "it runs in any
       browser" enough for desktop? (Leaning: browser is enough until proven
       otherwise.)
-- [ ] **Save sync/export decision** — saves are per-browser localStorage;
-      phone and desktop don't share progress. Options: ignore (fine for
-      now), manual export/import code, or cloud saves (big scope).
-- [ ] **Crash safety net** — v1 had a crash-log + friendly dialog; v2 has
-      nothing. Add window.onerror → log + "something broke, reload?" toast.
-      This is also the foundation for store crash reporting (below).
+- [x] **Save export/import** — DONE (2026-06-12): Settings > Transfer
+      save. EXPORT copies a CD1. save code (also shown for manual copy);
+      IMPORT + LOAD (two-tap confirm) applies it and reloads. This is the
+      migration path for the custom-domain move and phone<->desktop
+      transfer. Cloud saves remain out of scope.
+- [x] **Crash safety net** — DONE (2026-06-12): src/crash.ts (imported
+      first in main.ts) catches uncaught errors + rejections and shows a
+      framework-free reload banner with version + error detail. The hook
+      point for the future crash-reporting SDK.
 - [ ] **Performance pass on older phones** — tested on Shannon's recent
       iPhone only. Check an older device + Android; watch particle counts on
       late waves.
