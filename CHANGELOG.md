@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.8 — 2026-06-12
+
+- **Shooter rotation aligned.** Hex-snap faces were offset by 30°, so
+  the shooter was firing from between its weapon ports. Added a π/6
+  half-step to every snap target so a weapon port always faces the tower.
+
 ## v0.8.7 — 2026-06-12
 
 - **Bomber squadron: full hitbox + cascade explosion.** All 6 planes

@@ -312,7 +312,7 @@ export class BattleScene extends Phaser.Scene {
           e.snapTimer = 1.0 + Math.random() * 1.5;
         }
       }
-      const targetRot = e.snapSide * (Math.PI * 2 / hexSnap);
+      const targetRot = e.snapSide * (Math.PI * 2 / hexSnap) + Math.PI / hexSnap;
       const diff = Phaser.Math.Angle.Wrap(targetRot - e.sprite.rotation);
       e.sprite.setRotation(e.sprite.rotation + Math.sign(diff) * Math.min(Math.abs(diff), 6 * dt));
     }

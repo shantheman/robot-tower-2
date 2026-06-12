@@ -228,7 +228,7 @@ class PlaygroundScene extends Phaser.Scene {
       e.ox = ox; e.oy = oy;
       const pgSnapAnim = C.ENEMY_ANIM[e.type.key];
       if (pgSnapAnim?.hexSnap && dt > 0) {
-        const targetRot = e.snapSide * (Math.PI * 2 / pgSnapAnim.hexSnap);
+        const targetRot = e.snapSide * (Math.PI * 2 / pgSnapAnim.hexSnap) + Math.PI / pgSnapAnim.hexSnap;
         const diff = Phaser.Math.Angle.Wrap(targetRot - spr.rotation);
         spr.setRotation(spr.rotation + Math.sign(diff) * Math.min(Math.abs(diff), 6 * dt));
         e.shadow.setRotation(spr.rotation);
