@@ -73,12 +73,12 @@ export interface EnemyType {
      * body's display width, drawn between the body and the dish. */
     shadowAlpha: number; shadowDrop: number };
 }
-export const GRUNT: EnemyType = { key: "grunt", sprite: "enemy_0", radius: 14, hp: 20, speedMult: 1.0, reward: 5, contactDamage: 6, levelScaled: false, healthbar: false,
+export const GRUNT: EnemyType = { key: "grunt", sprite: "enemy_0", radius: 21, hp: 20, speedMult: 1.0, reward: 5, contactDamage: 6, levelScaled: false, healthbar: false,
   satellite: { texture: "enemy_0_satellite", pivot: [0.545, 0.475], swivelSpeed: 3.0, pauseMin: 0.6, pauseMax: 1.8,
     shadowAlpha: 0.35, shadowDrop: 0.08 } };
-export const FAST: EnemyType = { key: "fast", sprite: "enemy_1", radius: 10, hp: 10, speedMult: 1.8, reward: 6, contactDamage: 4, levelScaled: false, healthbar: false, air: true,
+export const FAST: EnemyType = { key: "fast", sprite: "enemy_1", radius: 15, hp: 10, speedMult: 1.8, reward: 6, contactDamage: 4, levelScaled: false, healthbar: false, air: true,
   rotors: { texture: "enemy_1_rotor", armReach: 0.70, spinRads: 18 } };
-export const TOUGH: EnemyType = { key: "tough", sprite: "enemy_3", radius: 15, hp: 70, speedMult: 0.9, reward: 14, contactDamage: 14, levelScaled: false, healthbar: false };
+export const TOUGH: EnemyType = { key: "tough", sprite: "enemy_3", radius: 22.5, hp: 70, speedMult: 0.9, reward: 14, contactDamage: 14, levelScaled: false, healthbar: false };
 export const TANK: EnemyType = { key: "tank", sprite: "enemy_2", radius: 26, hp: 160, speedMult: 0.5, reward: 30, contactDamage: 34, levelScaled: true, healthbar: true };
 export const BOMBER: EnemyType = { key: "bomber", sprite: "enemy_4", radius: 10, hp: 40, speedMult: 1.4, reward: 12, contactDamage: 26, levelScaled: true, healthbar: false, air: true,
   squadron: { offsets: [[-22, 14], [22, 14], [-42, 28], [42, 28], [0, 42]], driftAmp: 2.5, driftHz: 0.5 } };

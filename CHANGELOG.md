@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.14 — 2026-06-12
+
+- **Grunt, Tough, and Fast are 50% bigger.** Bumped their hit radius ×1.5
+  (grunt 14→21, fast 10→15, tough 15→22.5), which scales the sprite, shadow,
+  and grunt dish proportionally. Note: radius is also the hitbox, so they're
+  correspondingly easier to hit and reach the tower a hair sooner — shout if
+  you want the visual decoupled from the hitbox.
+
 ## v0.8.13 — 2026-06-12
 
 - **Grunt dish casts a drop shadow.** Like the tower gun's, the radar dish now
