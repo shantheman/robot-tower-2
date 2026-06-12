@@ -6,22 +6,15 @@
 import { game } from "../game";
 import { ACHIEVEMENTS, SKILL_NODES } from "../sim/state";
 import { TROPHY_ICON } from "./icons";
+import { Panel } from "./panel";
 
-export class HomeScreen {
-  private root: HTMLElement;
+export class HomeScreen extends Panel {
   onSkills: () => void = () => {};
   onSettings: () => void = () => {};
   onAchievements: () => void = () => {};
 
   constructor(parent: HTMLElement) {
-    this.root = document.createElement("div");
-    this.root.id = "home";
-    this.root.className = "panel-screen home hidden";
-    parent.appendChild(this.root);
-    game.register("home", {
-      onShow: () => { this.render(); this.root.classList.remove("hidden"); },
-      onHide: () => this.root.classList.add("hidden"),
-    });
+    super(parent, "home", "home", "panel-screen home");
   }
 
   render(): void {
@@ -37,7 +30,7 @@ export class HomeScreen {
         <div class="hs-box"><label>SKILLS</label><b class="gr">${gs.skills.size}/${SKILL_NODES.length}</b></div>
       </div>`;
 
-    this.root.innerHTML = `
+    this.setHtml(`
       <div class="home-grid"></div>
       <div class="home-topbar">
         ${returning ? `<div class="home-cores"><span class="core-icon small"></span><b>${gs.cores}</b></div>` : ""}
@@ -74,7 +67,7 @@ export class HomeScreen {
             Survive waves, earn coins to spend, and bank permanent Cores for every wave you clear.</div>`}
           <div class="home-credit">A game by Callum</div>
         </div>
-      </div>`;
+      </div>`);
 
     this.root.querySelector("[data-act=play]")?.addEventListener("click", () => {
       game.show("battle");

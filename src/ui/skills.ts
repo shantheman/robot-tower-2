@@ -9,30 +9,18 @@ import { play } from "../audio";
 import { SKILL_NODES, SkillNode } from "../sim/state";
 import { esc } from "./html";
 import { Category, ITEM_ART, catIcon } from "./icons";
+import { Panel } from "./panel";
 
 const BRANCHES = ["CANNON", "DEFENSE", "DRONE", "ULTIMATES"] as const;
 type NodeState = "owned" | "canbuy" | "cant" | "locked";
 
-export class SkillsPanel {
-  private root: HTMLElement;
+export class SkillsPanel extends Panel {
   /** Where to return on close (home or battle). */
   returnTo: "home" | "battle" = "home";
   private activeBranch: Category = "CANNON";
 
   constructor(parent: HTMLElement) {
-    this.root = document.createElement("div");
-    this.root.id = "skills";
-    this.root.className = "panel-screen hidden";
-    parent.appendChild(this.root);
-    game.register("skills", {
-      onShow: () => {
-        this.render();
-        // A fresh open starts at the top (render preserves scroll for buys).
-        this.root.querySelector(".panel-scroll")!.scrollTop = 0;
-        this.root.classList.remove("hidden");
-      },
-      onHide: () => this.root.classList.add("hidden"),
-    });
+    super(parent, "skills", "skills");
   }
 
   private nodeState(n: SkillNode): NodeState {
@@ -86,9 +74,7 @@ export class SkillsPanel {
         ${catIcon(b)}<span>${b}</span>
       </button>`).join("");
 
-    // Unlocking re-renders; keep the scroll position or the buy jumps to top.
-    const keepScroll = this.root.querySelector(".panel-scroll")?.scrollTop ?? 0;
-    this.root.innerHTML = `
+    this.setHtml(`
       <div class="panel-scroll">
       <header class="panel-head">
         <div class="panel-title-group"><h1>SKILL TREE</h1></div>
@@ -111,8 +97,7 @@ export class SkillsPanel {
           <span class="cta-col"><span class="cta-big">${this.returnTo === "battle" ? "RESUME BATTLE" : "BACK TO BASE"}</span>
           ${isTouch() ? "" : `<span class="cta-sub2">[Esc]</span>`}</span>
         </button>
-      </footer>`;
-    this.root.querySelector(".panel-scroll")!.scrollTop = keepScroll;
+      </footer>`);
 
     this.root.querySelectorAll<HTMLButtonElement>(".skill-node.canbuy").forEach((el) => {
       el.addEventListener("click", () => {

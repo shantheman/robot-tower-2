@@ -8,6 +8,7 @@ import { play } from "../audio";
 import { waveInLevel, wavesForLevel } from "../sim/waves";
 import { esc } from "./html";
 import { Category, ITEM_ART, catIcon } from "./icons";
+import { Panel } from "./panel";
 
 interface CardSpec {
   key: string;
@@ -19,23 +20,9 @@ interface CardSpec {
   onBuy?: () => boolean;
 }
 
-export class ShopPanel {
-  private root: HTMLElement;
-
+export class ShopPanel extends Panel {
   constructor(parent: HTMLElement) {
-    this.root = document.createElement("div");
-    this.root.id = "shop";
-    this.root.className = "panel-screen hidden";
-    parent.appendChild(this.root);
-    game.register("shop", {
-      onShow: () => {
-        this.render();
-        // A fresh open starts at the top (render preserves scroll for buys).
-        this.root.querySelector(".panel-scroll")!.scrollTop = 0;
-        this.root.classList.remove("hidden");
-      },
-      onHide: () => this.root.classList.add("hidden"),
-    });
+    super(parent, "shop", "shop");
   }
 
   private fieldCards(): CardSpec[] {
@@ -179,10 +166,8 @@ export class ShopPanel {
     const pips = Array.from({ length: 10 }, (_, i) =>
       `<span class="pip ${i < Math.min(10, gs.towerLevel) ? "lit" : ""}"></span>`).join("");
     const ults = this.ultimateCards();
-    // Buying re-renders; keep the scroll position or the buy jumps to top.
-    const keepScroll = this.root.querySelector(".panel-scroll")?.scrollTop ?? 0;
 
-    this.root.innerHTML = `
+    this.setHtml(`
       <div class="panel-scroll">
       <header class="panel-head">
         <div class="panel-title-group">
@@ -250,8 +235,7 @@ export class ShopPanel {
              <span class="cta-col"><span class="cta-big">RESUME BATTLE</span>
              <span class="cta-sub2">Wave ${wil} of ${total}${isTouch() ? "" : " · [Tab / Esc]"}</span></span>
            </button>`}
-      </footer>`;
-    this.root.querySelector(".panel-scroll")!.scrollTop = keepScroll;
+      </footer>`);
 
     // Wire clicks
     const all = [...this.fieldCards(), ...this.ultimateCards()];

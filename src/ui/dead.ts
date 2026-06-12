@@ -4,25 +4,17 @@
 
 import { game } from "../game";
 import { waveInLevel } from "../sim/waves";
+import { Panel } from "./panel";
 
-export class DeadScreen {
-  private root: HTMLElement;
-
+export class DeadScreen extends Panel {
   constructor(parent: HTMLElement) {
-    this.root = document.createElement("div");
-    this.root.id = "dead";
-    this.root.className = "panel-screen dead hidden";
-    parent.appendChild(this.root);
-    game.register("dead", {
-      onShow: () => { this.render(); this.root.classList.remove("hidden"); },
-      onHide: () => this.root.classList.add("hidden"),
-    });
+    super(parent, "dead", "dead", "panel-screen dead");
   }
 
   render(): void {
     const gs = game.gs;
     const cpWave = gs.checkpointWaveInLevel();
-    this.root.innerHTML = `
+    this.setHtml(`
       <div class="dead-wrap">
         <div class="dead-title">YOU DIED</div>
         <div class="dead-sub">You fell on <b>Level ${gs.level}</b> · Wave ${waveInLevel(gs.wave)}</div>
@@ -33,7 +25,7 @@ export class DeadScreen {
         : `<button class="cta" data-act="retry">RETRY LEVEL ${gs.level} ▸</button>`}
           <button class="ghost-btn" data-act="home">HOME</button>
         </div>
-      </div>`;
+      </div>`);
 
     this.root.querySelector("[data-act=checkpoint]")?.addEventListener("click", () => {
       game.show("battle");

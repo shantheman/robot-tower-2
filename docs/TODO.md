@@ -90,7 +90,9 @@ on load). The items below are the gaps, most impactful first.
       instead of `@v4` tags (supply-chain), and add explicit
       `permissions: contents: read` to ci.yml (it currently inherits the
       default token scope; deploy.yml already declares least privilege).
-7. - [ ] **Panel base class** *(refactor)* — the root-div + register +
+7. - [x] **Panel base class** — DONE (2026-06-12): src/ui/panel.ts
+      owns register/show/hide + the setHtml scroll contract; shop, skills,
+      home, dead, pause all extend it. *(refactor)* — the root-div + register +
       hidden-class + render pattern is copy-pasted across 5 panels, and
       the scroll-preservation logic now lives in 2 of them. A small
       `Panel` base would also give new screens the right behavior free.
