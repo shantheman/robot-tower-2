@@ -114,33 +114,39 @@ export class Effects {
     if (!t.exists("pfx_fire")) {
       const c = t.createCanvas("pfx_fire", 32, 32)!;
       const ctx = c.context;
+      ctx.clearRect(0, 0, 32, 32);
       const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
       g.addColorStop(0,    "rgba(255,220,80,1)");
       g.addColorStop(0.35, "rgba(255,80,0,.9)");
       g.addColorStop(1,    "rgba(200,20,0,0)");
-      ctx.fillStyle = g; ctx.fillRect(0, 0, 32, 32);
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(16, 16, 16, 0, Math.PI * 2); ctx.fill();
       c.refresh();
     }
 
     if (!t.exists("pfx_smoke")) {
       const c = t.createCanvas("pfx_smoke", 48, 48)!;
       const ctx = c.context;
+      ctx.clearRect(0, 0, 48, 48);
       const g = ctx.createRadialGradient(24, 24, 0, 24, 24, 24);
       g.addColorStop(0,   "rgba(70,50,30,.7)");
       g.addColorStop(0.5, "rgba(35,25,15,.4)");
       g.addColorStop(1,   "rgba(10,8,5,0)");
-      ctx.fillStyle = g; ctx.fillRect(0, 0, 48, 48);
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(24, 24, 24, 0, Math.PI * 2); ctx.fill();
       c.refresh();
     }
 
     if (!t.exists("pfx_spark")) {
       const c = t.createCanvas("pfx_spark", 12, 12)!;
       const ctx = c.context;
+      ctx.clearRect(0, 0, 12, 12);
       const g = ctx.createRadialGradient(6, 6, 0, 6, 6, 6);
       g.addColorStop(0,   "rgba(255,255,200,1)");
       g.addColorStop(0.5, "rgba(255,180,50,.8)");
       g.addColorStop(1,   "rgba(255,100,0,0)");
-      ctx.fillStyle = g; ctx.fillRect(0, 0, 12, 12);
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(6, 6, 6, 0, Math.PI * 2); ctx.fill();
       c.refresh();
     }
   }

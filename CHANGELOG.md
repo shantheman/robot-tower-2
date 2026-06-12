@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.10 — 2026-06-12
+
+- **Explosion black-square artifact fixed.** Particle canvas textures
+  were drawn with `fillRect`, which painted the full rectangle including
+  corners outside the radial gradient — those pixels rendered as opaque
+  black in WebGL. Switched to `arc()` + `fill()` so only the circular
+  gradient region is ever painted; corners stay transparent.
+
 ## v0.8.9 — 2026-06-12
 
 - **Animation retune + breathe removed.** All enemies updated to
