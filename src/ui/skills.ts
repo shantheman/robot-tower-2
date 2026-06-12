@@ -24,7 +24,12 @@ export class SkillsPanel {
     this.root.className = "panel-screen hidden";
     parent.appendChild(this.root);
     game.register("skills", {
-      onShow: () => { this.render(); this.root.classList.remove("hidden"); },
+      onShow: () => {
+        this.render();
+        // A fresh open starts at the top (render preserves scroll for buys).
+        this.root.querySelector(".panel-scroll")!.scrollTop = 0;
+        this.root.classList.remove("hidden");
+      },
       onHide: () => this.root.classList.add("hidden"),
     });
   }
@@ -80,6 +85,8 @@ export class SkillsPanel {
         ${catIcon(b)}<span>${b}</span>
       </button>`).join("");
 
+    // Unlocking re-renders; keep the scroll position or the buy jumps to top.
+    const keepScroll = this.root.querySelector(".panel-scroll")?.scrollTop ?? 0;
     this.root.innerHTML = `
       <div class="panel-scroll">
       <header class="panel-head">
@@ -104,6 +111,7 @@ export class SkillsPanel {
           ${isTouch() ? "" : `<span class="cta-sub2">[Esc]</span>`}</span>
         </button>
       </footer>`;
+    this.root.querySelector(".panel-scroll")!.scrollTop = keepScroll;
 
     this.root.querySelectorAll<HTMLButtonElement>(".skill-node.canbuy").forEach((el) => {
       el.addEventListener("click", () => {

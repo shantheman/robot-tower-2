@@ -27,7 +27,12 @@ export class ShopPanel {
     this.root.className = "panel-screen hidden";
     parent.appendChild(this.root);
     game.register("shop", {
-      onShow: () => { this.render(); this.root.classList.remove("hidden"); },
+      onShow: () => {
+        this.render();
+        // A fresh open starts at the top (render preserves scroll for buys).
+        this.root.querySelector(".panel-scroll")!.scrollTop = 0;
+        this.root.classList.remove("hidden");
+      },
       onHide: () => this.root.classList.add("hidden"),
     });
   }
@@ -173,6 +178,8 @@ export class ShopPanel {
     const pips = Array.from({ length: 10 }, (_, i) =>
       `<span class="pip ${i < Math.min(10, gs.towerLevel) ? "lit" : ""}"></span>`).join("");
     const ults = this.ultimateCards();
+    // Buying re-renders; keep the scroll position or the buy jumps to top.
+    const keepScroll = this.root.querySelector(".panel-scroll")?.scrollTop ?? 0;
 
     this.root.innerHTML = `
       <div class="panel-scroll">
@@ -243,6 +250,7 @@ export class ShopPanel {
              <span class="cta-sub2">Wave ${wil} of ${total}${isTouch() ? "" : " · [Tab / Esc]"}</span></span>
            </button>`}
       </footer>`;
+    this.root.querySelector(".panel-scroll")!.scrollTop = keepScroll;
 
     // Wire clicks
     const all = [...this.fieldCards(), ...this.ultimateCards()];
