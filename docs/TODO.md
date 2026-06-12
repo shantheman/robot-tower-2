@@ -49,6 +49,21 @@ major system.
 
 ## Launch readiness
 
+- [ ] **Custom domain** — buy a domain and serve the game from it; hosting
+      stays on GitHub Pages (fully supported: set the custom domain in the
+      repo's Pages settings + add a `public/CNAME` file so Actions deploys
+      keep it; DNS = CNAME record -> shantheman.github.io for a subdomain,
+      or A/AAAA records for an apex; HTTPS is automatic via Let's Encrypt;
+      also "verify" the domain on the GitHub account to block takeovers).
+      Availability checked 2026-06-12: **coredefender.com is AVAILABLE**,
+      as are coredefender.io / .gg / .app and playcoredefender.com (only
+      coredefendergame.com is taken). Zero-cost alternative: a subdomain
+      of baumangames.com (play.baumangames.com). Code change is tiny: the
+      Pages base path becomes "/" instead of /core-defender/, and GitHub
+      auto-redirects the old github.io URL to the new domain.
+      ⚠️ **Do this EARLY**: localStorage saves are per-origin, so the move
+      orphans every existing save — cheap now, painful after launch (or
+      gate on the save export/import item below).
 - [ ] **PWA pass** — manifest + icons + service worker: installable to the
       home screen, runs offline, fullscreen standalone on iOS. Cheap, and a
       real alternative to app stores for the friend-circle audience.
