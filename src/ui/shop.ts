@@ -14,8 +14,9 @@ interface CardSpec {
   key: string;
   name: string;
   desc: string;
-  cost: number | null;          // null -> owned (green check)
+  cost: number | null;          // null -> owned/used (green check)
   state: "buy" | "poor" | "owned" | "equipped";
+  stateLabel?: string;          // green-check text override (e.g. "USED")
   cat: Category;                // which cluster it renders under (v3 layout)
   onBuy?: () => boolean;
 }
@@ -97,20 +98,32 @@ export class ShopPanel extends Panel {
       state: gs.guidedOwned ? "owned" : m >= C.GUIDED_COST ? "buy" : "poor",
       onBuy: () => gs.tryBuyGuided(),
     });
+    // Repair + Plating are limited per level (v2 balance: stacking them made
+    // the tower unkillable). Spent cards show a green "USED".
+    const per = (max: number) => max === 1 ? "once per level" : `${max}× per level`;
     if (gs.skills.has("repair")) {
+      const used = gs.repairBuys >= C.REPAIR_MAX_BUYS;
       const hurt = gs.hp < gs.maxHp();
       cards.push({
-        key: "repair", cat: "DEFENSE", name: "Repair", desc: `restore +${C.REPAIR_HP} HP`,
-        cost: gs.repairCost(),
-        state: hurt && m >= gs.repairCost() ? "buy" : "poor",
+        key: "repair", cat: "DEFENSE", name: "Repair",
+        desc: `+${C.REPAIR_HP} HP · ${per(C.REPAIR_MAX_BUYS)}`,
+        cost: used ? null : gs.repairCost(),
+        state: used ? "owned" : hurt && m >= gs.repairCost() ? "buy" : "poor",
+        stateLabel: "USED",
         onBuy: () => gs.tryBuyRepair(),
       });
     }
-    if (gs.skills.has("plating")) cards.push({
-      key: "plating", cat: "DEFENSE", name: "Plating", desc: `+${C.PLATING_HP} max HP`,
-      cost: gs.platingCost(), state: m >= gs.platingCost() ? "buy" : "poor",
-      onBuy: () => gs.tryBuyPlating(),
-    });
+    if (gs.skills.has("plating")) {
+      const used = gs.platingBuys >= C.PLATING_MAX_BUYS;
+      cards.push({
+        key: "plating", cat: "DEFENSE", name: "Plating",
+        desc: `+${C.PLATING_HP} max HP · ${per(C.PLATING_MAX_BUYS)}`,
+        cost: used ? null : gs.platingCost(),
+        state: used ? "owned" : m >= gs.platingCost() ? "buy" : "poor",
+        stateLabel: "USED",
+        onBuy: () => gs.tryBuyPlating(),
+      });
+    }
     if (gs.skills.has("shield")) cards.push({
       key: "shield", cat: "DEFENSE", name: "Shield",
       desc: gs.shieldLevel === 0
@@ -143,7 +156,7 @@ export class ShopPanel extends Panel {
 
   private card(it: CardSpec): string {
     const priceOrState = it.cost === null || it.state === "equipped"
-      ? `<div class="card-state">✓ ${it.state === "equipped" ? "EQUIPPED" : "OWNED"}</div>`
+      ? `<div class="card-state">✓ ${it.stateLabel ?? (it.state === "equipped" ? "EQUIPPED" : "OWNED")}</div>`
       : `<div class="card-price ${it.state === "poor" ? "poor" : ""}">
            <span class="coin-icon ${it.state === "poor" ? "dim" : ""}"></span>
            ${it.cost!.toLocaleString("en-US")}

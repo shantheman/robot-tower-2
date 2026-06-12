@@ -404,13 +404,15 @@ export class GameState {
     return true;
   }
   tryBuyRepair(): boolean {
-    if (!this.skills.has("repair") || this.hp >= this.maxHp() || !this.spend(this.repairCost())) return false;
+    if (!this.skills.has("repair") || this.repairBuys >= C.REPAIR_MAX_BUYS) return false;
+    if (this.hp >= this.maxHp() || !this.spend(this.repairCost())) return false;
     this.repairBuys += 1;
     this.hp = Math.min(this.maxHp(), this.hp + C.REPAIR_HP);
     return true;
   }
   tryBuyPlating(): boolean {
-    if (!this.skills.has("plating") || !this.spend(this.platingCost())) return false;
+    if (!this.skills.has("plating") || this.platingBuys >= C.PLATING_MAX_BUYS) return false;
+    if (!this.spend(this.platingCost())) return false;
     this.platingBuys += 1;
     this.hp += C.PLATING_HP; // current HP rises with the new max
     return true;

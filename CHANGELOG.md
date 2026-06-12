@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.7.4 — 2026-06-12
+
+Balance: **Repair and Plating are once per level now** (Shannon's call —
+stacked, they made the tower effectively unkillable, especially with
+mid-wave panic-buys through the pause shop). Spent cards show "✓ USED"
+until the next level. The caps are config knobs (REPAIR_MAX_BUYS /
+PLATING_MAX_BUYS) if playtests say once is too strict.
+
 ## v0.7.3 — 2026-06-12
 
 - **Transfer your save**: Settings → Transfer save. EXPORT copies a save

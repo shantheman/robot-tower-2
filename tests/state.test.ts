@@ -48,6 +48,23 @@ describe("economy core (parity with smoke_test.py)", () => {
     expect(g.maxHp()).toBe(max0 + C.PLATING_HP);
   });
 
+  it("repair + plating are limited per level and reset with the run", () => {
+    const g = fresh();
+    g.money = 10_000;
+    g.skills.add("repair").add("plating");
+    g.hp = 10;
+    for (let i = 0; i < C.REPAIR_MAX_BUYS; i++) expect(g.tryBuyRepair()).toBe(true);
+    g.hp = 10;
+    expect(g.tryBuyRepair()).toBe(false);           // cap hit, even while hurt
+    for (let i = 0; i < C.PLATING_MAX_BUYS; i++) expect(g.tryBuyPlating()).toBe(true);
+    expect(g.tryBuyPlating()).toBe(false);          // cap hit, money irrelevant
+    g.resetRun();                                   // next level: fresh stock
+    g.money = 10_000;
+    g.hp = 10;
+    expect(g.tryBuyRepair()).toBe(true);
+    expect(g.tryBuyPlating()).toBe(true);
+  });
+
   it("shield layers soak 30 each; overflow hits the tower (tank example)", () => {
     const g = fresh();
     g.money = 10_000;

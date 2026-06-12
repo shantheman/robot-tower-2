@@ -33,6 +33,11 @@ of **2026-06-10** (cores-per-wave economy update).
 >   level snapshots the full loadout (coins, upgrades, ultimates — including
 >   between-wave purchases). Death offers "Retry from wave N": the snapshot is
 >   restored at full HP. Replayed waves never re-pay cores (high-water mark).
+> - **Repair + Plating limited to once per level** (`REPAIR_MAX_BUYS` /
+>   `PLATING_MAX_BUYS` = 1, added 2026-06-12): unlimited buys let players
+>   stack cheap HP every shop visit — including mid-wave via the pause shop —
+>   into a near-unkillable tower. Spent cards show "✓ USED" for the rest of
+>   the level; the buy counters reset with the run.
 
 ---
 
@@ -200,8 +205,8 @@ Once unlocked, every drone volley also fires at a **second** enemy in range
 
 | Purchase | Effect | Base cost | Growth |
 |---|---|---|---|
-| **Repair** | Restore **+30 HP** (`REPAIR_HP`); only buyable when hurt | 60 coins | ×1.4 per buy |
-| **Plating** | **+25 max HP** (and +25 current) (`PLATING_HP`) | 90 coins | ×1.5 per buy |
+| **Repair** | Restore **+30 HP** (`REPAIR_HP`); only when hurt; **once per level** (`REPAIR_MAX_BUYS`) | 60 coins | n/a (single buy) |
+| **Plating** | **+25 max HP** (and +25 current) (`PLATING_HP`); **once per level** (`PLATING_MAX_BUYS`) | 90 coins | n/a (single buy) |
 | **Shield** | **Layered**: `2 + (level−1)` layers (`SHIELD_BASE_HITS`), each soaking up to **30 dmg** of a single hit (`SHIELD_HIT_ABSORB`) — a 34-dmg tank slam strips 2 layers; a 90-dmg boss slam strips 3; if a hit needs more layers than remain, the **unsoaked remainder damages the tower** (34 dmg into 1 layer = 4 tower dmg). **Recharges fully at each wave start.** One **ring** shows per remaining layer, and enemies/projectiles **crash on the outer ring** instead of reaching the tower | 350 coins | ×1.7 per level |
 
 ---

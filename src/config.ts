@@ -161,6 +161,12 @@ export const REPAIR_HP = 30;
 export const PLATING_BASE_COST = 90;
 export const PLATING_COST_GROWTH = 1.5;
 export const PLATING_HP = 25;
+/** v2 balance (Shannon, 2026-06-12): repair+plating stacked into a
+ * near-unkillable tower (cheap HP every shop visit, even mid-wave via the
+ * pause shop). Both are now limited buys per level — raise if playtests
+ * say 1 is too harsh. */
+export const REPAIR_MAX_BUYS = 1;
+export const PLATING_MAX_BUYS = 1;
 export const SHIELD_BASE_COST = 350;
 export const SHIELD_COST_GROWTH = 1.7;
 export const SHIELD_BASE_HITS = 2;        // layers at level 1 (+1 per level)
