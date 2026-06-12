@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.18 — 2026-06-12
+
+- **Tank is 33% bigger** (radius 26 → 34.6) and re-tuned: sits lower and stops
+  wobbling (`tank: { altitude: -12 }`). As with the other size bumps, radius is
+  also the hitbox, so it scales too.
+
 ## v0.8.17 — 2026-06-12
 
 - **New Tank enemy art** (enemy_2, Shannon's drop) — armored hull with a glowing
