@@ -105,7 +105,7 @@ export interface EnemyAnim {
 export const ENEMY_ANIM: Record<string, EnemyAnim> = {
   grunt:   { altitude: -20, wobbleDeg: 2, wobbleHz: 1.7 },
   fast:    { altitude: 7.5, bobAmp: 5, bobHz: 2.1, wobbleDeg: 6, wobbleHz: 2.6 },
-  tough:   { altitude: -8 },
+  tough:   { altitude: 0.5, bobAmp: 10, bobHz: 2.2 },
   tank:    { altitude: -7, wobbleDeg: 2.5, wobbleHz: 1 },
   bomber:  { altitude: 2.5, bobAmp: 4.5, bobHz: 1.4, wobbleDeg: 2, wobbleHz: 0.8 },
   boss:    { altitude: -16.5, wobbleDeg: 2, wobbleHz: 0.8 },

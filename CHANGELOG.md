@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.15 — 2026-06-12
+
+- **Tough now hovers** (Shannon's tune): altitude 0.5, a 10px hover bob at
+  2.2 Hz — it floats and casts a fading detached shadow instead of sitting
+  flat. Other enemies' anim values unchanged.
+
 ## v0.8.14 — 2026-06-12
 
 - **Grunt, Tough, and Fast are 50% bigger.** Bumped their hit radius ×1.5
