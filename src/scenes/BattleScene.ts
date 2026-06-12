@@ -412,6 +412,11 @@ export class BattleScene extends Phaser.Scene {
 
   private kill(e: Enemy, hitPlane?: Phaser.GameObjects.Image): void {
     e.alive = false;
+    // Drop the hit-flash tint now — once alive is false this enemy is filtered
+    // out of the update loop, so the flash branch can never clear it. Without
+    // this the whole squadron sits solid-white through the cascade.
+    e.sprite.clearTint();
+    e.squadronWings?.forEach(w => w.clearTint());
     const boss = e.type === C.BOSS;
     const { gain, bonus } = game.gs.onKill(e.type.reward, boss);
     play(boss ? "boom" : "kill");

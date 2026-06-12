@@ -2,6 +2,23 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.11 — 2026-06-12
+
+- **Explosion grey-square artifact fixed (for real).** v0.8.9/v0.8.10 chased
+  the wrong causes (breathe, canvas corners, smoke); the true culprit was the
+  particle *textures* themselves. The soft radial gradients had non-zero RGB at
+  their zero-alpha outer stop, so the additive pipeline summed that dark colour
+  across each full texture quad — invisible per particle, but at frame 0 when a
+  dozen particles stack on one point the fringes piled into a visible grey
+  square. Rebuilt `burst()` entirely from tweened solid circles (no canvas
+  textures, no particle emitters): a flash, shockwave ring, fireball chunks,
+  and sparks, all additive. Geometry has no quad and no fringe, so the artifact
+  is structurally impossible now.
+- **Bomber squadron no longer freezes solid-white on death.** The hit-flash
+  tint is now cleared the instant a formation dies, so the planes explode in
+  their own colours through the cascade instead of sitting white for ~0.5 s
+  (once dead they leave the update loop that would otherwise clear the tint).
+
 ## v0.8.10 — 2026-06-12
 
 - **Explosion black-square artifact fixed.** Particle canvas textures

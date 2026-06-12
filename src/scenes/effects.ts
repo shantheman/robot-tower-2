@@ -11,7 +11,6 @@ export class Effects {
 
   constructor(private scene: Phaser.Scene) {
     this.layer = scene.add.layer();
-    this.ensureParticleTextures();
   }
 
   /** Track a transient object so clear() can sweep it. */
@@ -30,11 +29,19 @@ export class Effects {
     this.scene.tweens.add({ targets: line, alpha: 0, duration: 90, onComplete: () => line.destroy() });
   }
 
+  /** Explosion built entirely from tweened geometry — filled circles on ADD
+   * blend, no canvas/particle textures. Texture quads with a soft radial
+   * gradient leave a faint dark fringe across the whole quad (straight-alpha
+   * RGB the ADD pipeline still sums); harmless per particle but, when a dozen
+   * stack on the same point at frame 0, they pile into a visible grey square.
+   * Solid circles have no quad and no fringe, so the artifact can't happen. */
   burst(x: number, y: number, n: number): void {
     const big = n > 12; // boss tier
+    const rnd = Phaser.Math.FloatBetween;
+    const ADD = Phaser.BlendModes.ADD;
 
-    // Central flash
-    const flash = this.track(this.scene.add.circle(x, y, big ? 28 : 18, 0xfffce0));
+    // Central flash — additive so it reads as a hot pop, never a dark disc.
+    const flash = this.track(this.scene.add.circle(x, y, big ? 26 : 17, 0xfffce0)).setBlendMode(ADD);
     this.scene.tweens.add({
       targets: flash, scaleX: big ? 4 : 3.2, scaleY: big ? 4 : 3.2, alpha: 0,
       duration: 200, ease: "Power2", onComplete: () => flash.destroy(),
@@ -49,46 +56,35 @@ export class Effects {
       onComplete: () => ring.destroy(),
     });
 
-    // Fire particles — additive blending gives that orange glow against dark backgrounds
-    const fire = this.track(this.scene.add.particles(x, y, "pfx_fire", {
-      speed: { min: 40, max: big ? 170 : 110 },
-      angle: { min: 0, max: 360 },
-      scale: { start: big ? 1.6 : 1.0, end: 0 },
-      alpha: { start: 0.95, end: 0 },
-      lifespan: { min: 280, max: 520 },
-      gravityY: -80,
-      blendMode: "ADD",
-      emitting: false,
-    }));
-    fire.explode(big ? 22 : 13);
-    this.scene.time.delayedCall(700, () => { if (fire.active) fire.destroy(); });
+    // Fireball chunks — solid orange circles flying outward, shrinking + fading.
+    const fireColors = [0xffe27a, 0xffab33, 0xff6a1a, 0xff3d10];
+    const fireN = big ? 18 : 11;
+    for (let i = 0; i < fireN; i++) {
+      const ang = (Math.PI * 2 * i) / fireN + rnd(-0.4, 0.4);
+      const reach = (big ? 72 : 46) * rnd(0.35, 1);
+      const col = fireColors[(Math.random() * fireColors.length) | 0];
+      const dot = this.track(this.scene.add.circle(x, y, (big ? 10 : 7) * rnd(0.6, 1.1), col)).setBlendMode(ADD);
+      this.scene.tweens.add({
+        targets: dot,
+        x: x + Math.cos(ang) * reach, y: y + Math.sin(ang) * reach - (big ? 18 : 12),
+        scale: 0, alpha: 0, duration: rnd(260, 520), ease: "Power2",
+        onComplete: () => dot.destroy(),
+      });
+    }
 
-    // Smoke — grows as it disperses, drifts upward
-    const smoke = this.track(this.scene.add.particles(x, y, "pfx_smoke", {
-      speed: { min: 12, max: 55 },
-      angle: { min: 200, max: 340 },
-      scale: { start: big ? 0.9 : 0.55, end: big ? 3.0 : 1.8 },
-      alpha: { start: 0.58, end: 0 },
-      lifespan: { min: 700, max: 1150 },
-      gravityY: -28,
-      blendMode: "NORMAL",
-      emitting: false,
-    }));
-    smoke.explode(big ? 10 : 5);
-    this.scene.time.delayedCall(1400, () => { if (smoke.active) smoke.destroy(); });
-
-    // Sparks — fast outward, additive for the hot ember glow
-    const sparks = this.track(this.scene.add.particles(x, y, "pfx_spark", {
-      speed: { min: 90, max: big ? 260 : 190 },
-      angle: { min: 0, max: 360 },
-      scale: { start: 1.4, end: 0 },
-      alpha: { start: 1, end: 0 },
-      lifespan: { min: 180, max: 360 },
-      blendMode: "ADD",
-      emitting: false,
-    }));
-    sparks.explode(big ? 28 : 17);
-    this.scene.time.delayedCall(500, () => { if (sparks.active) sparks.destroy(); });
+    // Sparks — tiny, fast, bright embers shooting straight out.
+    const sparkN = big ? 24 : 15;
+    for (let i = 0; i < sparkN; i++) {
+      const ang = rnd(0, Math.PI * 2);
+      const reach = (big ? 120 : 85) * rnd(0.4, 1);
+      const sp = this.track(this.scene.add.circle(x, y, rnd(1.2, 2.6), 0xfff2c4)).setBlendMode(ADD);
+      this.scene.tweens.add({
+        targets: sp,
+        x: x + Math.cos(ang) * reach, y: y + Math.sin(ang) * reach,
+        scale: 0.2, alpha: 0, duration: rnd(180, 360), ease: "Power3",
+        onComplete: () => sp.destroy(),
+      });
+    }
   }
 
   popup(x: number, y: number, text: string, color: string): void {
@@ -103,51 +99,5 @@ export class Effects {
     const r = this.track(this.scene.add.rectangle(
       game.world.w / 2, game.world.h / 2, game.world.w, game.world.h, color, alpha));
     this.scene.tweens.add({ targets: r, alpha: 0, duration: 220, onComplete: () => r.destroy() });
-  }
-
-  /** Generate soft radial-gradient textures for the particle system.
-   * Runs once per Phaser texture cache (keyed, so safe to call from both
-   * BattleScene and PlaygroundScene without duplicating the canvas data). */
-  private ensureParticleTextures(): void {
-    const t = this.scene.textures;
-
-    if (!t.exists("pfx_fire")) {
-      const c = t.createCanvas("pfx_fire", 32, 32)!;
-      const ctx = c.context;
-      ctx.clearRect(0, 0, 32, 32);
-      const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-      g.addColorStop(0,    "rgba(255,220,80,1)");
-      g.addColorStop(0.35, "rgba(255,80,0,.9)");
-      g.addColorStop(1,    "rgba(200,20,0,0)");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(16, 16, 16, 0, Math.PI * 2); ctx.fill();
-      c.refresh();
-    }
-
-    if (!t.exists("pfx_smoke")) {
-      const c = t.createCanvas("pfx_smoke", 48, 48)!;
-      const ctx = c.context;
-      ctx.clearRect(0, 0, 48, 48);
-      const g = ctx.createRadialGradient(24, 24, 0, 24, 24, 24);
-      g.addColorStop(0,   "rgba(70,50,30,.7)");
-      g.addColorStop(0.5, "rgba(35,25,15,.4)");
-      g.addColorStop(1,   "rgba(10,8,5,0)");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(24, 24, 24, 0, Math.PI * 2); ctx.fill();
-      c.refresh();
-    }
-
-    if (!t.exists("pfx_spark")) {
-      const c = t.createCanvas("pfx_spark", 12, 12)!;
-      const ctx = c.context;
-      ctx.clearRect(0, 0, 12, 12);
-      const g = ctx.createRadialGradient(6, 6, 0, 6, 6, 6);
-      g.addColorStop(0,   "rgba(255,255,200,1)");
-      g.addColorStop(0.5, "rgba(255,180,50,.8)");
-      g.addColorStop(1,   "rgba(255,100,0,0)");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(6, 6, 6, 0, Math.PI * 2); ctx.fill();
-      c.refresh();
-    }
   }
 }
