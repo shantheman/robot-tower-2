@@ -65,7 +65,7 @@ export class HomeScreen extends Panel {
           </div>
           ${returning ? "" : `<div class="home-blurb">Defend the core from robots closing in on every side.
             Survive waves, earn coins to spend, and bank permanent Cores for every wave you clear.</div>`}
-          <div class="home-credit">A game by Callum</div>
+          <div class="home-credit">A game by Bauman Games</div>
         </div>
       </div>`);
 

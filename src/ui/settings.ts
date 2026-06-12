@@ -44,7 +44,7 @@ export class SettingsModal {
         ${this.row("Reduce motion (no shake)", toggle("motion", gs.reduceMotion))}
         ${this.row("Reset progress", `<button class="set-toggle danger" data-key="reset">RESET</button>`)}
         <footer class="modal-foot">
-          <span>v${GAME_VERSION} · Made by Callum</span>
+          <span>v${GAME_VERSION} © 2026 Callum Bauman / Bauman Games.</span>
         </footer>
       </div>`;
 

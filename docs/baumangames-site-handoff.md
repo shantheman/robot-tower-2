@@ -14,7 +14,8 @@ know is in this file — the game's repo is separate and you don't need it.
   runs. 15-wave levels, mid-level checkpoints, bosses, four ultimate
   weapons, painterly sci-fi art.
 - **Made by:** Callum Bauman (game design), published by Bauman Games LLC.
-  The site credit style for the game itself is "A game by Callum".
+  In-game credit reads "A game by Bauman Games"; copyright line is
+  "© 2026 Callum Bauman / Bauman Games."
 - **Play now (free, browser, desktop + mobile):**
   https://shantheman.github.io/core-defender/
 - **Platforms:** web today; iOS/Android via app stores planned (Capacitor
