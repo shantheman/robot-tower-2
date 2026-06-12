@@ -57,7 +57,10 @@ on load). The items below are the gaps, most impactful first.
       `effects.ts` (zap/burst/popup/flash), and a shadow helper (the
       silhouette-shadow recipe is duplicated 3x: enemies, drone, tower).
       Wingman would make it ~900 lines — split BEFORE building Wingman.
-2. - [ ] **Scripted E2E harness (Playwright)** — the headless QA pattern
+2. - [x] **Scripted E2E harness (Playwright)** — DONE (2026-06-12):
+      e2e/game.spec.ts (4 flows: wave-clear->shop+cores, shop buy + next
+      wave, skill unlock + persistence, death->retry), driving rules
+      documented in the file; `npm run test:e2e`; e2e job in ci.yml. — the headless QA pattern
       (drive `sys.step()`, freeze enemies, assert sim/screen state) gets
       rebuilt ad hoc in the preview console every session and the recipes
       keep being re-learned (dt clamp! unkillable-enemy trick! world vs
