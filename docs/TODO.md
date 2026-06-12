@@ -137,8 +137,9 @@ on load). The items below are the gaps, most impactful first.
       home screen, runs offline, fullscreen standalone on iOS. Cheap, and a
       real alternative to app stores for the friend-circle audience.
 - [ ] **Capacitor wrap (iOS/Android)** — the real-app path: haptics, app
-      icon, splash, store listing. Needs the Apple/Google developer accounts
-      (decision + cost: $99/yr + $25 once).
+      icon, splash, store listing. Publishing under **Bauman Games LLC**
+      (Apple org account exists). Bundle ID: **com.baumangames.coredefender**
+      (matches the com.baumangames.chimera convention).
 - [ ] **Desktop packaging decision** — Tauri/Electron, or is "it runs in any
       browser" enough for desktop? (Leaning: browser is enough until proven
       otherwise.)
@@ -147,6 +148,7 @@ on load). The items below are the gaps, most impactful first.
       now), manual export/import code, or cloud saves (big scope).
 - [ ] **Crash safety net** — v1 had a crash-log + friendly dialog; v2 has
       nothing. Add window.onerror → log + "something broke, reload?" toast.
+      This is also the foundation for store crash reporting (below).
 - [ ] **Performance pass on older phones** — tested on Shannon's recent
       iPhone only. Check an older device + Android; watch particle counts on
       late waves.
@@ -155,11 +157,65 @@ on load). The items below are the gaps, most impactful first.
 - [ ] **LICENSE + asset provenance** — carried from v1, still unresolved:
       no LICENSE file; confirm the AI-generated art/sprites are cleared for
       whatever distribution ends up happening.
-- [ ] **ToS / Privacy Policy** — carried from v1: nothing collected today
-      (keep it that way); app stores will require links. Revisit at
-      Capacitor time.
-- [ ] **Analytics/crash-reporting decision** — same stance as v1: nothing
-      until there's a real reason, COPPA-gated, opt-in only.
+- [ ] **ToS / Privacy Policy** — Bauman Games already hosts both
+      (baumangames.com/terms.html + /privacy.html); update them to cover
+      Core Defender, including crash-data collection once that SDK lands.
+- [ ] **Crash reporting** — DECIDED (2026-06-12): yes, before the Apple
+      submission. Shannon leans Crashlytics; consider Sentry instead — in
+      a Capacitor app most "crashes" are JS errors in the webview, which
+      Sentry captures first-class without the Firebase/google-services
+      setup. Crash data only, no analytics.
+
+### Store submission checklist (Apple + Google Play)
+
+Context decided 2026-06-12: publisher **Bauman Games LLC**, bundle ID
+**com.baumangames.coredefender**, target audience **13+** (avoids kids/
+Families policy), ToS + Privacy Policy live at baumangames.com.
+
+**Legal / policy**
+- [ ] Update baumangames.com terms.html + privacy.html to list Core
+      Defender and disclose crash-data collection (crash SDK, when added).
+- [ ] Update baumangames.com marketing pages to include Core Defender.
+- [ ] Apple "App Privacy" nutrition label: declare diagnostics/crash data,
+      not linked to identity, not used for tracking (no ATT needed).
+- [ ] Google Play Data Safety form: same declaration.
+- [ ] Age-rating questionnaires (Apple + IARC): cartoon violence, ~9+/E10
+      content rating; declared target audience 13+ on Play.
+- [ ] EU DSA trader declaration (both stores; the LLC likely declares as
+      trader — confirm what chimera did).
+- [ ] Asset provenance comfort check (AI art) before the content-rights
+      attestations — ties to the LICENSE item above.
+
+**Accounts / process**
+- [ ] Google Play account: confirm whether an LLC org account exists (org
+      accounts skip the personal-account rule of 12 testers x 14 days,
+      but require a D-U-N-S number — the LLC has one if Apple org
+      enrollment is done).
+- [ ] Reserve the "Core Defender" name in App Store Connect early (name
+      collisions are common).
+- [ ] Android signing: enroll in Play App Signing (Google keeps the key).
+- [ ] TestFlight internal -> friend-circle external test before release;
+      Play internal testing track likewise.
+
+**Store assets** (Claude-Design batch)
+- [ ] App icon: 1024px (Apple) + Android adaptive (fg/bg layers, maskable)
+      — same art unblocks the PWA manifest item.
+- [ ] Screenshots: iPhone 6.7"/6.5"/5.5" (+ iPad if enabled), Android
+      phone + 7"/10" tablet, Play feature graphic 1024x500.
+- [ ] Splash screen (required by Capacitor anyway — see Art section).
+- [ ] Listing copy: short + full descriptions, Apple keywords, support URL
+      (baumangames.com or the Pages site), contact email.
+
+**Technical**
+- [ ] Capacitor config: bundle ID, versionName/versionCode sync with
+      GAME_VERSION, min/target OS (Play ratchets target API yearly).
+- [ ] Apple export compliance: ITSAppUsesNonExemptEncryption=NO
+      (HTTPS-only).
+- [ ] Apple 4.2 minimum-functionality pass: fully offline, no browser
+      chrome, haptics wired (games in Capacitor pass routinely; haptics
+      strengthens it).
+- [ ] Decide store-release cadence (web updates every push; store builds
+      are snapshots).
 
 ## Decisions needed (Shannon/Callum)
 
