@@ -5,6 +5,7 @@
 import Phaser from "phaser";
 import { WORLD_H, WORLD_W } from "./config";
 import { game } from "./game";
+import { installKeyboardRouting } from "./input";
 import { BattleScene } from "./scenes/BattleScene";
 import { updateHud } from "./ui/hud";
 import { ShopPanel } from "./ui/shop";
@@ -96,33 +97,8 @@ function openPauseShop(): void {
   game.show("shop");
 }
 
-// Global keyboard routing (Phaser handles Space-fires-ultimate in battle).
-window.addEventListener("keydown", (ev) => {
-  if (ev.key === "Tab") ev.preventDefault(); // never let Tab move focus
-  if (settings.visible) {
-    if (ev.key === "Escape") settings.hide();
-    return;
-  }
-  if (achievements.visible) {
-    if (ev.key === "Escape") achievements.hide();
-    return;
-  }
-  if (game.screen === "battle") {
-    if (ev.key === "Tab") openPauseShop();
-    else if (ev.key === "t" || ev.key === "T") openSkills();
-    else if (ev.key === "Escape") { game.battle?.setPaused(true); game.show("pause"); }
-  } else if (game.screen === "pause") {
-    if (ev.key === "Escape") pause.resume();
-  } else if (game.screen === "skills") {
-    if (ev.key === "Escape" || ev.key === "t" || ev.key === "T") skills.close();
-  } else if (game.screen === "shop") {
-    if (game.shopMode === "paused" && (ev.key === "Tab" || ev.key === "Escape")) shop.close();
-    else if (game.shopMode === "cleared" && (ev.key === " " || ev.key === "Enter")) {
-      ev.preventDefault();
-      shop.startNext();
-    }
-  }
-});
+// Global keyboard routing — the full shortcut map lives in src/input.ts.
+installKeyboardRouting({ shop, skills, pause, settings, achievements, openSkills, openPauseShop });
 
 // A live battle auto-pauses when the window loses focus (parity with the
 // original); regaining focus does NOT auto-resume.

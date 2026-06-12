@@ -124,7 +124,7 @@ export class BattleScene extends Phaser.Scene {
       if (p.wasTouch) this.joyOrigin = new Phaser.Math.Vector2(p.worldX, p.worldY);
     });
     this.input.on("pointerup", () => { this.mouseHeld = false; this.joyOrigin = null; });
-    this.input.keyboard?.on("keydown-SPACE", () => this.fireUltimate());
+    // (Space-fires-ultimate lives in the global keyboard map: src/input.ts.)
 
     game.battle = {
       startBattle: () => this.startBattle(),
