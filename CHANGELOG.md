@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.23 — 2026-06-12
+
+- **Hid the Animation Playground link** from Settings. The playground page is
+  still built and live at `/playground.html` (direct URL) — just no longer
+  surfaced in-game.
+
 ## v0.8.22 — 2026-06-12
 
 - **Grunt dish pivot corrected** to Shannon's marked spot: pivot `0.545,0.475`

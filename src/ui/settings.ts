@@ -55,7 +55,6 @@ export class SettingsModal {
           <button class="set-toggle danger" data-key="apply">LOAD</button>
         </div>
         ${this.row("Reset progress", `<button class="set-toggle danger" data-key="reset">RESET</button>`)}
-        ${this.row("Animation playground", `<a class="set-toggle" href="playground.html" target="_blank" rel="noopener" style="text-decoration:none;text-align:center">OPEN ↗</a>`)}
         <footer class="modal-foot">
           <span>v${GAME_VERSION} © 2026 Callum Bauman / Bauman Games.</span>
         </footer>
