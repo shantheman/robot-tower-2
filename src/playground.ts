@@ -10,7 +10,7 @@
 import Phaser from "phaser";
 import "./styles.css";
 import * as C from "./config";
-import { enemyAnimFrame, updateEnemyRotors, updateSquadron } from "./scenes/enemyAnim";
+import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite } from "./scenes/enemyAnim";
 import { makeSilhouette, shadowOffset } from "./scenes/shadows";
 import { Effects } from "./scenes/effects";
 
@@ -66,6 +66,10 @@ class PlaygroundScene extends Phaser.Scene {
     squadronPhases: number[];
     snapSide: number;
     snapTimer: number;
+    satellite?: Phaser.GameObjects.Image;
+    satAngle: number;
+    satTarget: number;
+    satTimer: number;
   };
   private shots: { dot: Phaser.GameObjects.Arc; vx: number; vy: number }[] = [];
   private clock = 0;
@@ -80,6 +84,7 @@ class PlaygroundScene extends Phaser.Scene {
     }
     for (const t of [C.GRUNT, C.FAST, C.TOUGH, C.TANK, C.BOMBER, C.BOSS, C.SHOOTER]) {
       if (t.rotors) this.load.image(t.rotors.texture, `sprites/${t.rotors.texture}.png`);
+      if (t.satellite) this.load.image(t.satellite.texture, `sprites/${t.satellite.texture}.png`);
     }
   }
 
@@ -102,6 +107,7 @@ class PlaygroundScene extends Phaser.Scene {
     this.enemy?.rotors?.forEach(r => r.destroy());
     this.enemy?.squadronWings?.forEach(r => r.destroy());
     this.enemy?.squadronShadows?.forEach(r => r.destroy());
+    this.enemy?.satellite?.destroy();
     for (const s of this.shots) s.dot.destroy();
     this.shots = [];
     this.rangeRing.clear();
@@ -141,6 +147,14 @@ class PlaygroundScene extends Phaser.Scene {
       squadronWings, squadronShadows, squadronPhases,
       snapSide: Math.floor(Math.random() * 6),
       snapTimer: Math.random() * 1.5,
+      satellite: type.satellite
+        ? this.add.image(start.x, start.y, type.satellite.texture)
+            .setOrigin(type.satellite.pivot[0], type.satellite.pivot[1])
+            .setScale(baseScale)
+        : undefined,
+      satAngle: Math.random() * Math.PI * 2,
+      satTarget: Math.random() * Math.PI * 2,
+      satTimer: 0,
     };
 
     if (pg.state === "firing" && type.ranged) {
@@ -206,6 +220,7 @@ class PlaygroundScene extends Phaser.Scene {
           e.rotors?.forEach(r => r.setVisible(false));
           e.squadronWings?.forEach(r => r.setVisible(false));
           e.squadronShadows?.forEach(r => r.setVisible(false));
+          e.satellite?.setVisible(false);
           this.time.delayedCall(700, () => {
             if (!this.enemy) return;
             const s = this.startPos();
@@ -214,6 +229,7 @@ class PlaygroundScene extends Phaser.Scene {
             this.enemy.rotors?.forEach(r => r.setVisible(true));
             this.enemy.squadronWings?.forEach(r => r.setVisible(true));
             this.enemy.squadronShadows?.forEach(r => r.setVisible(true));
+            this.enemy.satellite?.setVisible(true);
             this.enemy.visible = true;
           });
         }
@@ -254,6 +270,24 @@ class PlaygroundScene extends Phaser.Scene {
             ).setRotation(e.squadronWings[i].rotation).setAlpha(a);
           }
         }
+      }
+      // Radar dish: swivel toward a random heading, dwell, then re-aim.
+      if (e.satellite && e.type.satellite && dt > 0) {
+        const sc = e.type.satellite;
+        const diff = Phaser.Math.Angle.Wrap(e.satTarget - e.satAngle);
+        if (Math.abs(diff) <= sc.swivelSpeed * dt) {
+          e.satAngle = e.satTarget;
+          e.satTimer -= dt;
+          if (e.satTimer <= 0) {
+            e.satTarget = Math.random() * Math.PI * 2;
+            e.satTimer = sc.pauseMin + Math.random() * (sc.pauseMax - sc.pauseMin);
+          }
+        } else {
+          e.satAngle += Math.sign(diff) * sc.swivelSpeed * dt;
+        }
+      }
+      if (e.satellite && e.type.satellite) {
+        placeSatellite(spr, e.satellite, e.type.satellite.pivot, e.satAngle);
       }
     }
 

@@ -41,6 +41,25 @@ export function updateSquadron(
   }
 }
 
+/** Plant a swiveling overlay (e.g. a radar dish) on a body sprite. The overlay
+ * shares an aligned canvas with the base, so its `pivot` (origin, set once at
+ * spawn) is the same point on both. We place that pivot on the base's rotated
+ * mount point and rotate the overlay by the base facing plus its own swivel —
+ * so at swivel 0 it overlays exactly as the artist drew it. */
+export function placeSatellite(
+  base: Phaser.GameObjects.Image,
+  sat: Phaser.GameObjects.Image,
+  pivot: [number, number],
+  swivel: number,
+): void {
+  const lx = (pivot[0] - 0.5) * base.displayWidth;
+  const ly = (pivot[1] - 0.5) * base.displayHeight;
+  const r = base.rotation, cos = Math.cos(r), sin = Math.sin(r);
+  sat.setPosition(base.x + lx * cos - ly * sin, base.y + lx * sin + ly * cos);
+  sat.setScale(base.scaleX);
+  sat.setRotation(r + swivel);
+}
+
 export function updateEnemyRotors(
   sprite: Phaser.GameObjects.Image,
   rotors: Phaser.GameObjects.Image[],

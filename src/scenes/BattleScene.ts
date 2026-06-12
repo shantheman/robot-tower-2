@@ -16,7 +16,7 @@ import {
 } from "../sim/waves";
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
-import { enemyAnimFrame, updateEnemyRotors, updateSquadron } from "./enemyAnim";
+import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
 
@@ -89,6 +89,7 @@ export class BattleScene extends Phaser.Scene {
     }
     for (const t of [C.GRUNT, C.FAST, C.TOUGH, C.TANK, C.BOMBER, C.BOSS, C.SHOOTER]) {
       if (t.rotors) this.load.image(t.rotors.texture, `sprites/${t.rotors.texture}.png`);
+      if (t.satellite) this.load.image(t.satellite.texture, `sprites/${t.satellite.texture}.png`);
     }
   }
 
@@ -215,7 +216,7 @@ export class BattleScene extends Phaser.Scene {
       for (const e of this.enemies) {
         e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
         e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
-        e.squadronShadows?.forEach(r => r.destroy());
+        e.squadronShadows?.forEach(r => r.destroy()); e.satellite?.destroy();
       }
       this.enemies = [];
     }
@@ -266,6 +267,13 @@ export class BattleScene extends Phaser.Scene {
     const squadronShadows = squadronWings?.map(() =>
       makeSilhouette(this, this.shadowLayer, type.sprite, x + shadowOffX, y + shadowOffY, sprite.scale, air));
     if (squadronWings?.length) this.children.bringToTop(sprite);
+    // Swiveling overlay (origin = pivot so it rotates about its mount), layered
+    // above the body. placeSatellite re-positions it every animation frame.
+    const satellite = type.satellite
+      ? this.add.image(x, y, type.satellite.texture)
+          .setOrigin(type.satellite.pivot[0], type.satellite.pivot[1])
+          .setScale(sprite.scale)
+      : undefined;
     this.enemies.push({
       sprite, shadow, shadowOffX, shadowOffY, type, hp, maxHp: hp, alive: true, flash: 0,
       fireTimer: type.ranged?.fireCd ?? 0,
@@ -278,6 +286,8 @@ export class BattleScene extends Phaser.Scene {
             this.add.image(x, y, type.rotors!.texture).setScale(sprite.scale))
         : undefined,
       squadronWings, squadronShadows, squadronPhases,
+      satellite,
+      satAngle: Math.random() * Math.PI * 2, satTarget: Math.random() * Math.PI * 2, satTimer: 0,
     });
   }
 
@@ -297,6 +307,10 @@ export class BattleScene extends Phaser.Scene {
   private animateEnemy(e: Enemy, dt: number): void {
     if (game.gs.reduceMotion) {
       e.rotors?.forEach(r => r.setVisible(false));
+      // Keep the overlay planted on the (statically posed) body, just frozen.
+      if (e.satellite && e.type.satellite) {
+        placeSatellite(e.sprite, e.satellite, e.type.satellite.pivot, e.satAngle);
+      }
       return;
     }
     // Hex-snap rotation: lerp toward the target discrete face.
@@ -330,6 +344,24 @@ export class BattleScene extends Phaser.Scene {
     if (e.squadronWings && e.type.squadron) {
       const sq = e.type.squadron;
       updateSquadron(e.sprite, e.squadronWings, sq.offsets, sq.driftAmp, sq.driftHz, this.animClock, e.squadronPhases);
+    }
+    // Radar dish: swivel toward satTarget, dwell on arrival, then re-aim.
+    if (e.satellite && e.type.satellite && dt > 0) {
+      const sc = e.type.satellite;
+      const diff = Phaser.Math.Angle.Wrap(e.satTarget - e.satAngle);
+      if (Math.abs(diff) <= sc.swivelSpeed * dt) {
+        e.satAngle = e.satTarget;          // arrived
+        e.satTimer -= dt;
+        if (e.satTimer <= 0) {
+          e.satTarget = Math.random() * Math.PI * 2;
+          e.satTimer = sc.pauseMin + Math.random() * (sc.pauseMax - sc.pauseMin);
+        }
+      } else {
+        e.satAngle += Math.sign(diff) * sc.swivelSpeed * dt;
+      }
+    }
+    if (e.satellite && e.type.satellite) {
+      placeSatellite(e.sprite, e.satellite, e.type.satellite.pivot, e.satAngle);
     }
   }
 
@@ -444,7 +476,7 @@ export class BattleScene extends Phaser.Scene {
           this.effects.burst(plane.x, plane.y, 8);
           plane.destroy();
           shadowMap.get(plane)?.destroy();
-          if (idx === order.length - 1) e.rotors?.forEach(r => r.destroy());
+          if (idx === order.length - 1) { e.rotors?.forEach(r => r.destroy()); e.satellite?.destroy(); }
         });
       });
     } else {
@@ -454,6 +486,7 @@ export class BattleScene extends Phaser.Scene {
       e.rotors?.forEach(r => r.destroy());
       e.squadronWings?.forEach(r => r.destroy());
       e.squadronShadows?.forEach(r => r.destroy());
+      e.satellite?.destroy();
     }
   }
 
@@ -676,7 +709,7 @@ export class BattleScene extends Phaser.Scene {
         e.alive = false;
         e.sprite.destroy(); e.shadow.destroy(); e.hpBar?.destroy();
         e.rotors?.forEach(r => r.destroy()); e.squadronWings?.forEach(r => r.destroy());
-        e.squadronShadows?.forEach(r => r.destroy());
+        e.squadronShadows?.forEach(r => r.destroy()); e.satellite?.destroy();
         if (res.died) { this.towerDestroyed(); return; }
       }
       if (e.alive && e.type.healthbar) {

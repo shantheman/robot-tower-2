@@ -30,6 +30,12 @@ export interface Enemy {
   squadronPhases: number[];
   snapSide: number;   // hex-snap: current face index (0..hexSnap-1)
   snapTimer: number;  // hex-snap: seconds until next idle side-change
+  // Swiveling overlay (e.g. grunt radar dish): rotates to satTarget, pauses
+  // satTimer seconds on arrival, then picks a new random heading.
+  satellite?: Phaser.GameObjects.Image;
+  satAngle: number;   // current swivel offset (rad), relative to the base facing
+  satTarget: number;  // heading it's swivelling toward (rad)
+  satTimer: number;   // seconds left to dwell once arrived
 }
 
 export interface EnemyBullet {

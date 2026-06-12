@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.12 — 2026-06-12
+
+- **Grunt is a radar tank now.** New two-part art (Shannon's drop): a tank
+  body plus a satellite dish that mounts on the body's central plate and
+  swivels on its own — it rotates to a random heading, holds for a beat, then
+  re-aims, continuously. The dish pivots about its mount (origin pinned to the
+  clamp at 0.545, 0.475 of the shared canvas) and rides the body as it turns to
+  face the tower. Generic: any enemy can now declare a `satellite` overlay in
+  config. Honors reduce-motion (dish freezes, still seated). Previewable and
+  tunable in the Animation Playground.
+
 ## v0.8.11 — 2026-06-12
 
 - **Explosion grey-square artifact fixed (for real).** v0.8.9/v0.8.10 chased
