@@ -83,6 +83,9 @@ export const SPAWN_INTERVAL_BASE = 1.1;
 export const SPAWN_INTERVAL_STEP = 0.02;
 export const SPAWN_INTERVAL_MIN = 0.45;
 export const INTERMISSION_TIME = 3.0;
+/** Pause between the last kill and the shop/home swap, so the final
+ * explosion, popups, and sound finish instead of being cut off. */
+export const WAVE_CLEAR_LINGER = 1.0;
 
 // Economy — coins (in-run) and Cores (permanent). Cores are earned by
 // CLEARING WAVES, never by converting coins (v0.7.0 model).

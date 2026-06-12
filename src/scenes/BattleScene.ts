@@ -75,6 +75,7 @@ export class BattleScene extends Phaser.Scene {
   private enemyBullets: EnemyBullet[] = [];
   private toSpawn = 0;
   private spawnTimer = 0;
+  private clearedLinger = 0;
   private bossPending = false;
   private intermission = C.INTERMISSION_TIME;
   private fireTimer = 0;
@@ -217,6 +218,7 @@ export class BattleScene extends Phaser.Scene {
     this.toSpawn = waveRobotCount(game.gs.wave);
     this.bossPending = isBossWave(game.gs.wave);
     this.spawnTimer = 0;
+    this.clearedLinger = C.WAVE_CLEAR_LINGER;
   }
 
   private nextWave(): void {
@@ -627,9 +629,14 @@ export class BattleScene extends Phaser.Scene {
           this.spawnTimer = waveSpawnInterval(gs.wave);
         }
       } else if (this.enemies.length === 0) {
-        this.waveCleared();
-        this.pushHud();
-        return;
+        // Let the last kill's burst, popups, and sound breathe before the
+        // screen swap (the battle keeps simulating for this beat).
+        this.clearedLinger -= dt;
+        if (this.clearedLinger <= 0) {
+          this.waveCleared();
+          this.pushHud();
+          return;
+        }
       }
       const p = this.input.activePointer;
       if (this.joyOrigin) {
