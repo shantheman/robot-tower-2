@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.6 — 2026-06-12
+
+- **Shooter rotates like it has a brain.** The hexagonal shooter pod now
+  snaps to its 6 discrete faces instead of smoothly tracking the tower.
+  While flying in it idles through random face changes (1–2 s per side);
+  once it's in firing position it rotates to a fresh random face just before
+  each shot — a subtle pre-shot tell. All other enemies are unaffected.
+
 ## v0.8.5 — 2026-06-12
 
 - **Particle explosions.** `burst()` now uses Phaser's particle emitter system

@@ -81,11 +81,16 @@ export function enemyAnimFrame(o: EnemyAnimFrameOpts): { ox: number; oy: number 
   const a = o.anim;
   const t = o.clock;
   const ph = o.phase;
-  // Always face the tower, plus a small rotational wobble.
-  let rot = Math.atan2(o.towerY - o.sprite.y, o.towerX - o.sprite.x) + Math.PI / 2;
-  if (a?.wobbleDeg) rot += Phaser.Math.DegToRad(a.wobbleDeg) * Math.sin(t * (a.wobbleHz ?? 3) + ph);
-  o.sprite.setRotation(rot);
-  o.shadow?.setRotation(rot);
+  // Hex-snap enemies: rotation is set by the caller (lerped to a discrete face).
+  // Everyone else: face the tower, plus a small rotational wobble.
+  if (a?.hexSnap) {
+    o.shadow?.setRotation(o.sprite.rotation);
+  } else {
+    let rot = Math.atan2(o.towerY - o.sprite.y, o.towerX - o.sprite.x) + Math.PI / 2;
+    if (a?.wobbleDeg) rot += Phaser.Math.DegToRad(a.wobbleDeg) * Math.sin(t * (a.wobbleHz ?? 3) + ph);
+    o.sprite.setRotation(rot);
+    o.shadow?.setRotation(rot);
+  }
   // Idle breathe + ranged charge-tell swell.
   let scaleMul = 1;
   if (a?.breatheAmp) scaleMul += a.breatheAmp * Math.sin(t * (a.breatheHz ?? 2) + ph);

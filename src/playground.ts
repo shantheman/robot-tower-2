@@ -64,6 +64,8 @@ class PlaygroundScene extends Phaser.Scene {
     squadronWings?: Phaser.GameObjects.Image[];
     squadronShadows?: Phaser.GameObjects.Image[];
     squadronPhases: number[];
+    snapSide: number;
+    snapTimer: number;
   };
   private shots: { dot: Phaser.GameObjects.Arc; vx: number; vy: number }[] = [];
   private clock = 0;
@@ -137,6 +139,8 @@ class PlaygroundScene extends Phaser.Scene {
             this.add.image(start.x, start.y, type.rotors!.texture).setScale(baseScale))
         : undefined,
       squadronWings, squadronShadows, squadronPhases,
+      snapSide: Math.floor(Math.random() * 6),
+      snapTimer: Math.random() * 1.5,
     };
 
     if (pg.state === "firing" && type.ranged) {
@@ -172,8 +176,20 @@ class PlaygroundScene extends Phaser.Scene {
         const dist = Math.hypot(dx, dy);
         if (dist < 130) { const s = this.startPos(); spr.setPosition(s.x, s.y); }
         else { const sp = 90; spr.x += (dx / dist) * sp * dt; spr.y += (dy / dist) * sp * dt; }
+        const pgMoveAnim = C.ENEMY_ANIM[e.type.key];
+        if (pgMoveAnim?.hexSnap && dt > 0) {
+          e.snapTimer -= dt;
+          if (e.snapTimer <= 0) {
+            e.snapSide = (e.snapSide + 1 + Math.floor(Math.random() * (pgMoveAnim.hexSnap - 1))) % pgMoveAnim.hexSnap;
+            e.snapTimer = 1.0 + Math.random() * 1.5;
+          }
+        }
       } else if (pg.state === "firing" && e.type.ranged) {
         e.fireTimer -= dt;
+        const pgFireAnim = C.ENEMY_ANIM[e.type.key];
+        if (pgFireAnim?.hexSnap && e.fireTimer <= 0.35 && e.fireTimer + dt > 0.35) {
+          e.snapSide = (e.snapSide + 1 + Math.floor(Math.random() * (pgFireAnim.hexSnap - 1))) % pgFireAnim.hexSnap;
+        }
         if (e.fireTimer <= 0) {
           e.fireTimer = e.type.ranged.fireCd;
           const dx = TOWER_X - spr.x, dy = TOWER_Y - spr.y, d = Math.hypot(dx, dy);
@@ -210,6 +226,13 @@ class PlaygroundScene extends Phaser.Scene {
         phase: e.phase, baseScale: e.baseScale, fireCharge: charge, towerX: TOWER_X, towerY: TOWER_Y,
       });
       e.ox = ox; e.oy = oy;
+      const pgSnapAnim = C.ENEMY_ANIM[e.type.key];
+      if (pgSnapAnim?.hexSnap && dt > 0) {
+        const targetRot = e.snapSide * (Math.PI * 2 / pgSnapAnim.hexSnap);
+        const diff = Phaser.Math.Angle.Wrap(targetRot - spr.rotation);
+        spr.setRotation(spr.rotation + Math.sign(diff) * Math.min(Math.abs(diff), 6 * dt));
+        e.shadow.setRotation(spr.rotation);
+      }
       const off = shadowOffset(e.type.radius, !!e.type.air);
       const z = pg.zoom;
       e.shadow.setPosition(spr.x - ox + off.x * z, spr.y - oy + off.y * z);

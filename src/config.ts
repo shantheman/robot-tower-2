@@ -90,6 +90,7 @@ export interface EnemyAnim {
   wobbleHz?: number;
   chargeTell?: boolean; // ranged: swell toward the shot (telegraph)
   altitude?: number;   // static hover height in px above ground (0 = flat); dims shadow
+  hexSnap?: number;    // discrete rotation snapping: N sides (e.g. 6); overrides tower-facing
 }
 export const ENEMY_ANIM: Record<string, EnemyAnim> = {
   grunt:   { breatheAmp: 0.05, breatheHz: 2.4 },
@@ -98,7 +99,7 @@ export const ENEMY_ANIM: Record<string, EnemyAnim> = {
   tank:    { breatheAmp: 0.035, breatheHz: 1.1 },                  // slow, heavy
   bomber:  { bobAmp: 4, bobHz: 2.8, wobbleDeg: 6, wobbleHz: 4 },   // twitchy swarm
   boss:    { breatheAmp: 0.05, breatheHz: 1.0 },                   // menacing pulse
-  shooter: { bobAmp: 4, bobHz: 2.2, chargeTell: true },            // hover + windup
+  shooter: { bobAmp: 4, bobHz: 2.2, chargeTell: true, hexSnap: 6 }, // hover + snap rotation
 };
 
 /** Silhouette shadows — every unit casts its own sprite, black-tinted, under

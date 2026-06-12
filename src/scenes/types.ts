@@ -28,6 +28,8 @@ export interface Enemy {
   squadronWings?: Phaser.GameObjects.Image[];
   squadronShadows?: Phaser.GameObjects.Image[];
   squadronPhases: number[];
+  snapSide: number;   // hex-snap: current face index (0..hexSnap-1)
+  snapTimer: number;  // hex-snap: seconds until next idle side-change
 }
 
 export interface EnemyBullet {

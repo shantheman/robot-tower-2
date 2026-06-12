@@ -272,6 +272,7 @@ export class BattleScene extends Phaser.Scene {
       speed: waveRobotSpeed(game.gs.wave) * type.speedMult,
       animPhase: Math.random() * Math.PI * 2, baseScale: sprite.scale, animOX: 0, animOY: 0,
       rotorAngle: 0,
+      snapSide: Math.floor(Math.random() * 6), snapTimer: Math.random() * 1.5,
       rotors: type.rotors
         ? [0, 1, 2, 3].map(() =>
             this.add.image(x, y, type.rotors!.texture).setScale(sprite.scale))
@@ -297,6 +298,23 @@ export class BattleScene extends Phaser.Scene {
     if (game.gs.reduceMotion) {
       e.rotors?.forEach(r => r.setVisible(false));
       return;
+    }
+    // Hex-snap rotation: lerp toward the target discrete face.
+    const anim = C.ENEMY_ANIM[e.type.key];
+    if (anim?.hexSnap && dt > 0) {
+      const hexSnap = anim.hexSnap;
+      // Moving-state idle rotation: tick the side-change timer when out of range.
+      const dist = Math.hypot(this.towerPos.x - e.sprite.x, this.towerPos.y - e.sprite.y);
+      if (!e.type.ranged || dist > e.type.ranged.fireRange) {
+        e.snapTimer -= dt;
+        if (e.snapTimer <= 0) {
+          e.snapSide = (e.snapSide + 1 + Math.floor(Math.random() * (hexSnap - 1))) % hexSnap;
+          e.snapTimer = 1.0 + Math.random() * 1.5;
+        }
+      }
+      const targetRot = e.snapSide * (Math.PI * 2 / hexSnap);
+      const diff = Phaser.Math.Angle.Wrap(targetRot - e.sprite.rotation);
+      e.sprite.setRotation(e.sprite.rotation + Math.sign(diff) * Math.min(Math.abs(diff), 6 * dt));
     }
     const charge = e.type.ranged ? 1 - Math.max(0, e.fireTimer) / e.type.ranged.fireCd : 0;
     const { ox, oy } = enemyAnimFrame({
@@ -599,6 +617,10 @@ export class BattleScene extends Phaser.Scene {
       const ranged = e.type.ranged;
       if (ranged && dist <= ranged.fireRange) {
         e.fireTimer -= enemyDt;
+        const preShot = C.ENEMY_ANIM[e.type.key]?.hexSnap;
+        if (preShot && e.fireTimer <= 0.35 && e.fireTimer + enemyDt > 0.35 && enemyDt > 0) {
+          e.snapSide = (e.snapSide + 1 + Math.floor(Math.random() * (preShot - 1))) % preShot;
+        }
         if (e.fireTimer <= 0 && enemyDt > 0) {
           const dot = this.effects.track(this.add.circle(e.sprite.x, e.sprite.y, C.ENEMY_BULLET_RADIUS, 0xff5238));
           this.enemyBullets.push({
@@ -608,7 +630,9 @@ export class BattleScene extends Phaser.Scene {
           e.fireTimer = ranged.fireCd;
         }
       } else if (dist > 0 && enemyDt > 0) {
-        e.sprite.setRotation(Math.atan2(dy, dx) + Math.PI / 2);
+        if (!C.ENEMY_ANIM[e.type.key]?.hexSnap) {
+          e.sprite.setRotation(Math.atan2(dy, dx) + Math.PI / 2);
+        }
         e.sprite.x += (dx / dist) * e.speed * enemyDt;
         e.sprite.y += (dy / dist) * e.speed * enemyDt;
       }
