@@ -98,6 +98,8 @@ export const BOSS_FIRE = {
   damagePerLevel: 4,    // +4 damage per level
   bulletRadius: 9,      // chunkier than a shooter round
   bulletColor: 0xff7a1a,
+  muzzleForward: 0.13,  // spawn the round at the turret: this fraction of the
+                        // sprite's display height ahead of center, toward the tower
 };
 
 /** Procedural "alive" animation per enemy — cheap transforms on the existing

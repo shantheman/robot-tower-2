@@ -718,8 +718,15 @@ export class BattleScene extends Phaser.Scene {
       if (e.type === C.BOSS && enemyDt > 0 && dist > 0) {
         e.fireTimer -= enemyDt;
         if (e.fireTimer <= 0) {
+          // Muzzle: forward of center (toward the tower) by muzzleForward of the
+          // sprite height; nudge for the boss's static altitude so it lines up
+          // with the rendered turret rather than the logical (pre-anim) position.
+          const ahead = e.sprite.displayHeight * C.BOSS_FIRE.muzzleForward;
+          const alt = C.ENEMY_ANIM[e.type.key]?.altitude ?? 0;
+          const mx = e.sprite.x + (dx / dist) * ahead;
+          const my = e.sprite.y - alt + (dy / dist) * ahead;
           const dot = this.effects.track(this.add.circle(
-            e.sprite.x, e.sprite.y, C.BOSS_FIRE.bulletRadius, C.BOSS_FIRE.bulletColor));
+            mx, my, C.BOSS_FIRE.bulletRadius, C.BOSS_FIRE.bulletColor));
           this.enemyBullets.push({
             dot, vx: (dx / dist) * C.ENEMY_BULLET_SPEED, vy: (dy / dist) * C.ENEMY_BULLET_SPEED,
             damage: e.fireDamage, alive: true,

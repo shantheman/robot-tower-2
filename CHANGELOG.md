@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.20 — 2026-06-12
+
+- **Boss faces the right way + fires from its turret.** The boss art was
+  approaching backwards (guns pointing away from the tower) — rotated the
+  sprite 180°. Its covering fire now spawns from the central turret muzzle
+  (forward of center toward the tower, `BOSS_FIRE.muzzleForward`) instead of
+  the sprite's center.
+
 ## v0.8.19 — 2026-06-12
 
 - **New Boss art** (a hulking mech) and **boss covering fire.** The boss now
