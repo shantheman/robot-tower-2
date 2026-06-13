@@ -55,18 +55,55 @@ export async function initAnalytics(): Promise<void> {
       persistence: "localStorage",
       disable_session_recording: !SESSION_REPLAY, // replay for the friend test; off before launch
     });
-    posthog.register({ app: APP }); // tag every event so games can share a project
+    // Tag every event: `app` separates games sharing one project; `platform`
+    // lets you slice metrics (esp. FPS) by native-vs-web once the App Store
+    // build ships; `dpr` + the SDK's $screen_* help guess device class on web.
+    posthog.register({ app: APP, platform: detectPlatform(),
+      dpr: Math.round((window.devicePixelRatio || 1) * 100) / 100 });
     ph = posthog as unknown as PH;
     track("app_open", { version: GAME_VERSION });
-    // Capture time even if the player just closes the tab.
-    document.addEventListener("visibilitychange", () => { if (document.hidden) flushPlaytime(); });
-    window.addEventListener("pagehide", flushPlaytime);
+    // Capture pending samples even if the player just closes the tab.
+    const flushAll = () => { flushPlaytime(); flushFps(); };
+    document.addEventListener("visibilitychange", () => { if (document.hidden) flushAll(); });
+    window.addEventListener("pagehide", flushAll);
   } catch { /* blocked / failed — analytics is best-effort, never fatal */ }
 }
 
 export function track(event: string, props?: Record<string, unknown>): void {
   if (!ph) return;
   try { ph.capture(event, props); } catch { /* ignore */ }
+}
+
+/** "ios" / "android" inside the Capacitor native shell, else "web". Registered
+ * as a super-property so every metric (esp. FPS) can be sliced native-vs-web. */
+function detectPlatform(): string {
+  const cap = (window as unknown as {
+    Capacitor?: { isNativePlatform?: () => boolean; getPlatform?: () => string };
+  }).Capacitor;
+  if (cap?.isNativePlatform?.()) return cap.getPlatform?.() ?? "native";
+  return "web";
+}
+
+// FPS: BattleScene samples the (already smoothed) frame rate each active frame;
+// we accumulate and emit ONE summary event per window — never per frame. Slice
+// the summary by $device_type / platform to see which devices run smoothly.
+let fpsSum = 0, fpsN = 0, fpsMin = Infinity, fpsSlow = 0;
+const FPS_SLOW_BELOW = 50; // a sampled frame rate under this counts toward slow_pct
+
+export function addFps(fps: number): void {
+  if (!(fps > 0) || fps > 240) return; // skip warm-up / garbage samples
+  fpsSum += fps; fpsN++;
+  if (fps < fpsMin) fpsMin = fps;
+  if (fps < FPS_SLOW_BELOW) fpsSlow++;
+}
+
+/** Send the accumulated FPS window (avg, worst, % slow). No-op under ~0.5s. */
+export function flushFps(): void {
+  if (fpsN < 30) { fpsSum = fpsN = fpsSlow = 0; fpsMin = Infinity; return; }
+  const avg = Math.round(fpsSum / fpsN), min = Math.round(fpsMin);
+  const slowPct = Math.round((fpsSlow / fpsN) * 100), samples = fpsN;
+  fpsSum = fpsN = fpsSlow = 0; fpsMin = Infinity;
+  track("fps", { fps_avg: avg, fps_min: min, slow_pct: slowPct, samples });
 }
 
 /** Add active play time (called each frame while a wave is live, in seconds). */

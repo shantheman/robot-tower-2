@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.59 — 2026-06-13
+
+- **FPS analytics.** The battle loop already measured a smoothed frame rate for
+  the quality throttle; now it also samples it for analytics and emits an `fps`
+  event per window (`fps_avg`, `fps_min`, `slow_pct`, `samples`) — flushed every
+  60s of active play and on level-clear / game-over / tab-hide, never per frame.
+- **`platform` + `dpr` super-properties.** Every event is now tagged
+  `platform` (`web` now; `ios`/`android` once the Capacitor build ships) so FPS
+  and everything else can be sliced native-vs-web, plus `dpr` to help classify
+  devices on the web (where the exact model isn't exposed).
+
 ## v0.8.58 — 2026-06-13
 
 - **Tutorial coach-marks redesigned** (Claude Design handoff). The flat arrow is

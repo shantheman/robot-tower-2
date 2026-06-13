@@ -17,7 +17,7 @@ import {
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
 import { perf } from "../perf";
-import { track, addPlaytime, flushPlaytime } from "../analytics";
+import { track, addPlaytime, flushPlaytime, addFps, flushFps } from "../analytics";
 import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
@@ -73,6 +73,7 @@ export class BattleScene extends Phaser.Scene {
   private fpsAvg = 60;                                   // smoothed FPS for the perf throttle
   private perfLite = false;                              // FPS-driven low-quality state
   private perfFrames = 0;                                // active frames seen (grace period)
+  private fpsFlushT = 0;                                 // active seconds since the last FPS analytics flush
   private joyOrigin: Phaser.Math.Vector2 | null = null;  // touch: floating joystick anchor
   private joyGfx!: Phaser.GameObjects.Graphics;
   private paused = false;
@@ -253,6 +254,7 @@ export class BattleScene extends Phaser.Scene {
     if (bossWave) {
       track("level_cleared", { level });
       flushPlaytime();          // level done → bank the active time so far
+      flushFps();               // …and the FPS window for this level
       play("level_clear");      // celebratory sting only on level (boss-wave) completion
       this.setPaused(true);     // CRITICAL: stop simulating under the Home screen
       game.justClearedLevel = game.gs.level - 1; // onWaveCleared advanced it
@@ -268,6 +270,7 @@ export class BattleScene extends Phaser.Scene {
     this.over = true;
     track("game_over", { level: game.gs.level, wave: game.gs.wave });
     flushPlaytime();
+    flushFps();
     game.gs.save();
     game.show("dead");
   }
@@ -691,6 +694,7 @@ export class BattleScene extends Phaser.Scene {
    * trips it, so it has no effect on capable devices. */
   private updatePerf(): void {
     this.fpsAvg = this.fpsAvg * 0.98 + this.game.loop.actualFps * 0.02;
+    addFps(this.game.loop.actualFps); // analytics sample (summary flushed in chunks, not per frame)
     if (this.perfFrames++ > 120) {
       if (this.fpsAvg < 48) this.perfLite = true;
       else if (this.fpsAvg > 56) this.perfLite = false;   // recover with hysteresis
@@ -706,6 +710,8 @@ export class BattleScene extends Phaser.Scene {
 
     this.updatePerf();
     addPlaytime(dt); // active play time (this branch only runs while not paused)
+    this.fpsFlushT += dt;
+    if (this.fpsFlushT >= 60) { this.fpsFlushT = 0; flushFps(); } // periodic FPS summary on long waves
     gs.tick(dt);
     for (const k of Object.keys(this.cooldowns) as C.UltimateKey[]) {
       if (this.cooldowns[k] > 0) this.cooldowns[k] -= dt;
