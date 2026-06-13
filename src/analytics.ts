@@ -12,10 +12,13 @@
 
 import { GAME_VERSION } from "./version";
 
-// Public client key — safe to embed in the client. Paste the Mech Tide PostHog
-// PROJECT key here to turn analytics on; leave blank to keep it fully off.
+// Public client key — safe to embed in the client. Paste the PostHog PROJECT
+// key here to turn analytics on; leave blank to keep it fully off. This game can
+// share ONE project with other games: every event is tagged `app` (below), so
+// you filter PostHog insights/dashboards by `app = mech-tide` to separate them.
 const POSTHOG_KEY = "";
 const POSTHOG_HOST = "https://us.i.posthog.com"; // EU region: https://eu.i.posthog.com
+const APP = "mech-tide"; // event tag so multiple games can live in one project
 
 type PH = { capture: (event: string, props?: Record<string, unknown>) => void };
 let ph: PH | null = null;
@@ -31,6 +34,7 @@ export async function initAnalytics(): Promise<void> {
       capture_pageview: true,
       persistence: "localStorage",
     });
+    posthog.register({ app: APP }); // tag every event so games can share a project
     ph = posthog as unknown as PH;
     track("app_open", { version: GAME_VERSION });
     // Capture time even if the player just closes the tab.

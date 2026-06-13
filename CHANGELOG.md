@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.48 — 2026-06-13
+
+- **Analytics events tagged `app: "mech-tide"`** so the game can share a single
+  PostHog project with other games (free-tier = one project); separate them by
+  filtering insights/dashboards on `app = mech-tide`. Still inert until a key
+  is set.
+
 ## v0.8.47 — 2026-06-13
 
 - **Anonymous analytics wiring (PostHog).** Added `src/analytics.ts` and
