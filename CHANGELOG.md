@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.51 — 2026-06-13
+
+- **Custom domain: mechtide.com.** Vite base path `/mech-tide/` → `/` (served
+  at the domain root) and added `public/CNAME`. DNS is 4 apex A records to
+  GitHub Pages + a `www` CNAME. Finish in GitHub repo Settings → Pages (set the
+  custom domain, enable HTTPS once the cert provisions). The old
+  shantheman.github.io/mech-tide URL auto-redirects to the new domain.
+
 ## v0.8.50 — 2026-06-13
 
 - **Session replay ON for the friend test** (`SESSION_REPLAY` flag in

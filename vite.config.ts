@@ -20,7 +20,9 @@ const CSP = [
 ].join("; ");
 
 export default defineConfig({
-  base: process.env.GH_PAGES ? "/mech-tide/" : "/",
+  // Served at the root of the custom domain (mechtide.com) — see public/CNAME.
+  // (Was "/mech-tide/" while hosted at shantheman.github.io/mech-tide.)
+  base: "/",
   // Two pages: the game (index.html) and the dev Animation Playground
   // (playground.html), linked from Settings. Remove the playground entry to
   // drop it from the build.
