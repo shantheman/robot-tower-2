@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.38 — 2026-06-12
+
+- **Drone flies with momentum.** The drone used to move at a constant speed
+  straight at its target spot, so it flipped direction instantly (5 mph right →
+  5 mph left). It now carries a velocity and accelerates/decelerates toward
+  where it wants to be — banking through direction changes and easing in as it
+  arrives, instead of snapping. Still quick (reverses full speed in ~0.25s);
+  tunable via `DRONE_ACCEL` / `DRONE_ARRIVE_RADIUS`. Top speed is unchanged.
+
 ## v0.8.37 — 2026-06-12
 
 - **Tower beams draw above the base, below the gun.** The auto-shooter zaps

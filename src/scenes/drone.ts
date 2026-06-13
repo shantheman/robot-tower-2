@@ -18,6 +18,7 @@ export class DroneController {
   private fans: Phaser.GameObjects.Image[] = [];
   private fanAngle = 0;
   private angle = 0;
+  private vel = new Phaser.Math.Vector2(0, 0);   // momentum (px/s) for smooth steering
   private fireTimer = 0;
   private interceptTimer = 0;
   private medicPulse = 0;
@@ -38,6 +39,7 @@ export class DroneController {
     this.shadow = undefined;
     this.fans.forEach((f) => f.destroy());
     this.fans = [];
+    this.vel.set(0, 0);
   }
 
   /** Movement + firing + medic. Runs only while the wave is live (the
@@ -75,14 +77,25 @@ export class DroneController {
         this.towerPos.y + Math.sin(this.angle) * C.DRONE_ORBIT_RADIUS,
       );
     }
-    const d = want.clone().subtract(new Phaser.Math.Vector2(drone.x, drone.y));
-    const dist = d.length();
-    const step = Math.min(dist, C.DRONE_SPEED * dt);
-    if (dist > 1) {
-      drone.x += (d.x / dist) * step;
-      drone.y += (d.y / dist) * step;
-      drone.setRotation(Math.atan2(d.y, d.x) + Math.PI / 2);
-    }
+    // Steer with momentum: accelerate toward the velocity that would carry the
+    // drone to `want` (easing off within ARRIVE_RADIUS so it settles), capped by
+    // DRONE_ACCEL per frame — so it banks through a direction change instead of
+    // flipping its heading instantly.
+    const dx = want.x - drone.x, dy = want.y - drone.y;
+    const dist = Math.hypot(dx, dy);
+    const desiredSpeed = dist > C.DRONE_ARRIVE_RADIUS
+      ? C.DRONE_SPEED : C.DRONE_SPEED * (dist / C.DRONE_ARRIVE_RADIUS);
+    const dvx = dist > 0.001 ? (dx / dist) * desiredSpeed : 0;
+    const dvy = dist > 0.001 ? (dy / dist) * desiredSpeed : 0;
+    let sx = dvx - this.vel.x, sy = dvy - this.vel.y;
+    const sMag = Math.hypot(sx, sy), maxDV = C.DRONE_ACCEL * dt;
+    if (sMag > maxDV && sMag > 0) { sx *= maxDV / sMag; sy *= maxDV / sMag; }
+    this.vel.x += sx; this.vel.y += sy;
+    const spd = this.vel.length();
+    if (spd > C.DRONE_SPEED) this.vel.scale(C.DRONE_SPEED / spd);
+    drone.x += this.vel.x * dt;
+    drone.y += this.vel.y * dt;
+    if (this.vel.lengthSq() > 4) drone.setRotation(Math.atan2(this.vel.y, this.vel.x) + Math.PI / 2);
     if (this.shadow) {
       const off = shadowOffset(C.DRONE_RADIUS, true);
       this.shadow.setPosition(drone.x + off.x, drone.y + off.y);
