@@ -2,6 +2,19 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.54 — 2026-06-13
+
+- **Home tower-upgrade modal redesigned** (per mock): tower image, big
+  `LEVEL N → N+1` with a pip bar + "X levels remaining", a "WHAT LEVEL N GIVES
+  YOU" current→next breakdown (Coins Earned ×, Max Tower HP, Starting Coins —
+  real values, coins + icons, never "$"), and a YOUR CORES / LEVEL UP footer
+  that locks to "You need X more cores" when short. (The shop's compact banner
+  is unchanged.)
+- **Fresh saves start SFX at 50%** (music was already 50%).
+- **Analytics never fires from localhost** (the Claude Code preview / local
+  `vite preview`), so test traffic can't reach the data — no per-session
+  opt-out to remember.
+
 ## v0.8.53 — 2026-06-13
 
 - **Tutorial coach marks** (shown once each, remembered in the save). A dark

@@ -83,7 +83,7 @@ export class GameState {
   skills = new Set<SkillKey>();
   achievements = new Set<string>();
   tutorialsSeen = new Set<string>(); // one-time tutorial overlays already shown
-  volume = 1.0;       // SFX (0 = mute)
+  volume = 0.5;       // SFX (0 = mute)
   musicVolume = 0.5;  // background music (0 = off)
   reduceMotion = false;
 
@@ -145,7 +145,7 @@ export class GameState {
       this.skills = new Set(d.skills ?? []);
       this.achievements = new Set(d.achievements ?? []);
       this.tutorialsSeen = new Set(d.tutorials ?? []);
-      this.volume = Math.min(1, Math.max(0, d.volume ?? 1));
+      this.volume = Math.min(1, Math.max(0, d.volume ?? 0.5));
       this.musicVolume = Math.min(1, Math.max(0, d.music_volume ?? 0.5));
       this.reduceMotion = !!d.reduce_motion;
     } catch { /* unreadable save -> defaults */ }

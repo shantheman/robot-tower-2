@@ -31,6 +31,11 @@ let playedMs = 0; // accumulated ACTIVE play time, flushed in chunks
 
 export async function initAnalytics(): Promise<void> {
   if (!POSTHOG_KEY || import.meta.env.DEV) return; // off when unconfigured / in dev
+  // Never send from localhost / preview builds (the Claude Code preview, local
+  // `vite preview`, etc.) so test traffic never reaches the data — no per-
+  // browser opt-out flag to remember.
+  const host = location.hostname;
+  if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host.endsWith(".local")) return;
   // Self-exclude your own sessions: load the game once with ?notrack=1 on each
   // of your browsers (persisted); ?notrack=0 undoes it. Keeps your events AND
   // replays out of the data entirely — PostHog never even loads on opted-out
