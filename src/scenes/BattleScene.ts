@@ -43,6 +43,8 @@ export class BattleScene extends Phaser.Scene {
   private onHud!: (s: HudState) => void;
 
   private towerPos = new Phaser.Math.Vector2(game.world.w / 2, game.world.h / 2);
+  private base!: Phaser.GameObjects.Image;
+  private baseBlue = false;          // showing the Auto-Shooter (blue-ring) base?
   private gun!: Phaser.GameObjects.Image;
   private gunShadow!: Phaser.GameObjects.Image;
   private gunVariant = 0;            // shots (1+multiLevel) the current gun art shows
@@ -83,6 +85,7 @@ export class BattleScene extends Phaser.Scene {
 
   preload() {
     this.load.image("turret_base", "sprites/turret_base.png");
+    this.load.image("base_blue", "sprites/base_blue.png"); // Auto-Shooter base
     for (const k of C.TURRET_GUN_TEXTURES) this.load.image(k, `sprites/${k}.png`);
     this.load.image("drone", "sprites/drone.png");
     this.load.image(C.DRONE_FAN.texture, `sprites/${C.DRONE_FAN.texture}.png`);
@@ -106,12 +109,16 @@ export class BattleScene extends Phaser.Scene {
     // tight "land" rim into shadowLayer; the elevated gun casts a detached
     // "air" silhouette ONTO the base (created between base and gun so it
     // draws above the base art), swiveling with the aim.
-    const base = this.add.image(this.towerPos.x, this.towerPos.y, "turret_base")
+    // The base shows base_blue (glowing ring) once Auto-Shooter is owned.
+    this.baseBlue = game.gs.autoLevel > 0;
+    this.base = this.add.image(this.towerPos.x, this.towerPos.y, this.baseBlue ? "base_blue" : "turret_base")
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y);
-    base.setScale(C.TURRET_BASE_W / base.width);
+    this.base.setScale(C.TURRET_BASE_W / this.base.width);
+    // The blue ring is internal glow — the plate silhouette is unchanged, so the
+    // shadow always uses the plain plate.
     const baseShadow = this.add.image(
       this.towerPos.x + C.TOWER_SHADOW.base.x, this.towerPos.y + C.TOWER_SHADOW.base.y, "turret_base")
-      .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y).setScale(base.scale)
+      .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y).setScale(this.base.scale)
       .setTintFill(0x000000).setAlpha(C.TOWER_SHADOW.base.alpha);
     this.shadowLayer.add(baseShadow);
     // The gun art swaps with how many bullets a shot fires (1/2/3/many barrels).
@@ -400,6 +407,14 @@ export class BattleScene extends Phaser.Scene {
     this.gunShadow.setTexture(key).setScale(this.gun.scale * C.TOWER_SHADOW.gun.scale);
   }
 
+  /** Swap the base art when Auto-Shooter is bought/owned (between waves). */
+  private syncBaseTexture(): void {
+    const on = game.gs.autoLevel > 0;
+    if (on === this.baseBlue) return;
+    this.baseBlue = on;
+    this.base.setTexture(on ? "base_blue" : "turret_base").setScale(C.TURRET_BASE_W / this.base.width);
+  }
+
   /** Centroid of the shot fan, in radians. The pattern is asymmetric (one round
    * straight at the cursor, extras to alternating sides), so its centroid is 0
    * for odd shot counts and +half-spread for even. The gun points HERE — not at
@@ -558,7 +573,12 @@ export class BattleScene extends Phaser.Scene {
       if (d < bestD) { bestD = d; best = e; }
     }
     if (!best) return;
-    this.effects.zap(this.towerPos.x, this.towerPos.y, best.sprite.x, best.sprite.y, C.AUTO_SHOOTER_COLOR);
+    // Zap leaves the base's blue ring at the point facing the target, so it
+    // reads as a straight line out of the middle of the base.
+    const dir = new Phaser.Math.Vector2(best.sprite.x - this.towerPos.x, best.sprite.y - this.towerPos.y).normalize();
+    const r = C.AUTO_RING_RADIUS_FRAC * this.base.displayWidth;
+    this.effects.zap(this.towerPos.x + dir.x * r, this.towerPos.y + dir.y * r,
+      best.sprite.x, best.sprite.y, C.AUTO_SHOOTER_COLOR);
     this.hitEnemy(best, C.AUTO_BULLET_DAMAGE);
     this.autoFireTimer = C.AUTO_BASE_COOLDOWN / gs.autoLevel;
   }
@@ -707,6 +727,7 @@ export class BattleScene extends Phaser.Scene {
       this.aimAngle += Phaser.Math.Angle.Wrap(this.aimTarget - this.aimAngle)
         * (1 - Math.exp(-C.AIM_SMOOTH_RATE * dt));
       this.syncGunTexture();
+      this.syncBaseTexture();
       this.gun.setRotation(this.aimAngle + this.gunSkew() + Math.PI / 2);
       this.gunShadow.setRotation(this.gun.rotation);
       this.fireTimer -= dt;

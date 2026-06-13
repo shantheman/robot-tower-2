@@ -215,6 +215,10 @@ export function turretGunKey(shots: number): string {
 // Visual sizes (world px), proportions per the mock: gun height = 0.69 x base.
 export const TURRET_BASE_W = 96;
 export const TURRET_GUN_H = 66;
+/** When Auto-Shooter is owned the base swaps to base_blue.png (a glowing blue
+ * ring round the hub); its zaps leave that ring at the point facing the target.
+ * Radius as a fraction of the base's display width (the ring sits ~halfway out). */
+export const AUTO_RING_RADIUS_FRAC = 0.245;
 export const ENEMY_SPRITE_SCALE = 3.0;          // sprite width = radius x this
 
 // -- In-run upgrade costs (base x growth^level) -------------------------------

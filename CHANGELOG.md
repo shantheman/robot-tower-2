@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.36 — 2026-06-12
+
+- **Auto-Shooter lights up the base.** Once you own Auto-Shooter, the tower base
+  swaps to a version with a glowing blue ring round the hub (`base_blue.png`),
+  and its zaps now leave that ring — at the point facing the target, so each
+  zap reads as a straight line out of the middle of the base instead of from
+  the tower centre or the sprite edge. Ring radius is tunable
+  (`AUTO_RING_RADIUS_FRAC`). Updates live the moment you buy Auto-Shooter.
+
 ## v0.8.35 — 2026-06-12
 
 Turret firing + feel fixes:
