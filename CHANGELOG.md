@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.56 — 2026-06-13
+
+- **Tower sits centered on the pad on every level.** Re-centered the pad in 11
+  backgrounds using Shannon's marked centers — most visibly bg2/bg6/bg13
+  portrait (pad was off to the side/top). Each off-center image was cropped a
+  sliver on its far edge so the pad lands at the image center, which keeps the
+  tower on it at *all* resolutions (vs. a per-device CSS nudge). The rest were
+  already centered.
+
 ## v0.8.55 — 2026-06-13
 
 - **Generator coach mark** now spotlights just the Generator card (not the whole
