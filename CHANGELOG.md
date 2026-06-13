@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.43 — 2026-06-13
+
+- **Drone body swivels at a capped rate.** The drone used to snap its facing to
+  its direction of travel instantly; now the nose eases toward its heading at
+  `DRONE_TURN_RATE` (5 rad/s ≈ 0.6s for a 180° turn). Separate knob from the
+  accel/decel momentum.
+
 ## v0.8.42 — 2026-06-13
 
 - **Drone `DRONE_ACCEL` → 900.** Right at the settle-vs-circle threshold:

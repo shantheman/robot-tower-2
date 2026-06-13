@@ -95,7 +95,12 @@ export class DroneController {
     if (spd > C.DRONE_SPEED) this.vel.scale(C.DRONE_SPEED / spd);
     drone.x += this.vel.x * dt;
     drone.y += this.vel.y * dt;
-    if (this.vel.lengthSq() > 4) drone.setRotation(Math.atan2(this.vel.y, this.vel.x) + Math.PI / 2);
+    // Ease the body toward its heading at a capped rate (no instant snap when
+    // the velocity swings around); holds its facing when nearly stopped.
+    if (this.vel.lengthSq() > 4) {
+      const target = Math.atan2(this.vel.y, this.vel.x) + Math.PI / 2;
+      drone.setRotation(Phaser.Math.Angle.RotateTo(drone.rotation, target, C.DRONE_TURN_RATE * dt));
+    }
     if (this.shadow) {
       const off = shadowOffset(C.DRONE_RADIUS, true);
       this.shadow.setPosition(drone.x + off.x, drone.y + off.y);

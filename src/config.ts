@@ -294,6 +294,11 @@ export const DRONE_SPEED = 300;           // top speed (px/s)
  * extreme. ARRIVE_RADIUS is how close it starts easing off. */
 export const DRONE_ACCEL = 900;
 export const DRONE_ARRIVE_RADIUS = 50;
+/** Max rate the drone's body can rotate to face its direction of travel
+ * (rad/s). The nose eases toward its heading instead of snapping — lower =
+ * slower, more deliberate swivel (5 ≈ 0.6s for a 180° turn). Independent of
+ * ACCEL: that's how fast it changes its movement; this is just sprite spin. */
+export const DRONE_TURN_RATE = 5;
 export const DRONE_DAMAGE = 18;
 export const DRONE_DAMAGE_PER_LEVEL = 4;
 export const DRONE_STANDOFF = 75;
