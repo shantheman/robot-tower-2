@@ -10,12 +10,18 @@
 import Phaser from "phaser";
 import "./styles.css";
 import * as C from "./config";
-import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite } from "./scenes/enemyAnim";
+import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite, updateDroneFans } from "./scenes/enemyAnim";
 import { makeSilhouette, shadowOffset } from "./scenes/shadows";
 import { Effects } from "./scenes/effects";
 
 type State = "idle" | "moving" | "firing" | "explode";
 
+// The player's drone isn't an enemy; a minimal type lets the playground render
+// its body the normal way, then add the 4 spinning fans (preview/tune only).
+const DRONE_TYPE: C.EnemyType = {
+  key: "drone", sprite: "drone", radius: C.DRONE_RADIUS, hp: 1, speedMult: 1,
+  reward: 0, contactDamage: 0, levelScaled: false, healthbar: false, air: true,
+};
 const ENEMIES: { key: string; label: string; type: C.EnemyType }[] = [
   { key: "grunt", label: "Grunt", type: C.GRUNT },
   { key: "fast", label: "Fast (quad)", type: C.FAST },
@@ -24,8 +30,20 @@ const ENEMIES: { key: string; label: string; type: C.EnemyType }[] = [
   { key: "bomber", label: "Bomber", type: C.BOMBER },
   { key: "boss", label: "Boss", type: C.BOSS },
   { key: "shooter", label: "Shooter (ranged)", type: C.SHOOTER },
+  { key: "drone", label: "Drone (player)", type: DRONE_TYPE },
 ];
 const byKey = (k: string) => ENEMIES.find((e) => e.key === k)!;
+
+// Live, tunable copy of the drone-fan config (the "Drone" preview's sliders).
+const pgFan = { offset: C.DRONE_FAN.offset, scale: C.DRONE_FAN.scale, spinRads: C.DRONE_FAN.spinRads };
+let fanSpin = 0; // accumulated fan rotation
+const FAN_SLIDERS = [
+  { k: "offset", label: "Hole offset (×width)", min: 0.1, max: 0.4, step: 0.005 },
+  { k: "scale", label: "Fan scale (×body)", min: 0.4, max: 1.8, step: 0.02 },
+  { k: "spinRads", label: "Spin speed (rad/s)", min: 0, max: 40, step: 1 },
+] as const;
+const fmt = (v: number, step: number) =>
+  v.toFixed(step >= 1 ? 0 : step >= 0.1 ? 1 : step >= 0.01 ? 2 : 3);
 
 // Live, editable copy of the animation table (plain data → JSON clone is fine).
 const params: Record<string, C.EnemyAnim> = JSON.parse(JSON.stringify(C.ENEMY_ANIM));
@@ -61,6 +79,7 @@ class PlaygroundScene extends Phaser.Scene {
     visible: boolean;
     rotors?: Phaser.GameObjects.Image[];
     rotorAngle: number;
+    fans?: Phaser.GameObjects.Image[];
     squadronWings?: Phaser.GameObjects.Image[];
     squadronShadows?: Phaser.GameObjects.Image[];
     squadronPhases: number[];
@@ -80,6 +99,8 @@ class PlaygroundScene extends Phaser.Scene {
   preload(): void {
     this.load.image("turret_base", "sprites/turret_base.png");
     this.load.image("turret_gun", "sprites/turret_gun.png");
+    this.load.image("drone", "sprites/drone.png");
+    this.load.image(C.DRONE_FAN.texture, `sprites/${C.DRONE_FAN.texture}.png`);
     for (const k of ["enemy_0", "enemy_1", "enemy_2", "enemy_3", "enemy_4", "boss", "shooter"]) {
       this.load.image(k, `sprites/${k}.png`);
     }
@@ -110,6 +131,7 @@ class PlaygroundScene extends Phaser.Scene {
     this.enemy?.squadronShadows?.forEach(r => r.destroy());
     this.enemy?.satellite?.destroy();
     this.enemy?.satShadow?.destroy();
+    this.enemy?.fans?.forEach(f => f.destroy());
     for (const s of this.shots) s.dot.destroy();
     this.shots = [];
     this.rangeRing.clear();
@@ -134,6 +156,12 @@ class PlaygroundScene extends Phaser.Scene {
       makeSilhouette(this, this.shadowLayer, type.sprite,
         start.x + off.x * pg.zoom, start.y + off.y * pg.zoom, baseScale, air));
     if (squadronWings?.length) this.children.bringToTop(sprite);
+    // Player drone: 4 fans under the body (lift the body on top so its rim hides
+    // the fan edges — the same recessed look as in-game).
+    const fans = pg.key === "drone"
+      ? [0, 1, 2, 3].map(() => this.add.image(start.x, start.y, C.DRONE_FAN.texture).setScale(baseScale))
+      : undefined;
+    if (fans) this.children.bringToTop(sprite);
     this.enemy = {
       sprite, shadow, type, baseScale,
       phase: Math.random() * Math.PI * 2,
@@ -146,6 +174,7 @@ class PlaygroundScene extends Phaser.Scene {
         ? [0, 1, 2, 3].map(() =>
             this.add.image(start.x, start.y, type.rotors!.texture).setScale(baseScale))
         : undefined,
+      fans,
       squadronWings, squadronShadows, squadronPhases,
       snapSide: Math.floor(Math.random() * 6),
       snapTimer: Math.random() * 1.5,
@@ -229,6 +258,7 @@ class PlaygroundScene extends Phaser.Scene {
           e.squadronShadows?.forEach(r => r.setVisible(false));
           e.satellite?.setVisible(false);
           e.satShadow?.setVisible(false);
+          e.fans?.forEach(f => f.setVisible(false));
           this.time.delayedCall(700, () => {
             if (!this.enemy) return;
             const s = this.startPos();
@@ -239,6 +269,7 @@ class PlaygroundScene extends Phaser.Scene {
             this.enemy.squadronShadows?.forEach(r => r.setVisible(true));
             this.enemy.satellite?.setVisible(true);
             this.enemy.satShadow?.setVisible(true);
+            this.enemy.fans?.forEach(f => f.setVisible(true));
             this.enemy.visible = true;
           });
         }
@@ -298,6 +329,11 @@ class PlaygroundScene extends Phaser.Scene {
       if (e.satellite && e.type.satellite) {
         placeSatellite(spr, e.satellite, e.type.satellite.pivot, e.satAngle,
           e.satShadow, spr.displayWidth * e.type.satellite.shadowDrop);
+      }
+      // Drone fans: spin + plant at the 4 holes (tunable via the fan sliders).
+      if (e.fans) {
+        fanSpin += pgFan.spinRads * dt;
+        updateDroneFans(spr, e.fans, pgFan, fanSpin);
       }
     }
 
@@ -369,6 +405,7 @@ const panel = document.getElementById("pg-panel")!;
 
 function render(): void {
   const ranged = !!byKey(pg.key).type.ranged;
+  const isDrone = pg.key === "drone";
   if (pg.state === "firing" && !ranged) pg.state = "idle";
   panel.innerHTML = `
     <a class="back" href="index.html">&lsaquo; Back to game</a>
@@ -386,16 +423,15 @@ function render(): void {
         `<button data-state="${s}" class="${s === pg.state ? "on" : ""}" ${s === "firing" && !ranged ? "disabled" : ""}>${s}</button>`).join("")}
     </div>
 
-    <div class="grp">ANIMATION — ${byKey(pg.key).label.toUpperCase()}</div>
+    <div class="grp">${isDrone ? "DRONE FANS" : `ANIMATION — ${byKey(pg.key).label.toUpperCase()}`}</div>
     <div id="pg-sliders">
-      ${SLIDERS.map((s) => {
-        const raw = (params[pg.key]?.[s.k] as number) ?? 0;
-        const shown = s.pct ? `${Math.round(raw * 100)}%` : raw.toFixed(s.step < 1 ? 1 : 0);
-        return `<div class="sl"><label>${s.label}<b data-val="${s.k}">${shown}</b></label>
+      ${(isDrone ? FAN_SLIDERS : SLIDERS).map((s) => {
+        const raw = isDrone ? (pgFan as Record<string, number>)[s.k] : ((params[pg.key]?.[s.k as keyof C.EnemyAnim] as number) ?? 0);
+        return `<div class="sl"><label>${s.label}<b data-val="${s.k}">${fmt(raw, s.step)}</b></label>
           <input type="range" data-k="${s.k}" min="${s.min}" max="${s.max}" step="${s.step}" value="${raw}" /></div>`;
       }).join("")}
     </div>
-    ${ranged ? `<label class="chk"><input type="checkbox" id="pg-charge" ${params[pg.key]?.chargeTell ? "checked" : ""} /> Charge-tell (swell before firing)</label>` : ""}
+    ${(!isDrone && ranged) ? `<label class="chk"><input type="checkbox" id="pg-charge" ${params[pg.key]?.chargeTell ? "checked" : ""} /> Charge-tell (swell before firing)</label>` : ""}
 
     <div class="grp">VIEW</div>
     <div class="sl"><label>Zoom<b data-val="zoom">${pg.zoom.toFixed(1)}×</b></label>
@@ -413,11 +449,12 @@ function render(): void {
     b.addEventListener("click", () => { if (b.disabled) return; pg.state = b.dataset.state as State; pg.dirty = true; render(); }));
   panel.querySelectorAll<HTMLInputElement>("#pg-sliders input").forEach((inp) =>
     inp.addEventListener("input", () => {
-      const k = inp.dataset.k as keyof C.EnemyAnim;
+      const k = inp.dataset.k!;
       const v = Number(inp.value);
-      (params[pg.key] ??= {})[k] = v as never;
-      const spec = SLIDERS.find((s) => s.k === k)!;
-      panel.querySelector(`[data-val="${k}"]`)!.textContent = spec.pct ? `${Math.round(v * 100)}%` : v.toFixed(spec.step < 1 ? 1 : 0);
+      if (isDrone) (pgFan as Record<string, number>)[k] = v;
+      else (params[pg.key] ??= {})[k as keyof C.EnemyAnim] = v as never;
+      const spec = (isDrone ? FAN_SLIDERS : SLIDERS).find((s) => s.k === k)!;
+      panel.querySelector(`[data-val="${k}"]`)!.textContent = fmt(v, spec.step);
     }));
   const charge = panel.querySelector<HTMLInputElement>("#pg-charge");
   charge?.addEventListener("change", () => { (params[pg.key] ??= {}).chargeTell = charge.checked || undefined; });
@@ -444,7 +481,10 @@ function render(): void {
 /** Serialize the live params as a pasteable ENEMY_ANIM literal (drops zeros
  * and orphan *Hz with no matching amplitude, to keep the table clean). */
 function buildConfig(): string {
-  const lines = ENEMIES.map(({ key }) => {
+  if (pg.key === "drone") {
+    return `export const DRONE_FAN = { texture: "drone_fan", offset: ${round(pgFan.offset)}, scale: ${round(pgFan.scale)}, spinRads: ${round(pgFan.spinRads)} };`;
+  }
+  const lines = ENEMIES.filter(({ key }) => key !== "drone").map(({ key }) => {
     const p = params[key] ?? {};
     const parts: string[] = [];
     if (p.altitude) parts.push(`altitude: ${round(p.altitude)}`);

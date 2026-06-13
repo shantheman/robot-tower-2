@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.29 — 2026-06-12
+
+- **New animated drone.** The player's drone is now a quad-frame body with a
+  glowing core and **4 spinning fans**, one per hole (N/E/S/W). Fans sit under
+  the body so the frame rim hides their edges (recessed look) and counter-rotate
+  in pairs; the spin freezes under reduce-motion. Tunable via `DRONE_FAN`
+  (`offset` / `scale` / `spinRads`).
+- **Drone added to the Animation Playground** — selectable like an enemy, with
+  live **Fan offset / scale / spin** sliders and a Copy-config that emits the
+  `DRONE_FAN` line.
+
 ## v0.8.28 — 2026-06-12
 
 - **Upgrade sound** (Win03) plays on a successful purchase in the Upgrades shop

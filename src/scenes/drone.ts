@@ -9,11 +9,14 @@ import { game } from "../game";
 import { play } from "../audio";
 import { Effects } from "./effects";
 import { makeSilhouette, shadowOffset } from "./shadows";
+import { updateDroneFans } from "./enemyAnim";
 import type { Enemy, EnemyBullet } from "./types";
 
 export class DroneController {
   private sprite?: Phaser.GameObjects.Image;
   private shadow?: Phaser.GameObjects.Image;
+  private fans: Phaser.GameObjects.Image[] = [];
+  private fanAngle = 0;
   private angle = 0;
   private fireTimer = 0;
   private interceptTimer = 0;
@@ -33,6 +36,8 @@ export class DroneController {
     this.sprite = undefined;
     this.shadow?.destroy();
     this.shadow = undefined;
+    this.fans.forEach((f) => f.destroy());
+    this.fans = [];
   }
 
   /** Movement + firing + medic. Runs only while the wave is live (the
@@ -41,8 +46,10 @@ export class DroneController {
     const gs = game.gs;
     if (gs.droneLevel <= 0) return;
     if (!this.sprite) {
-      this.sprite = this.scene.add.image(
-        this.towerPos.x, this.towerPos.y - C.DRONE_ORBIT_RADIUS, "drone");
+      const x0 = this.towerPos.x, y0 = this.towerPos.y - C.DRONE_ORBIT_RADIUS;
+      // Fans first so they sit UNDER the body (the frame rim hides their edge).
+      this.fans = [0, 1, 2, 3].map(() => this.scene.add.image(x0, y0, C.DRONE_FAN.texture));
+      this.sprite = this.scene.add.image(x0, y0, "drone");
       this.sprite.setScale((C.DRONE_RADIUS * 2 * C.DRONE_SPRITE_SCALE) / this.sprite.width);
       // The drone flies — same detached silhouette shadow as flying enemies.
       this.shadow = makeSilhouette(
@@ -80,6 +87,10 @@ export class DroneController {
       const off = shadowOffset(C.DRONE_RADIUS, true);
       this.shadow.setPosition(drone.x + off.x, drone.y + off.y);
       this.shadow.setRotation(drone.rotation);
+    }
+    if (this.fans.length) {
+      if (!gs.reduceMotion) this.fanAngle += C.DRONE_FAN.spinRads * dt;
+      updateDroneFans(drone, this.fans, C.DRONE_FAN, this.fanAngle);
     }
     // Fire at up to 1 (or 2 with Twin Targeting) enemies in range.
     this.fireTimer -= enemyDt > 0 ? dt : 0; // drone is the player's: real dt

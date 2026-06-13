@@ -84,6 +84,7 @@ export class BattleScene extends Phaser.Scene {
     this.load.image("turret_base", "sprites/turret_base.png");
     this.load.image("turret_gun", "sprites/turret_gun.png");
     this.load.image("drone", "sprites/drone.png");
+    this.load.image(C.DRONE_FAN.texture, `sprites/${C.DRONE_FAN.texture}.png`);
     for (const k of ["enemy_0", "enemy_1", "enemy_2", "enemy_3", "enemy_4", "boss", "shooter"]) {
       this.load.image(k, `sprites/${k}.png`);
     }

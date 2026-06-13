@@ -145,6 +145,11 @@ export const TOWER_SHADOW = {
 } as const;
 /** Drone sprite display width = DRONE_RADIUS * 2 * this (art has padding). */
 export const DRONE_SPRITE_SCALE = 1.408;
+/** The drone body has 4 fan holes (N/E/S/W). Each gets a spinning fan sprite,
+ * drawn UNDER the body so the frame rim occludes the fan edge (recessed look).
+ * offset = hole distance from center as a fraction of the body's display width;
+ * scale = fan size relative to the body's scale; spinRads = spin speed. */
+export const DRONE_FAN = { texture: "drone_fan", offset: 0.255, scale: 1.0, spinRads: 16 };
 /** Muzzle flash/bullet origin, as fractions of the gun sprite: distance along
  * the barrel from the pivot, and the alternating left/right barrel offset. */
 export const MUZZLE_DIST_FACTOR = 0.92;

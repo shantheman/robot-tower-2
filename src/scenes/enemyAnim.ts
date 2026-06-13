@@ -67,6 +67,27 @@ export function placeSatellite(
   sat.setRotation(r + swivel);
 }
 
+/** Place + spin the player drone's 4 fans, one per hole (N/E/S/W). The holes
+ * sit at `cfg.offset` of the body's display width from center; fans are scaled
+ * to `cfg.scale × body scale` and spin (adjacent fans counter-rotate). Hole
+ * positions follow the body's rotation. */
+export function updateDroneFans(
+  base: Phaser.GameObjects.Image,
+  fans: Phaser.GameObjects.Image[],
+  cfg: { offset: number; scale: number },
+  spin: number,
+): void {
+  const off = base.displayWidth * cfg.offset;
+  const r = base.rotation, cos = Math.cos(r), sin = Math.sin(r);
+  const lx = [0, off, 0, -off]; // N, E, S, W (local)
+  const ly = [-off, 0, off, 0];
+  for (let i = 0; i < 4; i++) {
+    fans[i].setPosition(base.x + lx[i] * cos - ly[i] * sin, base.y + lx[i] * sin + ly[i] * cos);
+    fans[i].setScale(base.scaleX * cfg.scale);
+    fans[i].setRotation(i % 2 === 0 ? spin : -spin); // adjacent fans counter-rotate
+  }
+}
+
 export function updateEnemyRotors(
   sprite: Phaser.GameObjects.Image,
   rotors: Phaser.GameObjects.Image[],
