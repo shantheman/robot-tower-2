@@ -292,7 +292,7 @@ export const DRONE_SPEED = 300;           // top speed (px/s)
  * speed, 1200 ≈ 0.5s, 2400 ≈ 0.25s). Below ~900 it can't brake within
  * ARRIVE_RADIUS, so it overshoots/circles its target — fine for feeling out the
  * extreme. ARRIVE_RADIUS is how close it starts easing off. */
-export const DRONE_ACCEL = 200;
+export const DRONE_ACCEL = 900;
 export const DRONE_ARRIVE_RADIUS = 50;
 export const DRONE_DAMAGE = 18;
 export const DRONE_DAMAGE_PER_LEVEL = 4;

@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.42 — 2026-06-13
+
+- **Drone `DRONE_ACCEL` → 900.** Right at the settle-vs-circle threshold:
+  clear momentum through turns, but still brakes cleanly on arrival (no
+  orbiting). Tuning sweep landing point — easy to nudge ±.
+
 ## v0.8.41 — 2026-06-13
 
 - **Drone `DRONE_ACCEL` → 200** (was 1200) to feel out the floaty extreme: ~3s
