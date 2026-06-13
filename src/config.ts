@@ -259,7 +259,7 @@ export const MEDIC_COST = 300;        // in-run, one-time (tree-gated)
 export const MEDIC_HPS = 2;           // HP/sec healed while the field is clear
 export const TWIN_COST = 200;   // v2: one-time per-run buy (tree-gated) — the
                                 // original auto-granted it, breaking gate-not-grant
-export const DRONE_RADIUS = 11;
+export const DRONE_RADIUS = 22; // 2x — purely the drone's on-screen size (+ shadow); no gameplay effect
 export const DRONE_SPEED = 300;
 export const DRONE_DAMAGE = 18;
 export const DRONE_DAMAGE_PER_LEVEL = 4;

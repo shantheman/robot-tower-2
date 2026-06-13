@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.30 — 2026-06-12
+
+- **Drone is 2× bigger** (DRONE_RADIUS 11 → 22) — body, fans, and shadow scale
+  together. Purely on-screen size; no gameplay effect (range/medic/interceptor
+  use separate constants).
+
 ## v0.8.29 — 2026-06-12
 
 - **New animated drone.** The player's drone is now a quad-frame body with a
