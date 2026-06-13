@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.50 — 2026-06-13
+
+- **Session replay ON for the friend test** (`SESSION_REPLAY` flag in
+  analytics.ts). CSP updated for replay (`worker-src blob:`). ⚠️ Must be turned
+  OFF before any public release — flagged on the launch checklist. (Requires
+  enabling Session + Canvas recording in PostHog project settings; canvas
+  capture is a dashboard toggle, else the Phaser battle records blank.)
+- **Self-exclude opt-out:** load the game once with `?notrack=1` to keep your
+  own sessions (events + replays) out of the data; `?notrack=0` undoes it.
+  Persisted per browser — PostHog never loads on opted-out devices.
+
 ## v0.8.49 — 2026-06-13
 
 - **Analytics live.** Set the PostHog project key (US cloud) — playtime +

@@ -14,6 +14,7 @@ const CSP = [
   "font-src 'self'",
   // PostHog (US cloud): ingest on us.i.posthog.com, assets/config on us-assets.
   "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com",
+  "worker-src 'self' blob:", // PostHog session replay compresses in a blob worker
   "object-src 'none'",
   "base-uri 'self'",
 ].join("; ");

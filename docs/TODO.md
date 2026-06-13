@@ -165,6 +165,12 @@ Families policy), ToS + Privacy Policy live at baumangames.com.
       (baumangames.com or the Pages site), contact email.
 
 **Technical**
+- [ ] ⚠️ **Turn OFF session replay before ANY public release** (web or store).
+      It was enabled (v0.8.50) ONLY for the Callum-friends test — the friend
+      test's verbal consent covers it, but the public ToS/PP do not. To kill it:
+      set `SESSION_REPLAY = false` in src/analytics.ts AND disable the Session +
+      Canvas recording toggles in the PostHog project settings. (Plain
+      anonymous analytics stays on.)
 - [ ] Capacitor config: bundle ID, versionName/versionCode sync with
       GAME_VERSION, min/target OS (Play ratchets target API yearly).
 - [ ] Apple export compliance: ITSAppUsesNonExemptEncryption=NO
