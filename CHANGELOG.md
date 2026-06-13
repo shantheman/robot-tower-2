@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.41 — 2026-06-13
+
+- **Drone `DRONE_ACCEL` → 200** (was 1200) to feel out the floaty extreme: ~3s
+  to reverse full speed, and it overshoots/circles its target since it can't
+  brake within the arrive radius. Experimental — expect to dial back up.
+
 ## v0.8.40 — 2026-06-13
 
 - **Drone turns are softer.** `DRONE_ACCEL` halved (2400 → 1200) so the drone
