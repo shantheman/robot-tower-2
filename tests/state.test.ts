@@ -274,7 +274,7 @@ describe("saves survive game updates (never wipe on schema drift)", () => {
     expect(g.towerLevel).toBe(3);
     expect(g.skills.has("multi")).toBe(true);
     expect(g.level).toBe(1);                        // missing -> default, not a wipe
-    expect(g.volume).toBe(1);
+    expect(g.volume).toBe(0.5);                      // missing -> default SFX volume
   });
 
   it("tolerates a future save with unknown fields and version", () => {
