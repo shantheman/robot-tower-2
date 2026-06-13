@@ -9,6 +9,7 @@ import { waveInLevel, wavesForLevel } from "../sim/waves";
 import { esc } from "./html";
 import { Category, ITEM_ART, catIcon } from "./icons";
 import { towerBannerHtml } from "./towerBanner";
+import { maybeTutorial } from "./tutorial";
 import { Panel } from "./panel";
 
 interface CardSpec {
@@ -237,6 +238,16 @@ export class ShopPanel extends Panel {
     });
     this.root.querySelector("[data-act=next]")?.addEventListener("click", () => this.startNext());
     this.root.querySelector("[data-act=close]")?.addEventListener("click", () => this.close());
+
+    // Tutorial: first time the shop opens after clearing wave 1 of level 1,
+    // point new players at the Coin Generator.
+    if (cleared && game.gs.level === 1) {
+      maybeTutorial({
+        key: "generator",
+        text: "You don't have enough coins for an upgrade yet — but you will soon. The <b>Coin Generator</b> is a great first purchase: it speeds up how fast you collect coins.",
+        targets: () => [this.root.querySelector<HTMLElement>('[data-key="gen"]')?.closest<HTMLElement>(".cluster") ?? null],
+      });
+    }
   }
 
   /** Purchase confirmation: clone the picked card's blue border as an overlay

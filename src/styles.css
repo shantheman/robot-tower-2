@@ -514,6 +514,32 @@ body { display: grid; place-items: center; }
 .hs-tower { cursor: pointer; transition: border-color .12s, background .12s; }
 .hs-tower:hover { border-color: var(--cyan); background: rgba(127, 232, 255, 0.1); }
 .tower-modal-card { width: 480px; }
+
+/* -- Tutorial overlays (one-time spotlight coach marks) --------------------- */
+.tut-overlay { position: fixed; inset: 0; z-index: 9999; font-family: "Chakra Petch", sans-serif; }
+.tut-mask { position: fixed; inset: 0; cursor: pointer; }
+.tut-arrow {
+  position: fixed; transform: translateX(-50%); font-size: 34px; line-height: 1;
+  color: var(--cyan); text-shadow: 0 0 12px rgba(127, 232, 255, 0.85); pointer-events: none;
+}
+.tut-arrow.bounce-up { animation: tut-bup 0.9s ease-in-out infinite; }
+.tut-arrow.bounce-down { animation: tut-bdn 0.9s ease-in-out infinite; }
+@keyframes tut-bup { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
+@keyframes tut-bdn { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 10px); } }
+.tut-card {
+  position: fixed; left: 50%; transform: translateX(-50%); max-width: min(420px, 86vw);
+  padding: 18px 22px; border-radius: 14px; text-align: center; line-height: 1.5;
+  font-size: 15px; color: #dcecff;
+  background: linear-gradient(180deg, #0e1b30, #0a1424);
+  border: 1px solid var(--cyan); box-shadow: 0 0 32px rgba(127, 232, 255, 0.3);
+}
+.tut-card b { color: var(--cyan); }
+.tut-x {
+  position: fixed; top: 16px; right: 18px; width: 48px; height: 48px; border-radius: 12px;
+  font-size: 22px; cursor: pointer; color: #dcecff;
+  background: rgba(14, 27, 48, 0.92); border: 1px solid var(--line-strong);
+}
+.tut-x:hover { border-color: var(--cyan); color: var(--cyan); }
 .hs-val { display: flex; align-items: center; justify-content: center; gap: 6px; }
 .lt { color: #cdeeff; } .cy { color: var(--cyan); } .gr { color: var(--green); }
 .menu-btn {

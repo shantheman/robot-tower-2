@@ -82,6 +82,7 @@ export class GameState {
   bestWave = 0;
   skills = new Set<SkillKey>();
   achievements = new Set<string>();
+  tutorialsSeen = new Set<string>(); // one-time tutorial overlays already shown
   volume = 1.0;       // SFX (0 = mute)
   musicVolume = 0.5;  // background music (0 = off)
   reduceMotion = false;
@@ -143,6 +144,7 @@ export class GameState {
       this.bestWave = d.best_wave | 0;
       this.skills = new Set(d.skills ?? []);
       this.achievements = new Set(d.achievements ?? []);
+      this.tutorialsSeen = new Set(d.tutorials ?? []);
       this.volume = Math.min(1, Math.max(0, d.volume ?? 1));
       this.musicVolume = Math.min(1, Math.max(0, d.music_volume ?? 0.5));
       this.reduceMotion = !!d.reduce_motion;
@@ -159,6 +161,7 @@ export class GameState {
         best_wave: this.bestWave,
         skills: [...this.skills].sort(),
         achievements: [...this.achievements].sort(),
+        tutorials: [...this.tutorialsSeen].sort(),
         volume: Math.round(this.volume * 100) / 100,
         music_volume: Math.round(this.musicVolume * 100) / 100,
         reduce_motion: this.reduceMotion,
@@ -487,6 +490,10 @@ export class GameState {
     });
     return true;
   }
+
+  /** One-time tutorial overlays: shown once each, then remembered forever. */
+  hasSeenTut(key: string): boolean { return this.tutorialsSeen.has(key); }
+  markTutSeen(key: string): void { this.tutorialsSeen.add(key); this.save(); }
 
   checkAchievements(): void {
     if (this.wave >= 10) this.unlockAchievement("wave10");

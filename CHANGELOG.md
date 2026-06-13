@@ -2,6 +2,18 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.53 — 2026-06-13
+
+- **Tutorial coach marks** (shown once each, remembered in the save). A dark
+  scrim with spotlight cutouts, a bouncing arrow at each target, a text card,
+  and a close X (bounce respects reduce-motion). Three moments:
+  1. After clearing wave 1 of level 1 → in the shop, spotlights the **Coin
+     Generator** as a good first buy.
+  2. After clearing **Level 1** → on Home, explains that coins + field upgrades
+     reset each level but Tower Level and Skill Tree unlocks are permanent.
+  3. After clearing **Level 2** → on Home, spotlights the **Tower** box and
+     **Skill Tree** button (Cores raise your tower and unlock skills).
+
 ## v0.8.52 — 2026-06-13
 
 - **Removed "Transfer save"** (export/import) from Settings.
