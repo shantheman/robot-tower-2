@@ -2,6 +2,26 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.35 — 2026-06-12
+
+Turret firing + feel fixes:
+
+- **Rounds now leave the muzzle, not the base.** Every shot spawns at the gun's
+  barrel tips out front and then fans to its spread angle. Before, each round
+  started its travel distance along its *own* wide angle, so the outer shots of
+  a 3-/4-/many-fan appeared to spawn back around the base. Most obvious on 4+.
+- **Gun points at the shot fan's centre so the barrels match the spread.** The
+  fan is asymmetric (one round straight at the cursor, extras to alternating
+  sides), so for even shot counts (2, 4, …) the gun now aims at the fan's
+  centroid — a slight skew off the cursor — so its symmetric barrels straddle
+  the rounds instead of looking mismatched. Odd counts (1, 3, …) still point
+  dead at the cursor. The straight round always flies at the cursor.
+- **Smoother turret sweep.** The gun heading now eases toward the cursor each
+  frame (frame-rate independent, `AIM_SMOOTH_RATE`). The long barrel was
+  amplifying brief gaps in the pointer's position updates during fast circles,
+  reading as a stutter; easing smooths it. Gun, laser, and bullets all read the
+  same eased heading, so nothing lags relative to anything else.
+
 ## v0.8.34 — 2026-06-12
 
 - **Home + shop turret art matches the battle gun.** The home-screen hero

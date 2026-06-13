@@ -232,6 +232,11 @@ export const TURRET_SIZE_PER_LEVEL = 1;
 export const MS_BASE_COST = 220;
 export const MS_COST_GROWTH = 2.0;
 export const MULTI_SPREAD_DEG = 16;
+/** Turret aim easing: how fast the gun heading chases the cursor (per second,
+ * frame-rate independent: fraction closed = 1 - e^(-rate·dt)). Higher = snappier
+ * / less lag; lower = smoother. Smooths the long barrel's sweep when the
+ * pointer reports its position in bursts during fast circles. */
+export const AIM_SMOOTH_RATE = 50;
 export const PIERCE_BASE_COST = 150;
 export const PIERCE_COST_GROWTH = 1.8;
 export const EXPLOSIVE_BASE_COST = 250;

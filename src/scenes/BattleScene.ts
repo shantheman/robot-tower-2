@@ -63,8 +63,8 @@ export class BattleScene extends Phaser.Scene {
   private intermission = C.INTERMISSION_TIME;
   private fireTimer = 0;
   private mouseHeld = false;
-  private muzzleAlt = 1;
-  private aimAngle = -Math.PI / 2;                       // current gun heading
+  private aimAngle = -Math.PI / 2;                       // eased gun heading (gun/laser/bullets)
+  private aimTarget = -Math.PI / 2;                      // raw heading toward the cursor
   private joyOrigin: Phaser.Math.Vector2 | null = null;  // touch: floating joystick anchor
   private joyGfx!: Phaser.GameObjects.Graphics;
   private paused = false;
@@ -400,29 +400,46 @@ export class BattleScene extends Phaser.Scene {
     this.gunShadow.setTexture(key).setScale(this.gun.scale * C.TOWER_SHADOW.gun.scale);
   }
 
+  /** Centroid of the shot fan, in radians. The pattern is asymmetric (one round
+   * straight at the cursor, extras to alternating sides), so its centroid is 0
+   * for odd shot counts and +half-spread for even. The gun points HERE — not at
+   * the cursor — so its symmetric barrels straddle the rounds, while the
+   * straight round still flies at the cursor. */
+  private gunSkew(): number {
+    const n = 1 + game.gs.multiLevel;
+    return Phaser.Math.DegToRad((n % 2 === 0) ? C.MULTI_SPREAD_DEG / 2 : 0);
+  }
+
   private fireSpread(): void {
     const gs = game.gs;
     const aim = new Phaser.Math.Vector2(Math.cos(this.aimAngle), Math.sin(this.aimAngle));
-    // One bullet straight at the cursor, extras fanned symmetrically.
+    // One bullet straight at the cursor, extras fanned to alternating sides.
     const n = 1 + gs.multiLevel;
     const angles = [0];
     for (let k = 1; angles.length < n; k++) {
       angles.push(C.MULTI_SPREAD_DEG * k);
       if (angles.length < n) angles.push(-C.MULTI_SPREAD_DEG * k);
     }
+    // Gun points at the fan's centroid; spawn every round at the MUZZLE (the
+    // barrel tips out front) fanned across the barrels — not from each round's
+    // own wide angle, which used to splay the origins back around the base.
+    const centroid = Phaser.Math.DegToRad(angles.reduce((a, d) => a + d, 0) / n);
+    const gunDir = aim.clone().rotate(centroid);
+    const perp = gunDir.clone().rotate(Math.PI / 2);
     const muzzleDist = this.gun.displayHeight * C.GUN_PIVOT.y * C.MUZZLE_DIST_FACTOR;
+    const muzzleBase = this.towerPos.clone().add(gunDir.clone().scale(muzzleDist));
+    const barrelStep = this.gun.displayWidth * C.MUZZLE_SIDE_FACTOR;
     play("shoot");
     for (const deg of angles) {
-      const d = aim.clone().rotate(Phaser.Math.DegToRad(deg));
-      // Single-barrel art (n===1) fires straight from center; multi-barrel art
-      // alternates the muzzle left/right so rounds leave the outer barrels.
-      const sideAmt = n === 1 ? 0 : this.muzzleAlt * this.gun.displayWidth * C.MUZZLE_SIDE_FACTOR;
-      const side = d.clone().rotate(Math.PI / 2).scale(sideAmt);
-      this.muzzleAlt *= -1;
-      const start = this.towerPos.clone().add(d.clone().scale(muzzleDist)).add(side);
+      const dir = aim.clone().rotate(Phaser.Math.DegToRad(deg));
+      // Offset across the barrels, symmetric about the gun's centre (so 1 shot =
+      // centre, 2 = straddle, 3 = centre+two, …): index = (deg - centroid)/spread.
+      const barrel = Phaser.Math.DegToRad(deg) - centroid;
+      const start = muzzleBase.clone().add(
+        perp.clone().scale((barrel / Phaser.Math.DegToRad(C.MULTI_SPREAD_DEG)) * barrelStep));
       const dot = this.effects.track(this.add.circle(start.x, start.y, gs.playerBulletRadius(), C.PLAYER_BULLET_COLOR));
       this.bullets.push({
-        dot, vx: d.x * C.BULLET_SPEED, vy: d.y * C.BULLET_SPEED,
+        dot, vx: dir.x * C.BULLET_SPEED, vy: dir.y * C.BULLET_SPEED,
         damage: gs.playerDamage(), radius: gs.playerBulletRadius(),
         pierce: gs.pierceLevel, guided: gs.guidedOwned, hit: new Set(), alive: true,
       });
@@ -679,12 +696,18 @@ export class BattleScene extends Phaser.Scene {
       if (this.joyOrigin) {
         const dx = p.worldX - this.joyOrigin.x;
         const dy = p.worldY - this.joyOrigin.y;
-        if (dx * dx + dy * dy > 14 * 14) this.aimAngle = Math.atan2(dy, dx);
+        if (dx * dx + dy * dy > 14 * 14) this.aimTarget = Math.atan2(dy, dx);
       } else if (!p.wasTouch) {
-        this.aimAngle = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
+        this.aimTarget = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
       }
+      // Ease the heading toward the cursor (frame-rate independent). The pointer
+      // reports its position in bursts during fast circles, which would freeze
+      // the long barrel for a frame then snap it; easing makes the sweep smooth.
+      // gun, laser, and bullets all read aimAngle, so they stay in lockstep.
+      this.aimAngle += Phaser.Math.Angle.Wrap(this.aimTarget - this.aimAngle)
+        * (1 - Math.exp(-C.AIM_SMOOTH_RATE * dt));
       this.syncGunTexture();
-      this.gun.setRotation(this.aimAngle + Math.PI / 2);
+      this.gun.setRotation(this.aimAngle + this.gunSkew() + Math.PI / 2);
       this.gunShadow.setRotation(this.gun.rotation);
       this.fireTimer -= dt;
       if (this.mouseHeld && this.fireTimer <= 0) {
