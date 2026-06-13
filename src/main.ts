@@ -29,7 +29,8 @@ initMusic(); // looping background music, unlocked on first gesture (autoplay po
 // still fires for handlers that stopPropagation. (Canvas/battle clicks aren't
 // buttons, so aiming/firing stays silent here.)
 document.addEventListener("click", (e) => {
-  if ((e.target as HTMLElement)?.closest?.("button")) play("click");
+  const btn = (e.target as HTMLElement)?.closest?.("button");
+  if (btn && btn.dataset.sfx !== "none") play("click"); // buttons opt out via data-sfx="none"
 }, true);
 
 const stage = document.getElementById("stage")!;

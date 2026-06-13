@@ -223,10 +223,10 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private waveCleared(): void {
-    play("wave_clear");
     this.clearBoard(false);
     const { bossWave } = game.gs.onWaveCleared();
     if (bossWave) {
+      play("level_clear");      // celebratory sting only on level (boss-wave) completion
       this.setPaused(true);     // CRITICAL: stop simulating under the Home screen
       game.justClearedLevel = game.gs.level - 1; // onWaveCleared advanced it
       game.show("home");        // level complete -> Home (cores banked)

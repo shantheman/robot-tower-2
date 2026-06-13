@@ -162,7 +162,7 @@ export class ShopPanel extends Panel {
            ${it.cost!.toLocaleString("en-US")}
          </div>`;
     const art = ITEM_ART[it.key];
-    return `<button class="store-card ${it.state}" data-key="${it.key}">
+    return `<button class="store-card ${it.state}" data-key="${it.key}" data-sfx="none">
       ${art ? `<img class="card-art" src="${art}" alt="" draggable="false" /><span class="card-scrim"></span>` : ""}
       <span class="card-name">${esc(it.name)}</span>
       <span class="card-desc">${esc(it.desc)}</span>
@@ -209,7 +209,7 @@ export class ShopPanel extends Panel {
           <div class="pips">${pips}</div>
           <div class="tower-perks"><span>+10% earnings</span><span>+20 max HP</span><span>+30 start coins</span></div>
         </div>
-        <button class="cta levelup ${gs.cores >= towerCost ? "" : "disabled"}" data-act="towerup">
+        <button class="cta levelup ${gs.cores >= towerCost ? "" : "disabled"}" data-act="towerup" data-sfx="none">
           <span class="cta-big">LEVEL UP</span>
           <span class="cta-sub"><span class="core-icon small"></span> ${towerCost.toLocaleString("en-US")} cores</span>
         </button>
@@ -255,11 +255,11 @@ export class ShopPanel extends Panel {
     this.root.querySelectorAll<HTMLButtonElement>(".store-card").forEach((el) => {
       el.addEventListener("click", () => {
         const spec = all.find((c) => c.key === el.dataset.key);
-        if (spec?.onBuy?.()) { play("buy"); this.render(); }
+        if (spec?.onBuy?.()) { play("upgrade"); this.render(); }
       });
     });
     this.root.querySelector("[data-act=towerup]")?.addEventListener("click", () => {
-      if (game.gs.tryBuyTowerUpgrade()) { play("buy"); this.render(); }
+      if (game.gs.tryBuyTowerUpgrade()) { play("upgrade"); this.render(); }
     });
     this.root.querySelector("[data-act=next]")?.addEventListener("click", () => this.startNext());
     this.root.querySelector("[data-act=close]")?.addEventListener("click", () => this.close());

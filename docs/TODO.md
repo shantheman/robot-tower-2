@@ -12,8 +12,9 @@ and git).
 - [ ] **Second Wind** — pay cores to revive in place, once per run. Parked
       from the death-penalty redesign; adds a cores sink once the tree is
       bought out. Revisit after checkpoint feel is validated.
-- [ ] **Background music** — SFX exist (Web Audio synth); music never has.
-      Decide: synthesized loop vs. licensed track.
+- [x] **Background music** (done, v0.8.25) — looping MP3 track + separate
+      Sound/Music volume sliders (0 = off), both persisted. File-based SFX
+      system added too (boss fire, shooter fire, level clear, upgrade, click).
 - [ ] **Later levels + is there an end?** — carried from v1, still open.
       What do levels 8+ introduce (new enemies? modifiers?), and is there a
       win condition or is it endless?
@@ -24,6 +25,11 @@ and git).
 - [ ] **Haptics** — buzz on tower hit / ultimate fire / wave clear. Comes
       free with the Capacitor wrap (Haptics plugin); not available in
       browser on iOS.
+- [ ] **Upgrade-screen juice (animations)** — when you buy a field upgrade,
+      play a quick expanding-outline-that-fades-out on the selected card (a
+      "ping" off the box you picked). The Tower **Level Up** should get its
+      own, bigger animation (it's the headline upgrade). Pairs with the new
+      upgrade SFX (Win03). Honor reduce-motion (skip when set).
 
 ## Art & assets
 

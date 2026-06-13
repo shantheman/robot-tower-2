@@ -2,6 +2,16 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.28 — 2026-06-12
+
+- **Upgrade sound** (Win03) plays on a successful purchase in the Upgrades shop
+  (field upgrades + Tower Level Up). Those buttons opt out of the generic UI
+  click (`data-sfx="none"`) so it's the chime, not a double-up.
+- **Celebration sound moved to level complete.** The big-win sting now plays
+  only when you finish a level (the boss wave), not on every wave clear.
+- Added a TODO for upgrade-screen animations (expanding-outline ping on the
+  bought card; a bigger one for Tower Level Up).
+
 ## v0.8.27 — 2026-06-12
 
 - **More sound effects.** The ranged **Shooter** now has a fire sound, **clearing
