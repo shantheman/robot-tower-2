@@ -105,7 +105,6 @@ export class BattleScene extends Phaser.Scene {
   }
 
   create() {
-    this.drawBackdrop();
     this.shadowLayer = this.add.layer(); // every shadow sits under tower/enemies/fx
     this.effects = new Effects(this);    // fx layer created here: above shadows, under the tower
     this.droneCtl = new DroneController(
@@ -543,7 +542,9 @@ export class BattleScene extends Phaser.Scene {
     if (bonus === "cash") this.effects.popup(e.sprite.x, e.sprite.y - 18, `BONUS +${C.DROP_CASH}`, "#ffc94a");
     if (bonus === "heal") this.effects.popup(e.sprite.x, e.sprite.y - 18, `REPAIRED +${C.DROP_HEAL}`, "#46e39a");
     if (bonus === "rapid") this.effects.popup(e.sprite.x, e.sprite.y - 18, "RAPID FIRE!", "#ff9341");
-    if (!game.gs.reduceMotion) this.cameras.main.shake(boss ? 260 : 90, boss ? 0.012 : 0.004);
+    // Shake only on a boss kill — a per-grunt-kill shake reads as a constant
+    // "jiggle" once the Auto-Shooter is mowing things down.
+    if (boss && !game.gs.reduceMotion) this.cameras.main.shake(260, 0.012);
     e.hpBar?.destroy();
 
     const wings = e.squadronWings;
@@ -670,15 +671,6 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
-  private drawBackdrop(): void {
-    // (The page draws the gradient + grid full-bleed; only the tower-relative
-    // range rings live in-world.)
-    for (let i = 1; i <= 5; i++) {
-      const ring = this.add.graphics();
-      ring.lineStyle(1, 0x3b9dff, 0.10 - i * 0.015);
-      ring.strokeCircle(this.towerPos.x, this.towerPos.y, 90 * i);
-    }
-  }
 
   private drawShield(): void {
     const gs = game.gs;

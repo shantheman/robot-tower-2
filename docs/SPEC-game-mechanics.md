@@ -306,7 +306,7 @@ All in-run upgrade costs grow geometrically: `base × growth^level`.
 | Shield | 350 | 1.7 | coins |
 | EMP Burst (per run) | 400 | — | coins |
 | Time Warp (per run) | 500 | — | coins |
-| Drone (deploy / upgrade) | 100 / 80 | 1.6 | coins |
+| Drone (deploy / upgrade) | 100 / 120 | 1.6 | coins | <!-- upgrade base > deploy so the price never dips -->
 | Laser (per run) | 1000 | — | coins |
 | Freeze Bomb (per run) | 250 | — | coins |
 | **Tower Level** (permanent) | 50 | 1.4 | **Cores** |

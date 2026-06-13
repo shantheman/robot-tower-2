@@ -2,6 +2,16 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.57 — 2026-06-13
+
+- **Drone cost always climbs now.** It used to dip (deploy 🪙100 → first upgrade
+  🪙80); the upgrade base is raised to 120, so it's 100 → 120 → 192 → 307 → ….
+- **Removed the faint blue rings** drawn around the tower.
+- **No more per-kill camera "jiggle."** Only a boss kill shakes the screen;
+  routine kills (incl. Auto-Shooter clearing waves) keep their burst + sound but
+  no longer shake the view — that's what felt like the tower jiggling every
+  other shot.
+
 ## v0.8.56 — 2026-06-13
 
 - **Tower sits centered on the pad on every level.** Re-centered the pad in 11

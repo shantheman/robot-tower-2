@@ -306,10 +306,12 @@ export const DRONE_BASE_RANGE = 130;
 export const DRONE_RANGE_PER_LEVEL = 55;
 export const DRONE_BASE_CD = 1.6;
 export const DRONE_CD_FACTOR = 0.8;
-export const DRONE_COST = 100;
+export const DRONE_COST = 100;            // deploy (Lv 0 -> 1)
 export const DRONE_ORBIT_RADIUS = 100;
 export const DRONE_ORBIT_SPEED = 90;      // deg/sec idle orbit
-export const DRONE_UPGRADE_BASE_COST = 80;
+// First upgrade must cost MORE than deploy so the price never dips: deploy 100,
+// then 120 -> 192 -> 307 -> …
+export const DRONE_UPGRADE_BASE_COST = 120;
 export const DRONE_UPGRADE_GROWTH = 1.6;
 
 // Ultimates (own many, equip one; Space fires the equipped one)
