@@ -223,6 +223,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private waveCleared(): void {
+    play("wave_clear");
     this.clearBoard(false);
     const { bossWave } = game.gs.onWaveCleared();
     if (bossWave) {
@@ -704,6 +705,7 @@ export class BattleScene extends Phaser.Scene {
             dot, vx: (dx / dist) * C.ENEMY_BULLET_SPEED, vy: (dy / dist) * C.ENEMY_BULLET_SPEED,
             damage: ranged.projDamage, alive: true,
           });
+          play("shooter_fire");
           e.fireTimer = ranged.fireCd;
         }
       } else if (dist > 0 && enemyDt > 0) {

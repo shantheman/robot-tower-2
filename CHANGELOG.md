@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.27 — 2026-06-12
+
+- **More sound effects.** The ranged **Shooter** now has a fire sound, **clearing
+  a wave** plays a celebratory sting, and a **click** sound plays on every UI
+  button press (broad brush — specific buttons can be carved out later). All ride
+  the file-SFX system, so they respect the **Sound** volume and per-clip gains.
+
 ## v0.8.26 — 2026-06-12
 
 - **Boss-fire sound effect.** The boss now plays an impact sound each time it

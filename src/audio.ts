@@ -30,7 +30,10 @@ const SPECS: Record<string, ToneSpec> = {
  * sounds (so they share the Sound-volume gate + the AudioContext unlock).
  * `gain` balances each clip against the synth SFX in the mix. Add more here. */
 const FILE_SFX: Record<string, { url: string; gain: number }> = {
-  boss_fire: { url: import.meta.env.BASE_URL + "audio/mythic-hit-02.mp3", gain: 0.6 },
+  boss_fire:    { url: import.meta.env.BASE_URL + "audio/mythic-hit-02.mp3", gain: 0.6 },
+  shooter_fire: { url: import.meta.env.BASE_URL + "audio/lose06.mp3", gain: 0.6 },
+  wave_clear:   { url: import.meta.env.BASE_URL + "audio/big-win-confetti-09.mp3", gain: 0.7 },
+  click:        { url: import.meta.env.BASE_URL + "audio/selection-click-05.mp3", gain: 0.45 },
 };
 
 let ctx: AudioContext | null = null;

@@ -6,6 +6,7 @@ import "./crash"; // FIRST: the crash banner must catch module-init errors below
 import Phaser from "phaser";
 import { WORLD_AR_MAX, WORLD_AR_MIN, WORLD_H, WORLD_PORTRAIT_W } from "./config";
 import { game, isTouch } from "./game";
+import { play } from "./audio";
 import { initMusic } from "./music";
 import { installKeyboardRouting } from "./input";
 import { BattleScene } from "./scenes/BattleScene";
@@ -23,6 +24,13 @@ if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
 }
 
 initMusic(); // looping background music, unlocked on first gesture (autoplay policy)
+
+// Global UI click sound — broad brush: any <button> press. Capture phase so it
+// still fires for handlers that stopPropagation. (Canvas/battle clicks aren't
+// buttons, so aiming/firing stays silent here.)
+document.addEventListener("click", (e) => {
+  if ((e.target as HTMLElement)?.closest?.("button")) play("click");
+}, true);
 
 const stage = document.getElementById("stage")!;
 const panels = document.createElement("div");
