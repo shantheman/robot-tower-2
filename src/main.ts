@@ -19,6 +19,7 @@ import { DeadScreen } from "./ui/dead";
 import { PauseScreen } from "./ui/pause";
 import { SettingsModal } from "./ui/settings";
 import { AchievementsModal } from "./ui/achievements";
+import { TowerModal } from "./ui/towerModal";
 
 if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
   document.documentElement.classList.add("touch");
@@ -47,9 +48,12 @@ new DeadScreen(panels);
 const pause = new PauseScreen(panels);
 const settings = new SettingsModal(document.body);
 const achievements = new AchievementsModal(document.body);
+const tower = new TowerModal(document.body);
 home.onSkills = () => { skills.returnTo = "home"; game.show("skills"); };
 home.onSettings = () => settings.show();
 home.onAchievements = () => achievements.show();
+home.onTower = () => tower.show();
+tower.onClose = () => { if (game.screen === "home") home.render(); }; // refresh cores/tower strip
 pause.onSettings = () => settings.show();
 
 // Size the world to the window's aspect ratio so the canvas fills the screen

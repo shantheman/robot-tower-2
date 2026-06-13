@@ -4,7 +4,6 @@
 
 import { game } from "../game";
 import { SAVE_KEY } from "../sim/state";
-import { decodeSave, encodeSave } from "../sim/savecode";
 import { setMusicVolume } from "../music";
 import { GAME_VERSION } from "../version";
 
@@ -47,16 +46,6 @@ export class SettingsModal {
         ${this.row("Music", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.musicVolume * 100)}" data-key="music" />
           <b id="music-pct">${Math.round(gs.musicVolume * 100)}%</b></span>`)}
         ${this.row("Reduce motion (no shake)", toggle("motion", gs.reduceMotion))}
-        ${this.row("Transfer save", `<span class="set-pair">
-          <button class="set-toggle" data-key="export">EXPORT</button>
-          <button class="set-toggle" data-key="import">IMPORT</button></span>`)}
-        <div class="set-row save-io hidden" data-io="export">
-          <input readonly data-field="export" aria-label="Save code" />
-        </div>
-        <div class="set-row save-io hidden" data-io="import">
-          <input data-field="import" placeholder="Paste a CD1. save code…" aria-label="Save code to load" />
-          <button class="set-toggle danger" data-key="apply">LOAD</button>
-        </div>
         ${this.row("Reset progress", `<button class="set-toggle danger" data-key="reset">RESET</button>`)}
         <footer class="modal-foot">
           <span>v${GAME_VERSION} © 2026 Callum Bauman / Bauman Games.</span>
@@ -73,35 +62,6 @@ export class SettingsModal {
             location.reload();
           } else {
             el.textContent = "SURE?"; // second tap confirms
-          }
-          return;
-        } else if (k === "export") {
-          // Persist the latest state, then surface the code (clipboard +
-          // a visible field for manual copy on stingy mobile browsers).
-          gs.save();
-          const code = encodeSave(localStorage.getItem(SAVE_KEY) ?? "{}");
-          const row = this.root.querySelector<HTMLElement>('[data-io="export"]')!;
-          const field = row.querySelector<HTMLInputElement>("input")!;
-          row.classList.remove("hidden");
-          field.value = code;
-          field.select();
-          navigator.clipboard?.writeText(code).then(
-            () => { el.textContent = "COPIED"; },
-            () => { /* field stays selectable */ });
-          return;
-        } else if (k === "import") {
-          this.root.querySelector('[data-io="import"]')?.classList.remove("hidden");
-          this.root.querySelector<HTMLInputElement>('[data-field="import"]')?.focus();
-          return;
-        } else if (k === "apply") {
-          const field = this.root.querySelector<HTMLInputElement>('[data-field="import"]')!;
-          const json = decodeSave(field.value);
-          if (!json) { el.textContent = "INVALID"; return; }
-          if (el.textContent === "SURE?") {
-            localStorage.setItem(SAVE_KEY, json); // overwrites this browser's save
-            location.reload();
-          } else {
-            el.textContent = "SURE?"; // it replaces current progress
           }
           return;
         }

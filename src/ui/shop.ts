@@ -8,6 +8,7 @@ import { play } from "../audio";
 import { waveInLevel, wavesForLevel } from "../sim/waves";
 import { esc } from "./html";
 import { Category, ITEM_ART, catIcon } from "./icons";
+import { towerBannerHtml } from "./towerBanner";
 import { Panel } from "./panel";
 
 interface CardSpec {
@@ -175,9 +176,6 @@ export class ShopPanel extends Panel {
     const cleared = game.shopMode === "cleared";
     const wil = waveInLevel(gs.wave);
     const total = wavesForLevel(gs.level);
-    const towerCost = gs.towerUpgradeCost();
-    const pips = Array.from({ length: 10 }, (_, i) =>
-      `<span class="pip ${i < Math.min(10, gs.towerLevel) ? "lit" : ""}"></span>`).join("");
     const ults = this.ultimateCards();
 
     this.setHtml(`
@@ -189,31 +187,7 @@ export class ShopPanel extends Panel {
         </div>
       </header>
 
-      <section class="tower-hero">
-        <div class="turret-thumb">
-          <img class="tt-base" src="sprites/turret_base.png" alt="" />
-          <img class="tt-gun" src="sprites/turret_gun_1.png" alt="" />
-        </div>
-        <div class="tower-info">
-          <div class="tower-line">
-            <span class="tl-head">
-              <span class="tower-label">TOWER LEVEL</span>
-              <span class="perm-badge">✦ PERMANENT</span>
-            </span>
-            <span class="tl-nums">
-              <span class="tl-now">${gs.towerLevel}</span>
-              <span class="tl-arrow">→</span>
-              <span class="tl-next">${gs.towerLevel + 1}</span>
-            </span>
-          </div>
-          <div class="pips">${pips}</div>
-          <div class="tower-perks"><span>+10% earnings</span><span>+20 max HP</span><span>+30 start coins</span></div>
-        </div>
-        <button class="cta levelup ${gs.cores >= towerCost ? "" : "disabled"}" data-act="towerup" data-sfx="none">
-          <span class="cta-big">LEVEL UP</span>
-          <span class="cta-sub"><span class="core-icon small"></span> ${towerCost.toLocaleString("en-US")} cores</span>
-        </button>
-      </section>
+      ${towerBannerHtml()}
 
       <div class="section-head field"><span class="sh-label">FIELD UPGRADES</span>
         <span class="sh-note">↺ reset at end of level</span><span class="sh-rule"></span></div>

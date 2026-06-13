@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.52 — 2026-06-13
+
+- **Removed "Transfer save"** (export/import) from Settings.
+- **Upgrade your tower from Home.** Clicking the "TOWER Lv X" box on the home
+  screen opens a modal with the same TOWER LEVEL → LEVEL UP banner as the
+  Upgrades shop, so you can spend Cores on the tower without starting a run.
+  Banner extracted to a shared module (towerBanner.ts) so shop + modal match.
+
 ## v0.8.51 — 2026-06-13
 
 - **Custom domain: mechtide.com.** Vite base path `/mech-tide/` → `/` (served

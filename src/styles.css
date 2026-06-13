@@ -510,6 +510,10 @@ body { display: grid; place-items: center; }
 }
 .hs-box label { display: block; font-size: 10.5px; letter-spacing: 0.16em; color: #7488ad; margin-bottom: 5px; }
 .hs-box b { font-size: 20px; font-weight: 800; }
+/* The TOWER box opens the tower-upgrade modal — show it's tappable. */
+.hs-tower { cursor: pointer; transition: border-color .12s, background .12s; }
+.hs-tower:hover { border-color: var(--cyan); background: rgba(127, 232, 255, 0.1); }
+.tower-modal-card { width: 480px; }
 .hs-val { display: flex; align-items: center; justify-content: center; gap: 6px; }
 .lt { color: #cdeeff; } .cy { color: var(--cyan); } .gr { color: var(--green); }
 .menu-btn {

@@ -12,6 +12,7 @@ export class HomeScreen extends Panel {
   onSkills: () => void = () => {};
   onSettings: () => void = () => {};
   onAchievements: () => void = () => {};
+  onTower: () => void = () => {};
 
   constructor(parent: HTMLElement) {
     super(parent, "home", "home", "panel-screen home");
@@ -26,7 +27,7 @@ export class HomeScreen extends Panel {
       <div class="home-strip">
         <div class="hs-box"><label>REACHED</label><b class="lt">Lv ${gs.level}</b></div>
         <div class="hs-box"><label>CORES</label><span class="hs-val"><span class="core-icon small"></span><b class="cy">${gs.cores}</b></span></div>
-        <div class="hs-box"><label>TOWER</label><b class="cy">Lv ${gs.towerLevel}</b></div>
+        <div class="hs-box hs-tower" data-act="tower" title="Upgrade tower"><label>TOWER</label><b class="cy">Lv ${gs.towerLevel}</b></div>
         <div class="hs-box"><label>SKILLS</label><b class="gr">${gs.skills.size}/${SKILL_NODES.length}</b></div>
       </div>`;
 
@@ -77,6 +78,7 @@ export class HomeScreen extends Panel {
       el.addEventListener("click", () => this.onSkills()));
     this.root.querySelectorAll("[data-act=settings]").forEach((el) =>
       el.addEventListener("click", () => this.onSettings()));
+    this.root.querySelector("[data-act=tower]")?.addEventListener("click", () => this.onTower());
     this.root.querySelector("[data-act=achievements]")?.addEventListener("click", () =>
       this.onAchievements());
   }
