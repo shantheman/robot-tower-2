@@ -731,6 +731,7 @@ export class BattleScene extends Phaser.Scene {
             dot, vx: (dx / dist) * C.ENEMY_BULLET_SPEED, vy: (dy / dist) * C.ENEMY_BULLET_SPEED,
             damage: e.fireDamage, alive: true,
           });
+          play("boss_fire");
           e.fireTimer = e.fireCd;
         }
       }

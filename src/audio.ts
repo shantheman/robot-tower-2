@@ -26,8 +26,17 @@ const SPECS: Record<string, ToneSpec> = {
   buy: { freq: 880, dur: 0.10, vol: 0.30, wave: "square", sweep: 700 },
 };
 
+/** File-based one-shot SFX, decoded into the same buffer pool as the synth
+ * sounds (so they share the Sound-volume gate + the AudioContext unlock).
+ * `gain` balances each clip against the synth SFX in the mix. Add more here. */
+const FILE_SFX: Record<string, { url: string; gain: number }> = {
+  boss_fire: { url: import.meta.env.BASE_URL + "audio/mythic-hit-02.mp3", gain: 0.6 },
+};
+
 let ctx: AudioContext | null = null;
 const buffers = new Map<string, AudioBuffer>();
+const gainByName = new Map<string, number>(); // per-name volume multiplier (synth omitted = 1)
+let filesLoaded = false;
 
 function ensureContext(): AudioContext | null {
   if (ctx) return ctx;
@@ -52,7 +61,22 @@ function ensureContext(): AudioContext | null {
     }
     buffers.set(name, buf);
   }
+  void loadFileSfx(ctx); // decode the mp3 SFX into the same pool (async, once)
   return ctx;
+}
+
+/** Fetch + decode each FILE_SFX clip into the buffer pool. Runs once, after the
+ * context exists (decodeAudioData needs it). A failed load just skips that SFX. */
+async function loadFileSfx(c: AudioContext): Promise<void> {
+  if (filesLoaded) return;
+  filesLoaded = true;
+  for (const [name, spec] of Object.entries(FILE_SFX)) {
+    try {
+      const arr = await (await fetch(spec.url)).arrayBuffer();
+      buffers.set(name, await c.decodeAudioData(arr));
+      gainByName.set(name, spec.gain);
+    } catch { /* missing/undecodable -> that SFX stays silent */ }
+  }
 }
 
 // iOS: route audio as "playback" so the physical ring/silent switch doesn't
@@ -71,7 +95,7 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden && ctx?.state === "suspended") void ctx.resume();
 });
 
-export function play(name: keyof typeof SPECS): void {
+export function play(name: keyof typeof SPECS | keyof typeof FILE_SFX): void {
   const gs = game.gs;
   if (gs.volume <= 0) return; // volume 0 IS mute
   const c = ensureContext();
@@ -83,7 +107,7 @@ export function play(name: keyof typeof SPECS): void {
     const src = c.createBufferSource();
     src.buffer = buf;
     const gain = c.createGain();
-    gain.gain.value = gs.volume;
+    gain.gain.value = gs.volume * (gainByName.get(name) ?? 1);
     src.connect(gain).connect(c.destination);
     src.start();
   } catch { /* never crash over audio */ }

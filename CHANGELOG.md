@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.26 — 2026-06-12
+
+- **Boss-fire sound effect.** The boss now plays an impact sound each time it
+  fires at the tower. Added a small file-based SFX system: clips are fetched +
+  decoded into the same Web Audio pool as the synth sounds, so they share the
+  **Sound** volume gate and the autoplay unlock — and stay low-latency and
+  overlappable. Adding more SFX is now a one-line entry in `FILE_SFX`.
+
 ## v0.8.25 — 2026-06-12
 
 - **Background music.** A looping soundtrack plays across the whole game
