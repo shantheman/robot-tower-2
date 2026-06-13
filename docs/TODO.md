@@ -25,11 +25,11 @@ and git).
 - [ ] **Haptics** — buzz on tower hit / ultimate fire / wave clear. Comes
       free with the Capacitor wrap (Haptics plugin); not available in
       browser on iOS.
-- [ ] **Upgrade-screen juice (animations)** — when you buy a field upgrade,
-      play a quick expanding-outline-that-fades-out on the selected card (a
-      "ping" off the box you picked). The Tower **Level Up** should get its
-      own, bigger animation (it's the headline upgrade). Pairs with the new
-      upgrade SFX (Win03). Honor reduce-motion (skip when set).
+- [~] **Upgrade-screen juice (animations)** — DONE (v0.8.32): buying a card
+      pings a copy of its blue border outward + fades, as a confirmation;
+      honors reduce-motion. STILL TODO: give the Tower **Level Up** its own,
+      bigger/distinct animation (it's the headline upgrade — currently it uses
+      the same card ping).
 
 ## Art & assets
 

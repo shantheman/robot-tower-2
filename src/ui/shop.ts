@@ -255,14 +255,31 @@ export class ShopPanel extends Panel {
     this.root.querySelectorAll<HTMLButtonElement>(".store-card").forEach((el) => {
       el.addEventListener("click", () => {
         const spec = all.find((c) => c.key === el.dataset.key);
-        if (spec?.onBuy?.()) { play("upgrade"); this.render(); }
+        if (spec?.onBuy?.()) { play("upgrade"); this.ping(el); this.render(); }
       });
     });
-    this.root.querySelector("[data-act=towerup]")?.addEventListener("click", () => {
-      if (game.gs.tryBuyTowerUpgrade()) { play("upgrade"); this.render(); }
+    this.root.querySelector<HTMLButtonElement>("[data-act=towerup]")?.addEventListener("click", (ev) => {
+      if (game.gs.tryBuyTowerUpgrade()) { play("upgrade"); this.ping(ev.currentTarget as HTMLElement); this.render(); }
     });
     this.root.querySelector("[data-act=next]")?.addEventListener("click", () => this.startNext());
     this.root.querySelector("[data-act=close]")?.addEventListener("click", () => this.close());
+  }
+
+  /** Purchase confirmation: clone the picked card's blue border as an overlay
+   * that scales up and fades. Lives in <body> (fixed at the card's rect) so the
+   * panel's re-render can't kill it mid-animation. Skipped under reduce-motion. */
+  private ping(el: HTMLElement): void {
+    if (game.gs.reduceMotion) return;
+    const r = el.getBoundingClientRect();
+    const p = document.createElement("div");
+    p.className = "card-ping";
+    p.style.left = `${r.left}px`;
+    p.style.top = `${r.top}px`;
+    p.style.width = `${r.width}px`;
+    p.style.height = `${r.height}px`;
+    p.style.borderRadius = getComputedStyle(el).borderRadius;
+    document.body.appendChild(p);
+    p.addEventListener("animationend", () => p.remove());
   }
 
   startNext(): void {

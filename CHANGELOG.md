@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.32 — 2026-06-12
+
+- **Purchase ping on the Upgrades page.** Buying a card now flashes a copy of
+  its blue border that quickly grows and fades out — a visual "got it"
+  confirmation on the box you picked, alongside the upgrade chime. Works on
+  the field cards and the Tower Level Up button; skipped under reduce-motion.
+  (The Tower Level Up still uses the same ping for now — a bigger, distinct
+  animation for the headline upgrade is left as a follow-up in TODO.)
+
 ## v0.8.31 — 2026-06-12
 
 - **Good-guy fire is core-blue.** The tower's gun rounds (and muzzle flash) and

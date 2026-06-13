@@ -341,6 +341,18 @@ body { display: grid; place-items: center; }
 }
 .card-name { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 16px; color: #eaf4ff; }
 .card-desc { font-family: "Space Grotesk", sans-serif; font-size: 12px; color: #7488ad; margin-top: -5px; }
+/* Purchase confirmation: a copy of the card's blue border pings outward + fades. */
+.card-ping {
+  position: fixed; z-index: 9999; pointer-events: none; box-sizing: border-box;
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 16px rgba(127, 232, 255, 0.6), inset 0 0 10px rgba(127, 232, 255, 0.22);
+  transform-origin: center; will-change: transform, opacity;
+  animation: card-ping 440ms cubic-bezier(.2, .7, .3, 1) forwards;
+}
+@keyframes card-ping {
+  0%   { transform: scale(1);    opacity: 0.95; }
+  100% { transform: scale(1.18); opacity: 0; }
+}
 .card-price {
   display: flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 14px;
   border-radius: 9px; font-weight: 700; font-size: 14px; margin-top: auto;
