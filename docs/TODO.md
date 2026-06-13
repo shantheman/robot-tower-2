@@ -33,7 +33,7 @@ and git).
 
 ## Art & assets
 
-- [ ] **Final enemy sprites** — the HANDOFF marks the current five as
+- [x] **Final enemy sprites** — the HANDOFF marks the current five as
       temporary ("likely replaced later, possibly animated"). Boss, Shooter,
       and the in-battle drone still use the old pygame-era art, which clashes
       with the new painterly style.
