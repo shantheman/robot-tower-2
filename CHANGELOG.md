@@ -2,6 +2,19 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.58 — 2026-06-13
+
+- **Tutorial coach-marks redesigned** (Claude Design handoff). The flat arrow is
+  now a glowing **bouncing double-chevron** that points at its target; the bubble
+  got a glassy fill, HUD **corner brackets**, a **"TIP n OF 3"** counter, a caret
+  notch, and cyan keyword highlights; the spotlight now cuts a **soft-edged hole
+  with a crisp cyan ring** around each target instead of a hard rectangle.
+- **Responsive placement.** The coach-mark keeps the on-brand top-centered look
+  when it fits, but on a short landscape screen — where two targets (Tower chip +
+  Skill Tree) straddle the middle — it drops into the roomier side column with a
+  capped width and a chevron aimed at each target, so the bubble never covers a
+  spotlight. Verified at desktop, phone-landscape, and phone-portrait.
+
 ## v0.8.57 — 2026-06-13
 
 - **Drone cost always climbs now.** It used to dip (deploy 🪙100 → first upgrade

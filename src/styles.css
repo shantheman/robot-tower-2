@@ -556,25 +556,59 @@ body { display: grid; place-items: center; }
 .cta-need { flex-basis: 100%; text-align: center; font-size: 12px; font-weight: 600; color: #0a2436; }
 .tu-foot .cta.levelup.disabled .cta-need { color: #7488ad; }
 
-/* -- Tutorial overlays (one-time spotlight coach marks) --------------------- */
+/* -- Tutorial coach-marks (one-time spotlight overlays) --------------------- */
 .tut-overlay { position: fixed; inset: 0; z-index: 9999; font-family: "Chakra Petch", sans-serif; }
 .tut-mask { position: fixed; inset: 0; cursor: pointer; }
-.tut-arrow {
-  position: fixed; transform: translateX(-50%); font-size: 34px; line-height: 1;
-  color: var(--cyan); text-shadow: 0 0 12px rgba(127, 232, 255, 0.85); pointer-events: none;
+
+/* Crisp cyan ring + soft glow around each spotlight cut-out. */
+.tut-ring {
+  position: fixed; border-radius: 16px; pointer-events: none;
+  box-shadow: 0 0 0 1.5px rgba(127, 232, 255, 0.7), 0 0 26px rgba(127, 232, 255, 0.4);
 }
-.tut-arrow.bounce-up { animation: tut-bup 0.9s ease-in-out infinite; }
-.tut-arrow.bounce-down { animation: tut-bdn 0.9s ease-in-out infinite; }
-@keyframes tut-bup { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
-@keyframes tut-bdn { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 10px); } }
+
+/* Bouncing double-chevron pointer. Layers: position → bob → rotate. */
+.tut-ptr { position: fixed; transform: translate(-50%, -50%); pointer-events: none; }
+.tut-ptr-bob { width: 46px; height: 46px; }
+.tut-ptr svg { width: 46px; height: 46px; display: block;
+  filter: drop-shadow(0 0 7px #8fe9ff) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5)); }
+.tut-chev { fill: none; stroke: #8fe9ff; stroke-width: 6.5; stroke-linecap: round; stroke-linejoin: round; }
+.tut-chev-bg { opacity: 0.55; }
+@keyframes tut-bounce-down  { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(7px); } }
+@keyframes tut-bounce-up    { 0%, 100% { transform: translateY(5px); }  50% { transform: translateY(-7px); } }
+@keyframes tut-bounce-left  { 0%, 100% { transform: translateX(5px); }  50% { transform: translateX(-7px); } }
+@keyframes tut-bounce-right { 0%, 100% { transform: translateX(-5px); } 50% { transform: translateX(7px); } }
+
+/* The coach-mark bubble. */
 .tut-card {
-  position: fixed; left: 50%; transform: translateX(-50%); max-width: min(420px, 86vw);
-  padding: 18px 22px; border-radius: 14px; text-align: center; line-height: 1.5;
-  font-size: 15px; color: #dcecff;
-  background: linear-gradient(180deg, #0e1b30, #0a1424);
-  border: 1px solid var(--cyan); box-shadow: 0 0 32px rgba(127, 232, 255, 0.3);
+  position: fixed; width: 440px; max-width: 92vw; padding: 20px 24px; border-radius: 16px;
+  font-family: "Space Grotesk", sans-serif; font-size: 17px; line-height: 1.55;
+  color: #d3e6fa; text-align: center;
+  background: linear-gradient(180deg, rgba(16, 29, 52, 0.97), rgba(9, 18, 34, 0.97));
+  border: 1px solid rgba(127, 232, 255, 0.55);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), 0 0 34px rgba(43, 180, 224, 0.22),
+    inset 0 1px 0 rgba(127, 232, 255, 0.12);
 }
-.tut-card b { color: var(--cyan); }
+.tut-body b { color: #7fe8ff; font-weight: 700; }
+.tut-tip {
+  font-family: "Chakra Petch", sans-serif; font-size: 11px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: #5f87b8; margin-bottom: 10px;
+}
+/* HUD-style L-bracket in each corner. */
+.tut-bk { position: absolute; width: 12px; height: 12px; border-color: rgba(127, 232, 255, 0.8); }
+.tut-bk.tl { top: 7px; left: 7px; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 4px; }
+.tut-bk.tr { top: 7px; right: 7px; border-top: 2px solid; border-right: 2px solid; border-top-right-radius: 4px; }
+.tut-bk.bl { bottom: 7px; left: 7px; border-bottom: 2px solid; border-left: 2px solid; border-bottom-left-radius: 4px; }
+.tut-bk.br { bottom: 7px; right: 7px; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 4px; }
+/* Caret notch — a rotated square matching the bubble's edge + border. */
+.tut-caret {
+  position: absolute; width: 16px; height: 16px; background: #0c1730;
+  border-right: 1px solid rgba(127, 232, 255, 0.55); border-bottom: 1px solid rgba(127, 232, 255, 0.55);
+}
+.tut-caret-bottom { bottom: -9px; transform: translateX(-50%) rotate(45deg); }
+.tut-caret-top    { top: -9px;    transform: translateX(-50%) rotate(225deg); }
+.tut-caret-left   { left: -9px;   transform: translateY(-50%) rotate(135deg); }
+.tut-caret-right  { right: -9px;  transform: translateY(-50%) rotate(-45deg); }
+
 .tut-x {
   position: fixed; top: 16px; right: 18px; width: 48px; height: 48px; border-radius: 12px;
   font-size: 22px; cursor: pointer; color: #dcecff;

@@ -244,6 +244,7 @@ export class ShopPanel extends Panel {
     if (cleared && game.gs.level === 1) {
       maybeTutorial({
         key: "generator",
+        step: 1, total: 3,
         text: "You don't have enough coins for an upgrade yet — but you will soon. The <b>Coin Generator</b> is a great first purchase: it speeds up how fast you collect coins.",
         targets: () => [this.root.querySelector<HTMLElement>('[data-key="gen"]')],
       });
