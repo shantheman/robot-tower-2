@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.40 — 2026-06-13
+
+- **Drone turns are softer.** `DRONE_ACCEL` halved (2400 → 1200) so the drone
+  carries more momentum through direction changes — less of the instant snap
+  when its target dies and it re-aims at another. Easy to nudge back up.
+- **Friendlier upgrade descriptions.** Spelled out the stat-screen shorthand on
+  the Upgrades cards (e.g. Main Turret `+dmg, rate, size` → "more damage, fire
+  rate & size"; Multi-Shot `+1 bullet / lvl` → "+1 bullet per level"; "drone
+  swats projectiles" → "Drone shoots down enemy fire"). Kept `Lv N` and `HP` as
+  the standard short forms.
+
 ## v0.8.39 — 2026-06-13
 
 - **Adaptive effects throttle (safety net for slow devices).** If a device's

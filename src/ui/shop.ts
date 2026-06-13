@@ -38,62 +38,62 @@ export class ShopPanel extends Panel {
       },
       {
         key: "auto", cat: "CANNON", name: "Auto-Shooter",
-        desc: gs.autoLevel === 0 ? "deploy · auto-targets" : `Lv ${gs.autoLevel} · fires faster`,
+        desc: gs.autoLevel === 0 ? "Auto-fires at nearby enemies" : `Lv ${gs.autoLevel} · fires faster`,
         cost: gs.autoCost(), state: m >= gs.autoCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyAuto(),
       },
       {
         key: "turret", cat: "CANNON", name: "Main Turret",
-        desc: `Lv ${gs.turretLevel} · +dmg, rate, size`,
+        desc: `Lv ${gs.turretLevel} · more damage, fire rate & size`,
         cost: gs.turretCost(), state: m >= gs.turretCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyTurret(),
       },
       {
         key: "drone", cat: "DRONE", name: "Drone",
-        desc: gs.droneLevel === 0 ? "deploy · auto-hunts" : `Lv ${gs.droneLevel} · +dmg, range, rate`,
+        desc: gs.droneLevel === 0 ? "Flies out to hunt enemies" : `Lv ${gs.droneLevel} · more damage, range & fire rate`,
         cost: gs.droneCost(), state: m >= gs.droneCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyDrone(),
       },
     ];
     if (gs.skills.has("multi")) cards.push({
-      key: "multi", cat: "CANNON", name: "Multi-Shot", desc: `Lv ${gs.multiLevel} · +1 bullet / lvl`,
+      key: "multi", cat: "CANNON", name: "Multi-Shot", desc: `Lv ${gs.multiLevel} · +1 bullet per level`,
       cost: gs.multiCost(), state: m >= gs.multiCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyMulti(),
     });
     if (gs.skills.has("pierce")) cards.push({
-      key: "pierce", cat: "CANNON", name: "Piercing", desc: `Lv ${gs.pierceLevel} · pass through`,
+      key: "pierce", cat: "CANNON", name: "Piercing", desc: `Lv ${gs.pierceLevel} · shots pass through enemies`,
       cost: gs.pierceCost(), state: m >= gs.pierceCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyPierce(),
     });
     if (gs.skills.has("explosive")) cards.push({
       key: "explosive", cat: "CANNON", name: "Explosive",
-      desc: `Lv ${gs.explosiveLevel} · ${C.EXPLOSIVE_SPLASH_DMG + C.EXPLOSIVE_SPLASH_PER_LEVEL * Math.max(0, gs.explosiveLevel - 1)} splash, ${C.EXPLOSIVE_RADIUS_BASE + C.EXPLOSIVE_RADIUS_PER_LEVEL * Math.max(0, gs.explosiveLevel - 1)} range`,
+      desc: `Lv ${gs.explosiveLevel} · ${C.EXPLOSIVE_SPLASH_DMG + C.EXPLOSIVE_SPLASH_PER_LEVEL * Math.max(0, gs.explosiveLevel - 1)} splash damage, ${C.EXPLOSIVE_RADIUS_BASE + C.EXPLOSIVE_RADIUS_PER_LEVEL * Math.max(0, gs.explosiveLevel - 1)} radius`,
       cost: gs.explosiveCost(), state: m >= gs.explosiveCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyExplosive(),
     });
     if (gs.skills.has("twin")) cards.push({
       key: "twin", cat: "DRONE", name: "Twin Targeting",
-      desc: gs.twinOwned ? "drone hits 2 foes" : "drone hits 2 foes",
+      desc: "Drone hits 2 enemies at once",
       cost: gs.twinOwned ? null : C.TWIN_COST,
       state: gs.twinOwned ? "owned" : m >= C.TWIN_COST ? "buy" : "poor",
       onBuy: () => gs.tryBuyTwin(),
     });
     if (gs.skills.has("interceptor")) cards.push({
       key: "interceptor", cat: "DRONE", name: "Interceptor",
-      desc: "drone swats projectiles",
+      desc: "Drone shoots down enemy fire",
       cost: gs.interceptorOwned ? null : C.INTERCEPTOR_COST,
       state: gs.interceptorOwned ? "owned" : m >= C.INTERCEPTOR_COST ? "buy" : "poor",
       onBuy: () => gs.tryBuyInterceptor(),
     });
     if (gs.skills.has("medic")) cards.push({
       key: "medic", cat: "DRONE", name: "Field Medic",
-      desc: `repairs +${C.MEDIC_HPS} HP/sec in lulls`,
+      desc: `Drone heals the tower +${C.MEDIC_HPS} HP/sec when idle`,
       cost: gs.medicOwned ? null : C.MEDIC_COST,
       state: gs.medicOwned ? "owned" : m >= C.MEDIC_COST ? "buy" : "poor",
       onBuy: () => gs.tryBuyMedic(),
     });
     if (gs.skills.has("guided")) cards.push({
-      key: "guided", cat: "CANNON", name: "Guided", desc: "bullets bend to foes",
+      key: "guided", cat: "CANNON", name: "Guided", desc: "Shots curve toward enemies",
       cost: gs.guidedOwned ? null : C.GUIDED_COST,
       state: gs.guidedOwned ? "owned" : m >= C.GUIDED_COST ? "buy" : "poor",
       onBuy: () => gs.tryBuyGuided(),
@@ -127,7 +127,7 @@ export class ShopPanel extends Panel {
     if (gs.skills.has("shield")) cards.push({
       key: "shield", cat: "DEFENSE", name: "Shield",
       desc: gs.shieldLevel === 0
-        ? `${C.SHIELD_BASE_HITS} layers, ${C.SHIELD_HIT_ABSORB} dmg each`
+        ? `${C.SHIELD_BASE_HITS} layers, absorbs ${C.SHIELD_HIT_ABSORB} damage each`
         : `Lv ${gs.shieldLevel} · +1 layer`,
       cost: gs.shieldCost(), state: m >= gs.shieldCost() ? "buy" : "poor",
       onBuy: () => gs.tryBuyShield(),
