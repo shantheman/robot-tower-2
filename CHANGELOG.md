@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.34 — 2026-06-12
+
+- **Home + shop turret art matches the battle gun.** The home-screen hero
+  turret and the shop's "Main Turret" thumbnail now use the new single-barrel
+  art (`turret_gun_1.png`) with the matching 86% pivot, so the menus and the
+  battlefield show the same gun. The old twin-barrel `turret_gun.png` is no
+  longer referenced anywhere.
+
 ## v0.8.33 — 2026-06-12
 
 - **Turret gun art swaps with your shot count.** The main tower's swiveling gun

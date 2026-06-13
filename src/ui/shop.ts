@@ -192,7 +192,7 @@ export class ShopPanel extends Panel {
       <section class="tower-hero">
         <div class="turret-thumb">
           <img class="tt-base" src="sprites/turret_base.png" alt="" />
-          <img class="tt-gun" src="sprites/turret_gun.png" alt="" />
+          <img class="tt-gun" src="sprites/turret_gun_1.png" alt="" />
         </div>
         <div class="tower-info">
           <div class="tower-line">

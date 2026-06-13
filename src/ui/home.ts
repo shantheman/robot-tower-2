@@ -42,7 +42,7 @@ export class HomeScreen extends Panel {
           <div class="hero-turret">
             <span class="hero-glow"></span>
             <img class="hero-base" src="sprites/turret_base.png" alt="" />
-            <img class="hero-gun" src="sprites/turret_gun.png" alt="" />
+            <img class="hero-gun" src="sprites/turret_gun_1.png" alt="" />
           </div>
           <div class="home-badge">${game.justClearedLevel
             ? `LEVEL ${game.justClearedLevel} COMPLETE — CORES BANKED`

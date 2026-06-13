@@ -255,8 +255,8 @@ body { display: grid; place-items: center; }
 }
 .turret-thumb .tt-gun {
   position: absolute; left: 50%; top: 50%; height: 63px; width: auto;
-  transform-origin: 50% 79%;
-  transform: translate(-50%, -79%) rotate(-18deg);
+  transform-origin: 50% 86%;
+  transform: translate(-50%, -86%) rotate(-18deg);
   filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 14px rgba(127, 232, 255, 0.4));
 }
 .tower-info { flex: 1; }
@@ -491,7 +491,7 @@ body { display: grid; place-items: center; }
 }
 .hero-gun {
   position: absolute; left: 50%; top: 50%; height: 59%; width: auto;
-  transform-origin: 50% 79%; transform: translate(-50%, -79%) rotate(-16deg);
+  transform-origin: 50% 86%; transform: translate(-50%, -86%) rotate(-16deg);
   filter: drop-shadow(0 8px 14px rgba(0,0,0,0.6));
 }
 .home-badge { font-size: 13px; letter-spacing: 0.5em; color: #7fc7a0; margin-top: 6px; }
