@@ -17,6 +17,7 @@ import {
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
 import { perf } from "../perf";
+import { track, addPlaytime, flushPlaytime } from "../analytics";
 import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
@@ -177,6 +178,7 @@ export class BattleScene extends Phaser.Scene {
   // -- run / wave flow ---------------------------------------------------------
   startBattle(): void {
     game.gs.resetRun();
+    track("run_started", { level: game.gs.level });
     game.justClearedLevel = null;  // the celebration was seen; back to normal Home copy
     this.applyLevelBackground();
     this.clearBoard(true);
@@ -245,9 +247,13 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private waveCleared(): void {
+    const level = game.gs.level, wave = game.gs.wave; // capture before onWaveCleared advances
     this.clearBoard(false);
     const { bossWave } = game.gs.onWaveCleared();
+    track("wave_cleared", { level, wave });
     if (bossWave) {
+      track("level_cleared", { level });
+      flushPlaytime();          // level done → bank the active time so far
       play("level_clear");      // celebratory sting only on level (boss-wave) completion
       this.setPaused(true);     // CRITICAL: stop simulating under the Home screen
       game.justClearedLevel = game.gs.level - 1; // onWaveCleared advanced it
@@ -261,6 +267,8 @@ export class BattleScene extends Phaser.Scene {
 
   private towerDestroyed(): void {
     this.over = true;
+    track("game_over", { level: game.gs.level, wave: game.gs.wave });
+    flushPlaytime();
     game.gs.save();
     game.show("dead");
   }
@@ -705,6 +713,7 @@ export class BattleScene extends Phaser.Scene {
     if (this.paused || this.over) { this.pushHud(); return; }
 
     this.updatePerf();
+    addPlaytime(dt); // active play time (this branch only runs while not paused)
     gs.tick(dt);
     for (const k of Object.keys(this.cooldowns) as C.UltimateKey[]) {
       if (this.cooldowns[k] > 0) this.cooldowns[k] -= dt;

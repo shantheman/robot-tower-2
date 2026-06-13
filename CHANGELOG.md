@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.47 — 2026-06-13
+
+- **Anonymous analytics wiring (PostHog).** Added `src/analytics.ts` and
+  instrumented playtime + progression for the friend test: `app_open`,
+  `run_started`, `wave_cleared{level,wave}`, `level_cleared{level}`,
+  `game_over{level,wave}`, and `playtime{seconds}` (active battle time, summed
+  per anonymous per-browser user). No PII; off in dev. **Inert and zero-bundle
+  until a `POSTHOG_KEY` is set** — the SDK is dead-code-eliminated while the key
+  is blank, so this ships doing nothing until configured. Same code runs in the
+  Capacitor webview and queues offline.
+
 ## v0.8.46 — 2026-06-13
 
 - **Home menu labels align.** Gave the menu-button icon a fixed-width slot so

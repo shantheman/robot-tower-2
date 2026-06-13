@@ -8,6 +8,7 @@ import { WORLD_AR_MAX, WORLD_AR_MIN, WORLD_H, WORLD_PORTRAIT_W } from "./config"
 import { game, isTouch } from "./game";
 import { play } from "./audio";
 import { initMusic } from "./music";
+import { initAnalytics } from "./analytics";
 import { installKeyboardRouting } from "./input";
 import { BattleScene } from "./scenes/BattleScene";
 import { updateHud } from "./ui/hud";
@@ -24,6 +25,7 @@ if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
 }
 
 initMusic(); // looping background music, unlocked on first gesture (autoplay policy)
+initAnalytics(); // anonymous playtime + progression (no-op until a PostHog key is set)
 
 // Global UI click sound — broad brush: any <button> press. Capture phase so it
 // still fires for handlers that stopPropagation. (Canvas/battle clicks aren't

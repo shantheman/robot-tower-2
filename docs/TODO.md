@@ -108,11 +108,22 @@ major system.
       baumangames.com repo; the handoff brief for that session is
       `docs/baumangames-site-handoff.md`. Crash-data disclosure gets added
       there only once the crash SDK ships.
+- [~] **Analytics** — DONE (v0.8.47, 2026-06-13): anonymous PostHog (new
+      project under the existing org — no extra fee, shared free tier). Wired
+      in src/analytics.ts; paste the project key into `POSTHOG_KEY` (+ region
+      host) to turn it on — inert/zero-bundle until then. Events: app_open,
+      run_started, wave_cleared{level,wave}, level_cleared{level},
+      game_over{level,wave}, playtime{seconds} (active battle time, summed per
+      person). No PII; anonymous per-browser id. Same code runs in the
+      Capacitor webview and queues offline. ⚠️ This SUPERSEDES the old "crash
+      data only, no analytics" stance — the privacy labels below must now also
+      declare Product Interaction / Usage data.
 - [ ] **Crash reporting** — DECIDED (2026-06-12): yes, before the Apple
       submission. Shannon leans Crashlytics; consider Sentry instead — in
       a Capacitor app most "crashes" are JS errors in the webview, which
       Sentry captures first-class without the Firebase/google-services
-      setup. Crash data only, no analytics.
+      setup. (PostHog can also capture JS exceptions, so the web build could
+      lean on it for errors too — Crashlytics stays the native-crash tool.)
 
 ### Store submission checklist (Apple + Google Play)
 
@@ -122,9 +133,10 @@ Families policy), ToS + Privacy Policy live at baumangames.com.
 
 **Legal / policy**
 - [ ] baumangames.com updates (see docs/baumangames-site-handoff.md).
-- [ ] Apple "App Privacy" nutrition label: declare diagnostics/crash data,
-      not linked to identity, not used for tracking (no ATT needed).
-- [ ] Google Play Data Safety form: same declaration.
+- [ ] Apple "App Privacy" nutrition label: declare diagnostics/crash data
+      AND Product Interaction / Usage Data (PostHog analytics) — not linked to
+      identity, not used for tracking (no ATT needed).
+- [ ] Google Play Data Safety form: same declaration (incl. analytics/usage).
 - [ ] Age-rating questionnaires (Apple + IARC): cartoon violence, ~9+/E10
       content rating; declared target audience 13+ on Play.
 - [ ] EU DSA trader declaration (both stores; the LLC likely declares as
