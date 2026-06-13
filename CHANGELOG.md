@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.46 — 2026-06-13
+
+- **Home menu labels align.** Gave the menu-button icon a fixed-width slot so
+  CONTINUE / SKILL TREE / SETTINGS all start at the same x — the wider tree icon
+  was pushing "SKILL TREE" out of line with the ▸/⚙ glyph buttons.
+
 ## v0.8.45 — 2026-06-13
 
 - **Home Settings gear is grey**, matching the header gear (`var(--dim)`)

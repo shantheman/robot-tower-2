@@ -528,7 +528,12 @@ body { display: grid; place-items: center; }
 .menu-btn.green .mb-icon { color: var(--green); }
 .menu-row { display: flex; gap: 14px; }
 .menu-row .menu-btn { width: 196px; }
-.mb-icon { font-size: 22px; color: var(--cyan); flex: 0 0 auto; }
+/* Fixed-width icon slot so every label starts at the same x (the icons differ
+ * in natural width — the tree icon is wider than the ▸/⚙ glyphs). */
+.mb-icon {
+  font-size: 22px; color: var(--cyan); flex: 0 0 auto;
+  width: 24px; display: inline-flex; align-items: center; justify-content: center;
+}
 .menu-btn.primary .mb-icon { color: #04121f; }
 /* Settings gear stays grey (matching the header gear), not the default cyan. */
 .menu-btn[data-act="settings"] .mb-icon { color: var(--dim); }
