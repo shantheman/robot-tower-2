@@ -16,6 +16,7 @@ import {
 } from "../sim/waves";
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
+import { perf } from "../perf";
 import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
@@ -68,6 +69,9 @@ export class BattleScene extends Phaser.Scene {
   private mouseHeld = false;
   private aimAngle = -Math.PI / 2;                       // eased gun heading (gun/laser/bullets)
   private aimTarget = -Math.PI / 2;                      // raw heading toward the cursor
+  private fpsAvg = 60;                                   // smoothed FPS for the perf throttle
+  private perfLite = false;                              // FPS-driven low-quality state
+  private perfFrames = 0;                                // active frames seen (grace period)
   private joyOrigin: Phaser.Math.Vector2 | null = null;  // touch: floating joystick anchor
   private joyGfx!: Phaser.GameObjects.Graphics;
   private paused = false;
@@ -680,12 +684,27 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
+  /** Adaptive effects throttle: thin the heavy additive explosion particles
+   * only when a device is genuinely dropping frames (or reduce-motion is on).
+   * A smoothed FPS + hysteresis avoids reacting to one-off hitches; a grace
+   * period skips start-of-run decode jank. Hardware that holds ~60fps never
+   * trips it, so it has no effect on capable devices. */
+  private updatePerf(): void {
+    this.fpsAvg = this.fpsAvg * 0.98 + this.game.loop.actualFps * 0.02;
+    if (this.perfFrames++ > 120) {
+      if (this.fpsAvg < 48) this.perfLite = true;
+      else if (this.fpsAvg > 56) this.perfLite = false;   // recover with hysteresis
+    }
+    perf.fx = (game.gs.reduceMotion || this.perfLite) ? C.FX_LITE_SCALE : 1;
+  }
+
   // -- main loop ---------------------------------------------------------------------
   update(_time: number, deltaMs: number) {
     const gs = game.gs;
     const dt = Math.min(deltaMs / 1000, C.MAX_DT);
     if (this.paused || this.over) { this.pushHud(); return; }
 
+    this.updatePerf();
     gs.tick(dt);
     for (const k of Object.keys(this.cooldowns) as C.UltimateKey[]) {
       if (this.cooldowns[k] > 0) this.cooldowns[k] -= dt;

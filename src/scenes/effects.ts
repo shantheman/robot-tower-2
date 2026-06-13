@@ -5,6 +5,7 @@
 
 import Phaser from "phaser";
 import { game } from "../game";
+import { perf } from "../perf";
 
 export class Effects {
   readonly layer: Phaser.GameObjects.Layer;
@@ -58,7 +59,9 @@ export class Effects {
 
     // Fireball chunks — solid orange circles flying outward, shrinking + fading.
     const fireColors = [0xffe27a, 0xffab33, 0xff6a1a, 0xff3d10];
-    const fireN = big ? 18 : 11;
+    // perf.fx thins the additive chunks on devices dropping frames (or reduce-
+    // motion); a floor keeps a burst from vanishing entirely.
+    const fireN = Math.max(5, Math.round((big ? 18 : 11) * perf.fx));
     for (let i = 0; i < fireN; i++) {
       const ang = (Math.PI * 2 * i) / fireN + rnd(-0.4, 0.4);
       const reach = (big ? 72 : 46) * rnd(0.35, 1);
@@ -73,7 +76,7 @@ export class Effects {
     }
 
     // Sparks — tiny, fast, bright embers shooting straight out.
-    const sparkN = big ? 24 : 15;
+    const sparkN = Math.max(6, Math.round((big ? 24 : 15) * perf.fx));
     for (let i = 0; i < sparkN; i++) {
       const ang = rnd(0, Math.PI * 2);
       const reach = (big ? 120 : 85) * rnd(0.4, 1);
@@ -95,7 +98,9 @@ export class Effects {
   }
 
   flashScreen(color: number, alpha: number): void {
-    if (game.gs.reduceMotion) return;
+    // Full-screen additive flashes are pure overdraw — skip them under reduce-
+    // motion or when the perf throttle has kicked in.
+    if (game.gs.reduceMotion || perf.fx < 1) return;
     const r = this.track(this.scene.add.rectangle(
       game.world.w / 2, game.world.h / 2, game.world.w, game.world.h, color, alpha));
     this.scene.tweens.add({ targets: r, alpha: 0, duration: 220, onComplete: () => r.destroy() });

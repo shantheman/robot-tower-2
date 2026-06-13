@@ -241,6 +241,10 @@ export const MULTI_SPREAD_DEG = 16;
  * / less lag; lower = smoother. Smooths the long barrel's sweep when the
  * pointer reports its position in bursts during fast circles. */
 export const AIM_SMOOTH_RATE = 50;
+/** When a device is dropping frames (or reduce-motion is on), explosion
+ * particle counts scale to this fraction to cut additive overdraw. Devices
+ * holding framerate stay at 1 (full). See perf.ts + BattleScene.updatePerf. */
+export const FX_LITE_SCALE = 0.45;
 export const PIERCE_BASE_COST = 150;
 export const PIERCE_COST_GROWTH = 1.8;
 export const EXPLOSIVE_BASE_COST = 250;

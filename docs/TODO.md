@@ -92,7 +92,13 @@ major system.
       point for the future crash-reporting SDK.
 - [ ] **Performance pass on older phones** — tested on Shannon's recent
       iPhone only. Check an older device + Android; watch particle counts on
-      late waves.
+      late waves. NOTE (v0.8.39): an adaptive throttle now auto-thins explosion
+      particles + skips screen flashes when smoothed FPS drops below ~48 (or
+      reduce-motion is on); zero effect on devices holding framerate. Tunables:
+      `FX_LITE_SCALE` + the 48/56 hysteresis in `BattleScene.updatePerf`. If a
+      real slow device still struggles, next lever is dynamic resolution (drop
+      DPR only while FPS is low) — deliberately NOT a blanket DPR cap, which
+      would soften capable high-DPI devices too.
 - [ ] **Browser-compat sweep** — developed against Safari/Chrome; give
       Firefox and Android Chrome one full playthrough.
 - [ ] **LICENSE + asset provenance** — carried from v1, still unresolved:

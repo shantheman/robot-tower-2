@@ -2,6 +2,17 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.39 — 2026-06-13
+
+- **Adaptive effects throttle (safety net for slow devices).** If a device's
+  smoothed FPS drops below ~48 (or reduce-motion is on), explosion particle
+  counts thin (`FX_LITE_SCALE`) and full-screen flashes are skipped, cutting the
+  additive overdraw that's the heaviest moment in a fight. Recovers with
+  hysteresis once FPS climbs back. Devices that hold framerate never trip it —
+  **no effect on capable hardware** (verified: a 118fps machine stays at full
+  quality). No blanket resolution cap — that would soften capable high-DPI
+  devices; dropping resolution only while FPS is low is held as a later lever.
+
 ## v0.8.38 — 2026-06-12
 
 - **Drone flies with momentum.** The drone used to move at a constant speed
