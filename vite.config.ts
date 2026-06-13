@@ -8,11 +8,12 @@ import { defineConfig } from "vite";
 // alone — Vite's dev tooling needs freedoms the policy would deny.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self'",
+  "script-src 'self' https://us-assets.i.posthog.com", // PostHog may lazy-load modules
   "style-src 'self' 'unsafe-inline'", // Phaser styles the canvas via attributes
   "img-src 'self' data: blob:",       // Phaser fallback textures are data URIs
   "font-src 'self'",
-  "connect-src 'self'",
+  // PostHog (US cloud): ingest on us.i.posthog.com, assets/config on us-assets.
+  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com",
   "object-src 'none'",
   "base-uri 'self'",
 ].join("; ");

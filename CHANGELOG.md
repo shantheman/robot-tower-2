@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.49 — 2026-06-13
+
+- **Analytics live.** Set the PostHog project key (US cloud) — playtime +
+  progression now flow, tagged `app = mech-tide`. Verified ingestion returns OK.
+- **CSP allows PostHog.** The deploy CSP was `connect-src 'self'`, which would
+  have silently blocked every event; added `us.i.posthog.com` /
+  `us-assets.i.posthog.com` to `connect-src` (+ assets host to `script-src`).
+
 ## v0.8.48 — 2026-06-13
 
 - **Analytics events tagged `app: "mech-tide"`** so the game can share a single

@@ -16,8 +16,8 @@ import { GAME_VERSION } from "./version";
 // key here to turn analytics on; leave blank to keep it fully off. This game can
 // share ONE project with other games: every event is tagged `app` (below), so
 // you filter PostHog insights/dashboards by `app = mech-tide` to separate them.
-const POSTHOG_KEY = "";
-const POSTHOG_HOST = "https://us.i.posthog.com"; // EU region: https://eu.i.posthog.com
+const POSTHOG_KEY = "phc_CuTrrwvvBx54Wm2pxor6hDm2Xy3bdakZnFm95cUHgvsV"; // public client key (safe to embed)
+const POSTHOG_HOST = "https://us.i.posthog.com"; // US Cloud
 const APP = "mech-tide"; // event tag so multiple games can live in one project
 
 type PH = { capture: (event: string, props?: Record<string, unknown>) => void };
