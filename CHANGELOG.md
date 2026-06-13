@@ -2,6 +2,19 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.33 — 2026-06-12
+
+- **Turret gun art swaps with your shot count.** The main tower's swiveling gun
+  now shows a barrel set that matches how many bullets a shot fires
+  (`1 + Multi-Shot`): single (1), double (2), triple (3), then a multi-barrel
+  "many" for 4+. New art (`turret_gun_1/2/3/many.png`), new rotation pivot
+  (86%), and the single-barrel variant fires straight from center. The art
+  updates live the moment you buy Multi-Shot.
+- **Playground:** the reference turret uses the new art with a **bullets-per-shot
+  (1 / 2 / 3 / many)** selector to preview each variant.
+- (Decorative home-screen + shop turret thumbnails still use the old
+  twin-barrel art for now.)
+
 ## v0.8.32 — 2026-06-12
 
 - **Purchase ping on the Upgrades page.** Buying a card now flashes a copy of

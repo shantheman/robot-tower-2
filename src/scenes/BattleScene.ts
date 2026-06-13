@@ -45,6 +45,7 @@ export class BattleScene extends Phaser.Scene {
   private towerPos = new Phaser.Math.Vector2(game.world.w / 2, game.world.h / 2);
   private gun!: Phaser.GameObjects.Image;
   private gunShadow!: Phaser.GameObjects.Image;
+  private gunVariant = 0;            // shots (1+multiLevel) the current gun art shows
   private shieldGfx!: Phaser.GameObjects.Graphics;
   private effects!: Effects;
   private shadowLayer!: Phaser.GameObjects.Layer;
@@ -82,7 +83,7 @@ export class BattleScene extends Phaser.Scene {
 
   preload() {
     this.load.image("turret_base", "sprites/turret_base.png");
-    this.load.image("turret_gun", "sprites/turret_gun.png");
+    for (const k of C.TURRET_GUN_TEXTURES) this.load.image(k, `sprites/${k}.png`);
     this.load.image("drone", "sprites/drone.png");
     this.load.image(C.DRONE_FAN.texture, `sprites/${C.DRONE_FAN.texture}.png`);
     for (const k of ["enemy_0", "enemy_1", "enemy_2", "enemy_3", "enemy_4", "boss", "shooter"]) {
@@ -113,12 +114,15 @@ export class BattleScene extends Phaser.Scene {
       .setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y).setScale(base.scale)
       .setTintFill(0x000000).setAlpha(C.TOWER_SHADOW.base.alpha);
     this.shadowLayer.add(baseShadow);
+    // The gun art swaps with how many bullets a shot fires (1/2/3/many barrels).
+    this.gunVariant = 1 + game.gs.multiLevel;
+    const gunKey = C.turretGunKey(this.gunVariant);
     this.gunShadow = this.add.image(
-      this.towerPos.x + C.TOWER_SHADOW.gun.x, this.towerPos.y + C.TOWER_SHADOW.gun.y, "turret_gun")
+      this.towerPos.x + C.TOWER_SHADOW.gun.x, this.towerPos.y + C.TOWER_SHADOW.gun.y, gunKey)
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y)
       .setTintFill(0x000000).setAlpha(C.TOWER_SHADOW.gun.alpha);
     this.shieldGfx = this.add.graphics();
-    this.gun = this.add.image(this.towerPos.x, this.towerPos.y, "turret_gun")
+    this.gun = this.add.image(this.towerPos.x, this.towerPos.y, gunKey)
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y);
     this.gun.setScale(C.TURRET_GUN_H / this.gun.height); // mock: gun height = 0.69 x base
     this.gunShadow.setScale(this.gun.scale * C.TOWER_SHADOW.gun.scale);
@@ -383,6 +387,19 @@ export class BattleScene extends Phaser.Scene {
   }
 
   // -- player fire -----------------------------------------------------------------
+  /** Swap the gun art when the per-shot bullet count changes (1/2/3/many
+   * barrels). Cheap: only touches the texture when multiLevel actually moves
+   * (between waves, in the shop). All four share dims + pivot, so the scale
+   * carries over. */
+  private syncGunTexture(): void {
+    const shots = 1 + game.gs.multiLevel;
+    if (shots === this.gunVariant) return;
+    this.gunVariant = shots;
+    const key = C.turretGunKey(shots);
+    this.gun.setTexture(key).setScale(C.TURRET_GUN_H / this.gun.height);
+    this.gunShadow.setTexture(key).setScale(this.gun.scale * C.TOWER_SHADOW.gun.scale);
+  }
+
   private fireSpread(): void {
     const gs = game.gs;
     const aim = new Phaser.Math.Vector2(Math.cos(this.aimAngle), Math.sin(this.aimAngle));
@@ -397,7 +414,10 @@ export class BattleScene extends Phaser.Scene {
     play("shoot");
     for (const deg of angles) {
       const d = aim.clone().rotate(Phaser.Math.DegToRad(deg));
-      const side = d.clone().rotate(Math.PI / 2).scale(this.muzzleAlt * this.gun.displayWidth * C.MUZZLE_SIDE_FACTOR);
+      // Single-barrel art (n===1) fires straight from center; multi-barrel art
+      // alternates the muzzle left/right so rounds leave the outer barrels.
+      const sideAmt = n === 1 ? 0 : this.muzzleAlt * this.gun.displayWidth * C.MUZZLE_SIDE_FACTOR;
+      const side = d.clone().rotate(Math.PI / 2).scale(sideAmt);
       this.muzzleAlt *= -1;
       const start = this.towerPos.clone().add(d.clone().scale(muzzleDist)).add(side);
       const dot = this.effects.track(this.add.circle(start.x, start.y, gs.playerBulletRadius(), C.PLAYER_BULLET_COLOR));
@@ -663,6 +683,7 @@ export class BattleScene extends Phaser.Scene {
       } else if (!p.wasTouch) {
         this.aimAngle = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
       }
+      this.syncGunTexture();
       this.gun.setRotation(this.aimAngle + Math.PI / 2);
       this.gunShadow.setRotation(this.gun.rotation);
       this.fireTimer -= dt;

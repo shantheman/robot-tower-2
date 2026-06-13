@@ -203,8 +203,15 @@ export const WAVE_CLEAR_CORES = 1;   // x level, per cleared wave (instant)
 export const LEVEL_CLEAR_CORES = 15; // x level, bonus for the boss wave
 
 // Turret sprite rig (from the design handoff — pivots took iteration!)
-export const GUN_PIVOT = { x: 0.5, y: 0.79 };   // of turret_gun.png
+export const GUN_PIVOT = { x: 0.5, y: 0.86 };   // of the turret_gun_* art (rotation socket)
 export const BASE_SOCKET = { x: 0.5, y: 0.43 }; // of turret_base.png
+/** The swiveling gun art swaps with how many bullets a single shot fires
+ * (shots = 1 + multiLevel): 1 / 2 / 3 barrels, then "many" for 4+. All four
+ * share the same dimensions + pivot, so they're drop-in swaps. */
+export const TURRET_GUN_TEXTURES = ["turret_gun_1", "turret_gun_2", "turret_gun_3", "turret_gun_many"];
+export function turretGunKey(shots: number): string {
+  return TURRET_GUN_TEXTURES[Math.min(Math.max(shots, 1), 4) - 1];
+}
 // Visual sizes (world px), proportions per the mock: gun height = 0.69 x base.
 export const TURRET_BASE_W = 96;
 export const TURRET_GUN_H = 66;

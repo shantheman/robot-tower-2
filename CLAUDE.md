@@ -41,8 +41,12 @@ Mobile via Capacitor and desktop packaging come after the gameplay port.
   are wrapped today as the visible habit.
 - The localStorage save key is `rts2_save` **forever** (predates the rename;
   changing it wipes every player — see the note in src/sim/state.ts).
-- The turret rig pivots are load-bearing: gun pivot (50%, 79%), base socket
-  (50%, 43%) — see HANDOFF.md "Turret rig".
+- The turret rig pivots are load-bearing: gun pivot (50%, 86%), base socket
+  (50%, 43%) — see HANDOFF.md "Turret rig". The swiveling gun art swaps with
+  the per-shot bullet count (1 + multiLevel): `turret_gun_1/2/3/many.png`,
+  all sharing dims + pivot (see `turretGunKey()` in config.ts). The old
+  twin-barrel `turret_gun.png` (pivot 79%) survives only in the decorative
+  HTML spots (home hero, shop thumb).
 
 ## Visual testing rule (from Shannon, 2026-06-11)
 Any visual change gets verified at ALL THREE ratios before shipping: desktop

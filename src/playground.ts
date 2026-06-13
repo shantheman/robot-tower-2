@@ -55,6 +55,7 @@ const pg = {
   zoom: 2.6,
   slow: false,
   dirty: true, // rebuild the enemy when key/state changes
+  turretShots: 1, // tower gun art preview: 1/2/3 barrels, 4 = "many"
 };
 
 const TOWER_X = 500;
@@ -67,6 +68,8 @@ class PlaygroundScene extends Phaser.Scene {
   private effects!: Effects;
   private shadowLayer!: Phaser.GameObjects.Layer;
   private rangeRing!: Phaser.GameObjects.Graphics;
+  private gun!: Phaser.GameObjects.Image;   // tower reference gun (art swaps with "shots")
+  private gunVariant = 0;
   private enemy?: {
     sprite: Phaser.GameObjects.Image;
     shadow: Phaser.GameObjects.Image;
@@ -98,7 +101,7 @@ class PlaygroundScene extends Phaser.Scene {
 
   preload(): void {
     this.load.image("turret_base", "sprites/turret_base.png");
-    this.load.image("turret_gun", "sprites/turret_gun.png");
+    for (const k of C.TURRET_GUN_TEXTURES) this.load.image(k, `sprites/${k}.png`);
     this.load.image("drone", "sprites/drone.png");
     this.load.image(C.DRONE_FAN.texture, `sprites/${C.DRONE_FAN.texture}.png`);
     for (const k of ["enemy_0", "enemy_1", "enemy_2", "enemy_3", "enemy_4", "boss", "shooter"]) {
@@ -115,8 +118,10 @@ class PlaygroundScene extends Phaser.Scene {
     // Tower marker for facing/scale reference.
     const base = this.add.image(TOWER_X, TOWER_Y, "turret_base").setOrigin(C.BASE_SOCKET.x, C.BASE_SOCKET.y);
     base.setScale(C.TURRET_BASE_W / base.width);
-    const gun = this.add.image(TOWER_X, TOWER_Y, "turret_gun").setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y);
-    gun.setScale(C.TURRET_GUN_H / gun.height).setRotation(-Math.PI / 2);
+    this.gun = this.add.image(TOWER_X, TOWER_Y, C.turretGunKey(pg.turretShots))
+      .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y).setRotation(-Math.PI / 2);
+    this.gun.setScale(C.TURRET_GUN_H / this.gun.height);
+    this.gunVariant = pg.turretShots;
     this.rangeRing = this.add.graphics();
     this.effects = new Effects(this); // its fx layer draws above for the burst
     this.rebuild();
@@ -213,6 +218,10 @@ class PlaygroundScene extends Phaser.Scene {
     const dt = Math.min(dMs / 1000, 0.05) * (pg.slow ? 0.25 : 1);
     this.clock += dt;
     if (pg.dirty) { pg.dirty = false; this.rebuild(); }
+    if (pg.turretShots !== this.gunVariant) {
+      this.gunVariant = pg.turretShots;
+      this.gun.setTexture(C.turretGunKey(pg.turretShots)).setScale(C.TURRET_GUN_H / this.gun.height);
+    }
     const e = this.enemy;
     if (!e) return;
     const spr = e.sprite;
@@ -433,6 +442,12 @@ function render(): void {
     </div>
     ${(!isDrone && ranged) ? `<label class="chk"><input type="checkbox" id="pg-charge" ${params[pg.key]?.chargeTell ? "checked" : ""} /> Charge-tell (swell before firing)</label>` : ""}
 
+    <div class="grp">TOWER GUN — bullets per shot</div>
+    <div class="row" id="pg-shots">
+      ${[{ n: 1, l: "1" }, { n: 2, l: "2" }, { n: 3, l: "3" }, { n: 4, l: "many" }].map((o) =>
+        `<button data-shots="${o.n}" class="${o.n === pg.turretShots ? "on" : ""}">${o.l}</button>`).join("")}
+    </div>
+
     <div class="grp">VIEW</div>
     <div class="sl"><label>Zoom<b data-val="zoom">${pg.zoom.toFixed(1)}×</b></label>
       <input type="range" id="pg-zoom" min="1" max="4" step="0.1" value="${pg.zoom}" /></div>
@@ -447,6 +462,8 @@ function render(): void {
     b.addEventListener("click", () => { pg.key = b.dataset.key!; pg.dirty = true; render(); }));
   panel.querySelectorAll<HTMLButtonElement>("#pg-states button").forEach((b) =>
     b.addEventListener("click", () => { if (b.disabled) return; pg.state = b.dataset.state as State; pg.dirty = true; render(); }));
+  panel.querySelectorAll<HTMLButtonElement>("#pg-shots button").forEach((b) =>
+    b.addEventListener("click", () => { pg.turretShots = Number(b.dataset.shots); render(); }));
   panel.querySelectorAll<HTMLInputElement>("#pg-sliders input").forEach((inp) =>
     inp.addEventListener("input", () => {
       const k = inp.dataset.k!;
