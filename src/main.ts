@@ -6,6 +6,7 @@ import "./crash"; // FIRST: the crash banner must catch module-init errors below
 import Phaser from "phaser";
 import { WORLD_AR_MAX, WORLD_AR_MIN, WORLD_H, WORLD_PORTRAIT_W } from "./config";
 import { game, isTouch } from "./game";
+import { initMusic } from "./music";
 import { installKeyboardRouting } from "./input";
 import { BattleScene } from "./scenes/BattleScene";
 import { updateHud } from "./ui/hud";
@@ -20,6 +21,8 @@ import { AchievementsModal } from "./ui/achievements";
 if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
   document.documentElement.classList.add("touch");
 }
+
+initMusic(); // looping background music, unlocked on first gesture (autoplay policy)
 
 const stage = document.getElementById("stage")!;
 const panels = document.createElement("div");

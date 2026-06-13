@@ -5,6 +5,7 @@
 import { game } from "../game";
 import { SAVE_KEY } from "../sim/state";
 import { decodeSave, encodeSave } from "../sim/savecode";
+import { setMusicVolume } from "../music";
 import { GAME_VERSION } from "../version";
 
 export class SettingsModal {
@@ -41,8 +42,10 @@ export class SettingsModal {
     this.root.innerHTML = `
       <div class="modal-card">
         <header><span class="modal-title">SETTINGS</span><button class="modal-x" data-act="close">✕</button></header>
-        ${this.row("Volume", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.volume * 100)}" data-key="volume" />
+        ${this.row("Sound", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.volume * 100)}" data-key="volume" />
           <b id="vol-pct">${Math.round(gs.volume * 100)}%</b></span>`)}
+        ${this.row("Music", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.musicVolume * 100)}" data-key="music" />
+          <b id="music-pct">${Math.round(gs.musicVolume * 100)}%</b></span>`)}
         ${this.row("Reduce motion (no shake)", toggle("motion", gs.reduceMotion))}
         ${this.row("Transfer save", `<span class="set-pair">
           <button class="set-toggle" data-key="export">EXPORT</button>
@@ -112,6 +115,12 @@ export class SettingsModal {
       this.root.querySelector("#vol-pct")!.textContent = `${slider.value}%`;
     });
     slider?.addEventListener("change", () => gs.save());
+    const music = this.root.querySelector<HTMLInputElement>("input[data-key=music]");
+    music?.addEventListener("input", () => {
+      setMusicVolume(Number(music.value) / 100); // updates gs + the live track
+      this.root.querySelector("#music-pct")!.textContent = `${music.value}%`;
+    });
+    music?.addEventListener("change", () => gs.save());
     this.root.querySelector("[data-act=close]")?.addEventListener("click", () => this.hide());
   }
 }

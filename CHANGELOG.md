@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.25 — 2026-06-12
+
+- **Background music.** A looping soundtrack plays across the whole game
+  (streamed MP3, ~3.5 MB, converted from the source WAV). Settings now has two
+  independent sliders — **Sound** (the synth SFX) and **Music** — each with
+  **0 = off**, and both persist in the save. Music starts on the first
+  tap/click (browser autoplay policy) and pauses when the tab is hidden.
+
 ## v0.8.24 — 2026-06-12
 
 - **The game is now MECH TIDE** — Callum's pick (renamed from "Core Defender").

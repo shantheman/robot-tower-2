@@ -82,7 +82,8 @@ export class GameState {
   bestWave = 0;
   skills = new Set<SkillKey>();
   achievements = new Set<string>();
-  volume = 1.0;
+  volume = 1.0;       // SFX (0 = mute)
+  musicVolume = 0.5;  // background music (0 = off)
   reduceMotion = false;
 
   // -- run state (reset every battle) ---------------------------------------
@@ -143,6 +144,7 @@ export class GameState {
       this.skills = new Set(d.skills ?? []);
       this.achievements = new Set(d.achievements ?? []);
       this.volume = Math.min(1, Math.max(0, d.volume ?? 1));
+      this.musicVolume = Math.min(1, Math.max(0, d.music_volume ?? 0.5));
       this.reduceMotion = !!d.reduce_motion;
     } catch { /* unreadable save -> defaults */ }
   }
@@ -158,6 +160,7 @@ export class GameState {
         skills: [...this.skills].sort(),
         achievements: [...this.achievements].sort(),
         volume: Math.round(this.volume * 100) / 100,
+        music_volume: Math.round(this.musicVolume * 100) / 100,
         reduce_motion: this.reduceMotion,
       }));
     } catch { /* a failed save never crashes the game */ }
