@@ -400,13 +400,13 @@ export class BattleScene extends Phaser.Scene {
       const side = d.clone().rotate(Math.PI / 2).scale(this.muzzleAlt * this.gun.displayWidth * C.MUZZLE_SIDE_FACTOR);
       this.muzzleAlt *= -1;
       const start = this.towerPos.clone().add(d.clone().scale(muzzleDist)).add(side);
-      const dot = this.effects.track(this.add.circle(start.x, start.y, gs.playerBulletRadius(), 0xffe9a8));
+      const dot = this.effects.track(this.add.circle(start.x, start.y, gs.playerBulletRadius(), C.PLAYER_BULLET_COLOR));
       this.bullets.push({
         dot, vx: d.x * C.BULLET_SPEED, vy: d.y * C.BULLET_SPEED,
         damage: gs.playerDamage(), radius: gs.playerBulletRadius(),
         pierce: gs.pierceLevel, guided: gs.guidedOwned, hit: new Set(), alive: true,
       });
-      const flash = this.effects.track(this.add.circle(start.x, start.y, 9, 0xfff6da, 0.9));
+      const flash = this.effects.track(this.add.circle(start.x, start.y, 9, C.PLAYER_MUZZLE_COLOR, 0.9));
       this.tweens.add({ targets: flash, alpha: 0, scale: 1.8, duration: 70, onComplete: () => flash.destroy() });
     }
   }
@@ -521,7 +521,7 @@ export class BattleScene extends Phaser.Scene {
       if (d < bestD) { bestD = d; best = e; }
     }
     if (!best) return;
-    this.effects.zap(this.towerPos.x, this.towerPos.y, best.sprite.x, best.sprite.y, 0xffc94a);
+    this.effects.zap(this.towerPos.x, this.towerPos.y, best.sprite.x, best.sprite.y, C.AUTO_SHOOTER_COLOR);
     this.hitEnemy(best, C.AUTO_BULLET_DAMAGE);
     this.autoFireTimer = C.AUTO_BASE_COOLDOWN / gs.autoLevel;
   }

@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.31 — 2026-06-12
+
+- **Good-guy fire is core-blue.** The tower's gun rounds (and muzzle flash) and
+  the Auto-Shooter's zap are now a light blue (`PLAYER_BULLET_COLOR` /
+  `AUTO_SHOOTER_COLOR` `0x8ec9ff`) instead of warm yellow — leaning into the
+  blue Cores powering the defenders. Light enough to read on the dark floor.
+
 ## v0.8.30 — 2026-06-12
 
 - **Drone is 2× bigger** (DRONE_RADIUS 11 → 22) — body, fans, and shadow scale

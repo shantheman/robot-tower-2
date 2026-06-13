@@ -154,6 +154,11 @@ export const DRONE_FAN = { texture: "drone_fan", offset: 0.255, scale: 1.0, spin
  * the barrel from the pivot, and the alternating left/right barrel offset. */
 export const MUZZLE_DIST_FACTOR = 0.92;
 export const MUZZLE_SIDE_FACTOR = 0.16;
+/** Good-guy fire is "core blue" — the blue Cores power the tower. Light enough
+ * to read against the dark battlefield. */
+export const PLAYER_BULLET_COLOR = 0x8ec9ff; // tower gun rounds
+export const PLAYER_MUZZLE_COLOR = 0xe6f4ff; // bright blue-white muzzle flash
+export const AUTO_SHOOTER_COLOR = 0x8ec9ff;  // auto-turret zap
 
 /** Level backgrounds (visual only). Files live at
  * public/backgrounds/<name>_land.webp (960x720-ish worlds) and
