@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.55 — 2026-06-13
+
+- **Generator coach mark** now spotlights just the Generator card (not the whole
+  ECONOMY row), so the bouncing arrow points right at it.
+- **Tower modal** locked LEVEL UP button uses the custom padlock graphic
+  (`art/lock.webp`) instead of the OS emoji.
+
 ## v0.8.54 — 2026-06-13
 
 - **Home tower-upgrade modal redesigned** (per mock): tower image, big

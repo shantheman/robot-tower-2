@@ -55,7 +55,7 @@ export class TowerModal {
       ? `<button class="cta levelup" data-act="towerup" data-sfx="none">
            <span class="cta-big">LEVEL UP</span><span class="core-icon small"></span> ${c}</button>`
       : `<button class="cta levelup disabled" data-act="towerup" data-sfx="none" disabled>
-           <span class="cta-big">🔒 LEVEL UP</span><span class="core-icon small"></span> ${c}
+           <img class="lock-ico" src="art/lock.webp" alt="" /><span class="cta-big">LEVEL UP</span><span class="core-icon small"></span> ${c}
            <span class="cta-need">You need ${(cost - gs.cores).toLocaleString("en-US")} more cores</span></button>`;
 
     this.root.innerHTML = `
