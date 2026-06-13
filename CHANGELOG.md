@@ -2,6 +2,11 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.45 — 2026-06-13
+
+- **Home Settings gear is grey**, matching the header gear (`var(--dim)`)
+  instead of the default cyan.
+
 ## v0.8.44 — 2026-06-13
 
 - **New Skill Tree icon.** Replaced the hexagon glyph/SVG with the connected-
