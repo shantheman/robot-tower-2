@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.37 — 2026-06-12
+
+- **Tower beams draw above the base, below the gun.** The auto-shooter zaps
+  (and the ultimate laser) lived on the effects layer *under* the base, so a
+  zap leaving the blue ring was hidden by the base and only showed past its rim.
+  They now render on a dedicated layer between the base and the gun barrel, so
+  the zap reads as leaving the ring while the barrel still sits on top.
+
 ## v0.8.36 — 2026-06-12
 
 - **Auto-Shooter lights up the base.** Once you own Auto-Shooter, the tower base

@@ -49,7 +49,8 @@ export class BattleScene extends Phaser.Scene {
   private gunShadow!: Phaser.GameObjects.Image;
   private gunVariant = 0;            // shots (1+multiLevel) the current gun art shows
   private shieldGfx!: Phaser.GameObjects.Graphics;
-  private effects!: Effects;
+  private effects!: Effects;          // transient juice UNDER the tower (bursts, popups)
+  private towerFx!: Effects;          // tower-origin beams ABOVE the base, BELOW the gun
   private shadowLayer!: Phaser.GameObjects.Layer;
   private droneCtl!: DroneController;
   private autoFireTimer = 0;
@@ -129,6 +130,9 @@ export class BattleScene extends Phaser.Scene {
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y)
       .setTintFill(0x000000).setAlpha(C.TOWER_SHADOW.gun.alpha);
     this.shieldGfx = this.add.graphics();
+    // Tower-origin beams (auto-shooter zaps, ultimate laser) draw here — created
+    // AFTER the base so they sit above it, BEFORE the gun so the barrel stays on top.
+    this.towerFx = new Effects(this);
     this.gun = this.add.image(this.towerPos.x, this.towerPos.y, gunKey)
       .setOrigin(C.GUN_PIVOT.x, C.GUN_PIVOT.y);
     this.gun.setScale(C.TURRET_GUN_H / this.gun.height); // mock: gun height = 0.69 x base
@@ -173,6 +177,7 @@ export class BattleScene extends Phaser.Scene {
     this.applyLevelBackground();
     this.clearBoard(true);
     this.effects.clear();
+    this.towerFx.clear();
     this.over = false;
     this.setPaused(false);
     this.droneCtl.reset();
@@ -197,6 +202,7 @@ export class BattleScene extends Phaser.Scene {
     if (!game.gs.restoreCheckpoint()) return false;
     this.clearBoard(true);
     this.effects.clear();
+    this.towerFx.clear();
     this.over = false;
     this.setPaused(false);
     this.droneCtl.reset();
@@ -577,7 +583,7 @@ export class BattleScene extends Phaser.Scene {
     // reads as a straight line out of the middle of the base.
     const dir = new Phaser.Math.Vector2(best.sprite.x - this.towerPos.x, best.sprite.y - this.towerPos.y).normalize();
     const r = C.AUTO_RING_RADIUS_FRAC * this.base.displayWidth;
-    this.effects.zap(this.towerPos.x + dir.x * r, this.towerPos.y + dir.y * r,
+    this.towerFx.zap(this.towerPos.x + dir.x * r, this.towerPos.y + dir.y * r,
       best.sprite.x, best.sprite.y, C.AUTO_SHOOTER_COLOR);
     this.hitEnemy(best, C.AUTO_BULLET_DAMAGE);
     this.autoFireTimer = C.AUTO_BASE_COOLDOWN / gs.autoLevel;
@@ -620,9 +626,9 @@ export class BattleScene extends Phaser.Scene {
     this.laserActive -= dt;
     const aim = new Phaser.Math.Vector2(Math.cos(this.aimAngle), Math.sin(this.aimAngle));
     const end = this.towerPos.clone().add(aim.clone().scale(2000));
-    const beam = this.effects.track(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0xffffff, 0.9))
+    const beam = this.towerFx.track(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0xffffff, 0.9))
       .setOrigin(0).setLineWidth(C.LASER_WIDTH / 8);
-    const glow = this.effects.track(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0x7fe8ff, 0.35))
+    const glow = this.towerFx.track(this.add.line(0, 0, this.towerPos.x, this.towerPos.y, end.x, end.y, 0x7fe8ff, 0.35))
       .setOrigin(0).setLineWidth(C.LASER_WIDTH / 3);
     this.time.delayedCall(40, () => { beam.destroy(); glow.destroy(); });
     // Damage every enemy near the beam line.
