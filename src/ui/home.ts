@@ -57,7 +57,7 @@ export class HomeScreen extends Panel {
             <span class="mb-sub">${returning ? `${game.justClearedLevel ? "Onward" : "Jump back in"} · Level ${gs.level} · Wave 1` : "Begin at Level 1 · Wave 1"}</span></span>
           </button>
           <div class="menu-row">
-            <button class="menu-btn green" data-act="skills"><span class="mb-icon">⏣</span>
+            <button class="menu-btn green" data-act="skills"><span class="mb-icon tree-glyph"></span>
               <span class="mb-col"><span class="mb-title">SKILL TREE</span>
               <span class="mb-sub">${returning ? `${gs.cores} cores ready` : "Spend cores"}</span></span></button>
             <button class="menu-btn" data-act="settings"><span class="mb-icon">⚙</span>

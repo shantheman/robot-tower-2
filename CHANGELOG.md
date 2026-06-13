@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.8.44 — 2026-06-13
+
+- **New Skill Tree icon.** Replaced the hexagon glyph/SVG with the connected-
+  nodes `skill-tree-icon.png` on the Home menu button and the mobile battle HUD.
+  Applied as a CSS mask (`.tree-glyph`) so it inherits the button's green like
+  the icon it replaced, rather than baking in a fixed colour.
+
 ## v0.8.43 — 2026-06-13
 
 - **Drone body swivels at a capped rate.** The drone used to snap its facing to
