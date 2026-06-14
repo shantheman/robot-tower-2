@@ -11,3 +11,9 @@ Thumbs.db
 renders/
 test-results/
 playwright-report/
+
+# Secrets — local only, NEVER commit. (The .example template IS tracked.)
+secrets.local.json
+.env
+.env.local
+.env.*.local
