@@ -241,6 +241,13 @@ export const MULTI_SPREAD_DEG = 16;
  * / less lag; lower = smoother. Smooths the long barrel's sweep when the
  * pointer reports its position in bursts during fast circles. */
 export const AIM_SMOOTH_RATE = 50;
+/** Touch aim stick (mobile only). A fixed analog pad anchored in one bottom
+ * corner (side = GameState.handed); touches inside ringR·ACTIVATE grab it,
+ * touches elsewhere are tap/drag-to-aim. Sizes are CSS px (converted to world
+ * units at runtime). See BattleScene.stickGeom + Settings handedness. */
+export const STICK_RADIUS_PX = 62;        // base-ring radius
+export const STICK_MARGIN_PX = 26;        // gap from the screen corner
+export const STICK_ACTIVATE_SCALE = 1.7;  // grab radius = ringR · this
 /** When a device is dropping frames (or reduce-motion is on), explosion
  * particle counts scale to this fraction to cut additive overdraw. Devices
  * holding framerate stay at 1 (full). See perf.ts + BattleScene.updatePerf. */

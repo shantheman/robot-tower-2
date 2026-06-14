@@ -16,6 +16,16 @@ export function isTouch(): boolean {
   return document.documentElement.classList.contains("touch");
 }
 
+/** Reflect the player's handedness onto <html> so CSS can mirror the touch HUD
+ * (stick on the chosen corner, buttons on the other). Call at boot and whenever
+ * the Settings toggle changes. */
+export function applyHanded(): void {
+  const el = document.documentElement;
+  const left = game.gs.handed === "left";
+  el.classList.toggle("handed-left", left);
+  el.classList.toggle("handed-right", !left);
+}
+
 export type Screen = "home" | "battle" | "shop" | "skills" | "pause" | "dead";
 
 export interface ScreenHooks {

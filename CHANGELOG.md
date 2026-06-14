@@ -2,6 +2,23 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.0 — 2026-06-13
+
+- **The turret always fires now** (both platforms). Aiming is the whole game;
+  you no longer hold/tap to shoot — input only steers the gun. *(Balance note:
+  this raises player DPS uptime — early waves clear noticeably faster. Flagged
+  in TODO for the balance pass.)*
+- **New mobile controls.** Two ways to aim, both live at once:
+  - **Tap (or drag) anywhere** to point the turret there — momentary, so your
+    finger doesn't camp on the battlefield like the old floating stick did.
+  - **A fixed corner aim-stick** for smooth tracking, anchored in one bottom
+    corner. Touches inside it drive a relative analog aim; touches elsewhere are
+    taps. The other controls move to the opposite corner so nothing's under it.
+- **Settings → Joystick side (Left / Right)** — handedness toggle that mirrors
+  the whole bottom HUD; persisted. Touch only.
+- Desktop is unchanged: cursor aims, layout stays skills-left / upgrades-right /
+  ultimate-center (no on-screen stick).
+
 ## v0.8.59 — 2026-06-13
 
 - **FPS analytics.** The battle loop already measured a smoothed frame rate for

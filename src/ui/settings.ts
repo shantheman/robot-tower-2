@@ -2,7 +2,7 @@
  * Same options as the original game's panel (plus the version + credits
  * footer). Opens over Home or as the in-battle pause menu's settings. */
 
-import { game } from "../game";
+import { game, isTouch, applyHanded } from "../game";
 import { SAVE_KEY } from "../sim/state";
 import { setMusicVolume } from "../music";
 import { GAME_VERSION } from "../version";
@@ -46,6 +46,9 @@ export class SettingsModal {
         ${this.row("Music", `<span class="set-slider"><input type="range" min="0" max="100" value="${Math.round(gs.musicVolume * 100)}" data-key="music" />
           <b id="music-pct">${Math.round(gs.musicVolume * 100)}%</b></span>`)}
         ${this.row("Reduce motion (no shake)", toggle("motion", gs.reduceMotion))}
+        ${isTouch() ? this.row("Joystick side", `<span class="set-seg">
+          <button class="set-toggle ${gs.handed === "left" ? "on" : ""}" data-key="handL">LEFT</button>
+          <button class="set-toggle ${gs.handed === "right" ? "on" : ""}" data-key="handR">RIGHT</button></span>`) : ""}
         ${this.row("Reset progress", `<button class="set-toggle danger" data-key="reset">RESET</button>`)}
         <footer class="modal-foot">
           <span>v${GAME_VERSION} © 2026 Callum Bauman / Bauman Games.</span>
@@ -56,6 +59,8 @@ export class SettingsModal {
       el.addEventListener("click", () => {
         const k = el.dataset.key;
         if (k === "motion") gs.reduceMotion = !gs.reduceMotion;
+        else if (k === "handL") { gs.handed = "left"; applyHanded(); }
+        else if (k === "handR") { gs.handed = "right"; applyHanded(); }
         else if (k === "reset") {
           if (el.textContent === "SURE?") {
             localStorage.removeItem(SAVE_KEY);

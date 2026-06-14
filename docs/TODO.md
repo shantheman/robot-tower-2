@@ -9,6 +9,13 @@ and git).
 
 ## Gameplay & content
 
+- [~] **Mobile controls overhaul** (v0.9.0) — turret now ALWAYS fires (both
+      platforms); aim only steers it. Touch: fixed corner aim-stick (side =
+      Settings → Joystick side, L/R) PLUS tap/drag-anywhere to aim; desktop
+      keeps cursor aim. STILL TODO: (a) a one-time controls coach-mark
+      ("tap to aim & fire / pad in the corner") — deferred at Shannon's request
+      until he plays it; (b) re-check balance — always-fire raises player DPS
+      uptime and visibly clears early waves faster (fold into the balance pass).
 - [ ] **Second Wind** — pay cores to revive in place, once per run. Parked
       from the death-penalty redesign; adds a cores sink once the tree is
       bought out. Revisit after checkpoint feel is validated.

@@ -5,7 +5,7 @@
 import "./crash"; // FIRST: the crash banner must catch module-init errors below
 import Phaser from "phaser";
 import { WORLD_AR_MAX, WORLD_AR_MIN, WORLD_H, WORLD_PORTRAIT_W } from "./config";
-import { game, isTouch } from "./game";
+import { game, isTouch, applyHanded } from "./game";
 import { play } from "./audio";
 import { initMusic } from "./music";
 import { initAnalytics } from "./analytics";
@@ -24,6 +24,7 @@ import { TowerModal } from "./ui/towerModal";
 if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
   document.documentElement.classList.add("touch");
 }
+applyHanded(); // mirror the touch HUD to the saved left/right preference
 
 initMusic(); // looping background music, unlocked on first gesture (autoplay policy)
 initAnalytics(); // anonymous playtime + progression (no-op until a PostHog key is set)

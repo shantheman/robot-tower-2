@@ -86,6 +86,7 @@ export class GameState {
   volume = 0.5;       // SFX (0 = mute)
   musicVolume = 0.5;  // background music (0 = off)
   reduceMotion = false;
+  handed: "left" | "right" = "right"; // touch: which bottom corner the aim stick sits in
 
   // -- run state (reset every battle) ---------------------------------------
   money = 0;
@@ -148,6 +149,7 @@ export class GameState {
       this.volume = Math.min(1, Math.max(0, d.volume ?? 0.5));
       this.musicVolume = Math.min(1, Math.max(0, d.music_volume ?? 0.5));
       this.reduceMotion = !!d.reduce_motion;
+      this.handed = d.handed === "left" ? "left" : "right";
     } catch { /* unreadable save -> defaults */ }
   }
 
@@ -165,6 +167,7 @@ export class GameState {
         volume: Math.round(this.volume * 100) / 100,
         music_volume: Math.round(this.musicVolume * 100) / 100,
         reduce_motion: this.reduceMotion,
+        handed: this.handed,
       }));
     } catch { /* a failed save never crashes the game */ }
   }
