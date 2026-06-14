@@ -68,9 +68,8 @@ and git).
       no LICENSE file; confirm the AI-generated art/sprites are cleared for
       whatever distribution ends up happening.
 - [ ] **ToS / Privacy Policy + marketing site** — handled in the
-      baumangames.com repo; the handoff brief is
-      `docs/baumangames-site-handoff.md`. Crash-data disclosure gets added
-      there only once the crash SDK ships.
+      baumangames.com repo. Crash-data disclosure gets added there only once
+      the crash SDK ships.
 - [ ] **Crash reporting** — DECIDED (2026-06-12): yes, before the Apple
       submission. Shannon leans Crashlytics; consider Sentry (Capacitor
       "crashes" are mostly JS webview errors, which Sentry/PostHog capture
@@ -82,7 +81,7 @@ Context: publisher **Bauman Games LLC**, bundle ID **com.baumangames.mechtide**,
 target audience **13+**, ToS + Privacy Policy live at baumangames.com.
 
 **Legal / policy**
-- [ ] baumangames.com updates (see docs/baumangames-site-handoff.md).
+- [ ] baumangames.com updates (ToS / Privacy Policy / marketing).
 - [ ] Apple "App Privacy" label: declare diagnostics/crash data AND Product
       Interaction / Usage Data (PostHog) — not linked to identity, no tracking.
 - [ ] Google Play Data Safety form: same declaration (incl. analytics/usage).

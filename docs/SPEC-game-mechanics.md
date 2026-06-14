@@ -1,7 +1,7 @@
 # Game Mechanics & Balance Reference
 
 The concrete numbers behind Mech Tide (originally Robot Tower Survival) —
-enemy stats, weapon damage, upgrades, drops, and the wave/level logic.
+enemy stats, weapon damage, upgrades, drops, and the wave/stage logic.
 
 > ⚠️ **KEEP THIS IN SYNC.** Whenever any of these gameplay values or formulas
 > change (in `config.py`, `entities.py`, `waves.py`, or `game.py`), **update this
@@ -9,14 +9,21 @@ enemy stats, weapon damage, upgrades, drops, and the wave/level logic.
 
 **Where the values live:** almost everything is a named constant in
 [`config.py`](../config.py); enemy definitions are in
-[`entities.py`](../entities.py); wave/level math is in [`waves.py`](../waves.py);
+[`entities.py`](../entities.py); wave/stage math is in [`waves.py`](../waves.py);
 how they combine (damage, scaling) is in `game.py`. This doc reflects the code as
 of **2026-06-10** (cores-per-wave economy update).
 
+> **Terminology:** the game's progression unit is a **Stage** (the in-game
+> label). In code and the formulas below it's still named `level` (`gs.level`,
+> `WAVES_BY_LEVEL`, `wave_in_level`, `LEVEL_RAMP`, …) — same thing. This is
+> distinct from **Tower Level** (the permanent, cores-bought upgrade) and from an
+> item's **Lv** (its per-upgrade level). Prose here says "Stage"; code names and
+> formula variables keep `level`.
+
 
 > ## v2 balance changes (this port diverges from the original here)
-> - **Level length is capped at 15 waves** (`WAVES_LEVEL_CAP`). The original
->   grew +5 forever (level 10 = 50 waves). Levels past 3 are all 15 waves and
+> - **Stage length is capped at 15 waves** (`WAVES_LEVEL_CAP`). The original
+>   grew +5 forever (stage 10 = 50 waves). Stages past 3 are all 15 waves and
 >   differentiate by their steeper difficulty ramp instead.
 > - **Explosive Rounds buffed** (original: 12+6/lvl splash in a fixed 60px):
 >   splash **16 + 6/lvl**, radius **100 + 25/lvl** — sparse enemy spacing made
@@ -29,15 +36,15 @@ of **2026-06-10** (cores-per-wave economy update).
 >   0.35s) and Field Medic (250 cores / 300 coins — while the drone has no
 >   enemy in firing range it repairs the tower at 2 HP/s). Chain: Twin
 >   Targeting -> Interceptor -> Field Medic.
-> - **Mid-level checkpoints** (`CHECKPOINT_EVERY` = 5): starting wave 6/11 of a
->   level snapshots the full loadout (coins, upgrades, ultimates — including
+> - **Mid-stage checkpoints** (`CHECKPOINT_EVERY` = 5): starting wave 6/11 of a
+>   stage snapshots the full loadout (coins, upgrades, ultimates — including
 >   between-wave purchases). Death offers "Retry from wave N": the snapshot is
 >   restored at full HP. Replayed waves never re-pay cores (high-water mark).
-> - **Repair + Plating limited to once per level** (`REPAIR_MAX_BUYS` /
+> - **Repair + Plating limited to once per stage** (`REPAIR_MAX_BUYS` /
 >   `PLATING_MAX_BUYS` = 1, added 2026-06-12): unlimited buys let players
 >   stack cheap HP every shop visit — including mid-wave via the pause shop —
 >   into a near-unkillable tower. Spent cards show "✓ USED" for the rest of
->   the level; the buy counters reset with the run.
+>   the stage; the buy counters reset with the run.
 
 ---
 
@@ -63,7 +70,7 @@ enemy reaches it. The grunt's default would be `TOWER_CONTACT_DAMAGE` (10), but
 every enemy sets its own value. The **Sprite** column is the actual in-game art
 (the old colored circles are gone).
 
-| Enemy | Sprite | HP | Contact dmg | Speed× | Reward (coins) | Laser | HP scales w/ level? |
+| Enemy | Sprite | HP | Contact dmg | Speed× | Reward (coins) | Laser | HP scales w/ stage? |
 |---|---|---|---|---|---|---|---|
 | **Grunt** | <img src="../assets/sprites/enemy_0.png" width="42"> | 20 | 6 | 1.0 | 5 | one-shot | no |
 | **Fast** | <img src="../assets/sprites/enemy_1.png" width="42"> | 10 | 4 | 1.8 | 6 | one-shot | no |
@@ -82,9 +89,9 @@ Notes:
 - **Boss contact damage** is special: it's `max(90, 90% of the tower's max HP)`,
   so it nearly one-shots the tower **no matter how upgraded you are** (`Robot.update`).
 - **Boss covering fire** (v2 addition, not in the original): as it advances the boss
-  also lobs projectiles at the tower, scaling with the **game level** (`BOSS_FIRE`):
-  cooldown `max(0.9, 6.0 − 0.7×(level−1))` s and damage `4 + 4×(level−1)`. Level 1 is
-  a shot or two of chip damage over the slow trek; later levels are a faster, harder
+  also lobs projectiles at the tower, scaling with the **game stage** (`BOSS_FIRE`):
+  cooldown `max(0.9, 6.0 − 0.7×(level−1))` s and damage `4 + 4×(level−1)`. Stage 1 is
+  a shot or two of chip damage over the slow trek; later stages are a faster, harder
   barrage. It still crashes the tower normally (the fire is on top of the melee hit).
 - **Shooter** is ranged: it stops **260 px** from the tower (`SHOOTER_RANGE`) and
   fires a projectile every **1.6 s** (`SHOOTER_FIRE_CD`) for **8 dmg** each
@@ -95,7 +102,7 @@ Notes:
 - **HP scaling** (Tank/Bomber/Shooter/Boss only): `max_hp × (1 + 0.12 × (effective_wave − 1))`
   (`HEAVY_HP_RAMP` = 0.12). Grunts/Fast/Tough are **fixed** HP so a basic shot
   always one-shots a grunt. (`effective_wave` is defined under Waves below — note
-  it starts at **1.6** on every level's first wave, so heavies are already a touch
+  it starts at **1.6** on every stage's first wave, so heavies are already a touch
   tankier than their base HP.)
 
 ---
@@ -210,8 +217,8 @@ Once unlocked, every drone volley also fires at a **second** enemy in range
 
 | Purchase | Effect | Base cost | Growth |
 |---|---|---|---|
-| **Repair** | Restore **+30 HP** (`REPAIR_HP`); only when hurt; **once per level** (`REPAIR_MAX_BUYS`) | 60 coins | n/a (single buy) |
-| **Plating** | **+25 max HP** (and +25 current) (`PLATING_HP`); **once per level** (`PLATING_MAX_BUYS`) | 90 coins | n/a (single buy) |
+| **Repair** | Restore **+30 HP** (`REPAIR_HP`); only when hurt; **once per stage** (`REPAIR_MAX_BUYS`) | 60 coins | n/a (single buy) |
+| **Plating** | **+25 max HP** (and +25 current) (`PLATING_HP`); **once per stage** (`PLATING_MAX_BUYS`) | 90 coins | n/a (single buy) |
 | **Shield** | **Layered**: `2 + (level−1)` layers (`SHIELD_BASE_HITS`), each soaking up to **30 dmg** of a single hit (`SHIELD_HIT_ABSORB`) — a 34-dmg tank slam strips 2 layers; a 90-dmg boss slam strips 3; if a hit needs more layers than remain, the **unsoaked remainder damages the tower** (34 dmg into 1 layer = 4 tower dmg). **Recharges fully at each wave start.** One **ring** shows per remaining layer, and enemies/projectiles **crash on the outer ring** instead of reaching the tower | 350 coins | ×1.7 per level |
 
 ---
@@ -236,10 +243,10 @@ never wasted). Net effect:
 
 ---
 
-## Waves & levels
+## Waves & stages
 
 ### How many waves
-| Level | Waves | (`WAVES_BY_LEVEL`) |
+| Stage | Waves | (`WAVES_BY_LEVEL`) |
 |---|---|---|
 | 1 | 7 | |
 | 2 | 10 | |
@@ -247,21 +254,21 @@ never wasted). Net effect:
 | 4 | 20 | |
 | 5+ | +5 each (25, 30, …) | (`WAVES_LEVEL_EXTRA`) |
 
-The **last wave of every level is a boss wave** (`is_boss_wave`). On a boss wave,
+The **last wave of every stage is a boss wave** (`is_boss_wave`). On a boss wave,
 **1 Boss spawns plus the rest of that wave's normal enemies**.
 
 ### Difficulty curve — `effective_wave(wave)`
 All scaling (enemy count, speed, heavy-HP, which types appear) is driven by a
-single "difficulty wave" that **resets each level** and ramps **steeper on higher
-levels**:
+single "difficulty wave" that **resets each stage** and ramps **steeper on higher
+stages**:
 
 ```
 effective_wave = DIFF_WAVE1 + (wave_in_level − 1) × DIFF_PER_WAVE × ramp
 ramp           = 1 + LEVEL_RAMP × (level − 1)
 ```
 with `DIFF_WAVE1` = 1.6, `DIFF_PER_WAVE` = 0.7, `LEVEL_RAMP` = 0.35. So every
-level's wave 1 is difficulty **1.6**, climbing ~0.7 per wave (faster on later
-levels).
+stage's wave 1 is difficulty **1.6**, climbing ~0.7 per wave (faster on later
+stages).
 
 ### Enemy count / speed / spawn rate (per wave)
 | | Formula |
@@ -282,8 +289,8 @@ Spawn pool + relative weights (bosses are spawned separately, not from this pool
 | 4.5 | **Tank** |
 | 5.5 | **Shooter** |
 
-So early waves of *every* level are just grunts + fast, and the tougher types
-unlock as the level ramps (sooner on higher levels). The added types' weights
+So early waves of *every* stage are just grunts + fast, and the tougher types
+unlock as the stage ramps (sooner on higher stages). The added types' weights
 grow slowly as `effective_wave` climbs past their unlock point.
 
 ---
@@ -314,10 +321,10 @@ All in-run upgrade costs grow geometrically: `base × growth^level`.
 **Cores are earned during the run** — coins never convert to Cores (so shop
 spending doesn't tax your progression, and an instant quit earns nothing):
 
-- **+1 Core × level for every cleared wave** (`WAVE_CLEAR_CORES`), granted the
+- **+1 Core × stage for every cleared wave** (`WAVE_CLEAR_CORES`), granted the
   moment the wave ends — you keep these even if you die later in the run.
-- **+15 Cores × level for clearing the level's boss wave** (`LEVEL_CLEAR_CORES`).
+- **+15 Cores × stage for clearing the stage's boss wave** (`LEVEL_CLEAR_CORES`).
 
-So Level 3 (15 waves) pays 15×3 + 45 = **90 Cores** for a full clear. Skill-tree
+So Stage 3 (15 waves) pays 15×3 + 45 = **90 Cores** for a full clear. Skill-tree
 node prices (total **1,430** Cores): Cannon 70/90/160/220, Defense 60/100/180,
 Drone 150, Ultimates 60/80/110/150.
