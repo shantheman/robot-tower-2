@@ -39,7 +39,7 @@ export class ShopPanel extends Panel {
         onBuy: () => gs.tryBuyGen(),
       },
       {
-        key: "auto", cat: "CANNON", name: "Auto-Shooter",
+        key: "auto", cat: "CANNON", name: "Auto-Laser",
         desc: gs.autoLevel === 0 ? "Auto-fires at nearby enemies" : `Lv ${gs.autoLevel} · fires faster`,
         cost: gs.autoCost(), state: m >= gs.autoCost() ? "buy" : "poor",
         onBuy: () => gs.tryBuyAuto(),

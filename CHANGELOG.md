@@ -2,6 +2,11 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.2 — 2026-06-13
+
+- **Renamed the "Auto-Shooter" upgrade to "Auto-Laser"** (display name only;
+  mechanics, cost, and save data unchanged). SPEC updated to match.
+
 ## v0.9.1 — 2026-06-13
 
 - **Smaller aim-stick, tucked tighter into the corner** — ring radius 62 → 50px,

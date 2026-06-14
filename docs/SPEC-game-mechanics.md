@@ -111,13 +111,13 @@ reach that level from scratch.
 | Weapon | Base | Lv 1 | Lv 2 | Lv 3 | Lv 4 | Lv 5 | 💰 Cost → Lv 5 | Lv 6 | Lv 7 | Lv 8 | Lv 9 | Lv 10 | 💰 Cost → Lv 10 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **Standard gun** | 40 | 53.3 | 69.1 | 87.8 | 109.7 | 135.5 | **🪙 947** | 165.6 | 200.7 | 241.6 | 289.1 | 344.2 | **🪙 10,891** |
-| **Auto-Shooter** | — | 18.0 | 36.0 | 54.0 | 72.0 | 90.0 | **🪙 789** | 108 | 126 | 144 | 162 | 180 | **🪙 9,075** |
+| **Auto-Laser** | — | 18.0 | 36.0 | 54.0 | 72.0 | 90.0 | **🪙 789** | 108 | 126 | 144 | 162 | 180 | **🪙 9,075** |
 | **Drone** | — | 11.2 | 17.2 | 25.4 | 36.6 | 51.9 | **🪙 839** | 72.5 | 100.1 | 137.1 | 186.3 | 251.5 | **🪙 9,125** |
 
 > The two **💰 cost** columns are the cumulative coins to fully buy that weapon up
 > to Lv 5 / Lv 10. (GitHub markdown can't shade table cells, so they're flagged
 > with 💰/🪙 rather than a background color.)
-> **Balance pass 2026-06-05:** the Auto-Shooter and Drone were buffed (they were
+> **Balance pass 2026-06-05:** the Auto-Laser and Drone were buffed (they were
 > far behind the gun in DPS-per-coin — see `dads_feedback.md`). The gun is still
 > the strongest per coin; the helpers are now worth buying.
 
@@ -125,7 +125,7 @@ What "level" means per row, and why the DPS scales:
 - **Standard gun** — *Base* = no **Main Turret** upgrade (the gun you always have);
   *Lv N* = Main Turret level N. DPS climbs from **both** more damage (`20 + 4N`)
   **and** a faster cooldown (`0.5 × 0.9^N`). DPS = `(20 + 4N) ÷ (0.5 × 0.9^N)`.
-- **Auto-Shooter** — *Base* = not deployed (it doesn't fire). *Lv N* = Auto-Shooter
+- **Auto-Laser** — *Base* = not deployed (it doesn't fire). *Lv N* = Auto-Laser
   level N (the first purchase is Lv 1). Per-shot damage is fixed at **18**; only
   the fire rate scales: DPS = `18 ÷ (1.0 ÷ N)` = `18 × N`.
 - **Drone** — *Base* = not deployed. *Lv N* = Drone level N (deploy = Lv 1).
@@ -134,7 +134,7 @@ What "level" means per row, and why the DPS scales:
 
 Caveats: **Multi-Shot** multiplies the *Standard gun* row by the bullet count
 (`1 + MultiShotLevel`) if every bullet hits; the **rapid-fire** power-up
-temporarily multiplies the gun's rate by ~2.5× (for 5 s). The **Auto-Shooter/Drone** numbers assume a
+temporarily multiplies the gun's rate by ~2.5× (for 5 s). The **Auto-Laser/Drone** numbers assume a
 target is in range (the Drone also focus-fires only the strongest enemy and must
 be within its range). The **Laser** isn't a sustained-DPS weapon (burst ultimate)
 so it's listed separately below.
@@ -149,7 +149,7 @@ so it's listed separately below.
 So gun damage = `20 + 4 × MainTurretLevel`. (Again: the permanent *Tower Level*
 does **not** change this — only the Main Turret upgrade does.)
 
-### Auto-Shooter (in-run turret) — always available
+### Auto-Laser (in-run turret) — always available
 | | Value |
 |---|---|
 | Damage per shot | **18** (`AUTO_BULLET_DAMAGE`) — **fixed**, does not scale |
@@ -191,7 +191,7 @@ Every one of those bullets carries the same `player_damage()` (and any Piercing)
 Each level lets your bullets pass through **+1 extra enemy** before disappearing.
 
 ### Explosive Rounds (gated by the skill tree)
-Every **friendly bullet hit** (gun, auto-shooter, drone) also splashes
+Every **friendly bullet hit** (gun, auto-laser, drone) also splashes
 `12 + 6×(level−1)` damage (`EXPLOSIVE_SPLASH_DMG` / `_PER_LEVEL`) to enemies
 within **60 px** (`EXPLOSIVE_RADIUS`) of the struck enemy. No chain reactions.
 Each blast shows an expanding orange **shockwave ring** out to the real splash
@@ -295,7 +295,7 @@ All in-run upgrade costs grow geometrically: `base × growth^level`.
 | Upgrade | Base cost | Growth | Currency |
 |---|---|---|---|
 | Money Generator (+3 coins/s per level) | 50 | 1.6 | coins |
-| Auto-Shooter | 50 | 1.6 | coins |
+| Auto-Laser | 50 | 1.6 | coins |
 | Main Turret | 60 | 1.6 | coins |
 | Multi-Shot | 220 | 2.0 | coins |
 | Piercing | 150 | 1.8 | coins |
