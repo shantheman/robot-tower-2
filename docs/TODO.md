@@ -7,16 +7,9 @@ and git).
 
 ---
 
-## Gameplay & content
+## Gameplay
 
-- [ ] **Controls coach-mark** — a one-time mobile hint for the new HUD ("hold
-      to aim & fire; pad in the corner"). Deferred at Shannon's request until he
-      plays the redesign raw.
-- [ ] **Tower Level Up animation** — give the headline upgrade its own bigger,
-      distinct buy animation (it currently reuses the field-card ping).
-- [ ] **Second Wind** — pay cores to revive in place, once per run. Parked
-      from the death-penalty redesign; adds a cores sink once the tree is
-      bought out. Revisit after checkpoint feel is validated.
+
 - [ ] **Later levels + is there an end?** — carried from v1, still open.
       What do levels 8+ introduce (new enemies? modifiers?), and is there a
       win condition or is it endless?
@@ -27,23 +20,18 @@ and git).
       free with the Capacitor wrap (Haptics plugin); not available in
       browser on iOS.
 
-## Art & assets
+## Art, animations & assets
 
-- [ ] **Final enemy sprites** — the current set is temporary; Boss, Shooter,
-      and the in-battle drone still use old pygame-era art that clashes with the
-      painterly style. Possibly animated.
 - [ ] **App icon** — favicon shipped (the crystal core); still needed: the
       proper app icon set for the PWA manifest and app stores (512px+,
       maskable, Android adaptive layers).
 - [ ] **Loading/splash screen** — first load shows a blank stage for a beat;
       a branded splash would cover asset load (also required for Capacitor).
+- [ ] **Tower Level Up animation** — give the headline upgrade its own bigger,
+      distinct buy animation (it currently reuses the field-card ping).
 
 ## Code health
-
-- [ ] Re-audit when the codebase next grows a major system. Last full pass
-      2026-06-12 (see git/CHANGELOG): sim core tested (unit + Playwright e2e in
-      CI), BattleScene split into modules, panels share a base class, keyboard
-      map in src/input.ts, CSP on prod builds, innerHTML via esc().
+Last full pass 2026-06-12 (see git/CHANGELOG): sim core tested (unit + Playwright e2e in CI), BattleScene split into modules, panels share a base class, keyboard map in src/input.ts, CSP on prod builds, innerHTML via esc().
 
 ## Launch readiness
 
