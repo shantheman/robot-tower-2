@@ -802,8 +802,11 @@ export class BattleScene extends Phaser.Scene {
       const firing = isTouch()
         ? (this.stickP !== null || this.aimP?.isDown === true)
         : this.input.activePointer.isDown;
+      // Hold fire until the gun has swung onto the target heading, so a tap to a
+      // new direction doesn't spray shots at the in-between angles it sweeps past.
+      const aligned = Math.abs(Phaser.Math.Angle.Wrap(this.aimTarget - this.aimAngle)) < C.AIM_FIRE_TOLERANCE;
       this.fireTimer -= dt;
-      if (firing && this.fireTimer <= 0) {
+      if (firing && aligned && this.fireTimer <= 0) {
         this.fireSpread();
         this.fireTimer = gs.playerCooldown();
       }

@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.4 — 2026-06-13
+
+- **No more firing mid-swing.** When you tap a new direction, the gun holds fire
+  until it has swung onto the target heading (within ~11°), so shots land where
+  you tapped instead of spraying the angles it sweeps past. Sustained fire still
+  keeps up while you track a moving aim.
+
 ## v0.9.3 — 2026-06-13
 
 - **Reverted always-fire — hold to fire again.** Always-fire (v0.9.0) left too

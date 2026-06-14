@@ -241,6 +241,11 @@ export const MULTI_SPREAD_DEG = 16;
  * / less lag; lower = smoother. Smooths the long barrel's sweep when the
  * pointer reports its position in bursts during fast circles. */
 export const AIM_SMOOTH_RATE = 50;
+/** Hold fire until the eased gun heading is within this of the aim target
+ * (radians, ~11°). Stops bullets leaving at in-between angles while the turret
+ * swings to a freshly-tapped direction; loose enough that sustained fire keeps
+ * up while you sweep/track a moving aim. */
+export const AIM_FIRE_TOLERANCE = 0.2;
 /** Touch aim stick (mobile only). A fixed analog pad anchored in one bottom
  * corner (side = GameState.handed); touches inside ringR·ACTIVATE grab it,
  * touches elsewhere are tap/drag-to-aim. Sizes are CSS px (converted to world
