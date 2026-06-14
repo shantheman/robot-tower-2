@@ -19,11 +19,11 @@ import { GAME_VERSION } from "./version";
 const POSTHOG_KEY = "phc_CuTrrwvvBx54Wm2pxor6hDm2Xy3bdakZnFm95cUHgvsV"; // public client key (safe to embed)
 const POSTHOG_HOST = "https://us.i.posthog.com"; // US Cloud
 const APP = "mech-tide"; // event tag so multiple games can live in one project
-// Session replay: ON for the Callum-friends test ONLY. TURN OFF before the
-// public launch (see docs/TODO.md launch checklist). Also requires enabling
-// Session + Canvas recording in the PostHog project settings (canvas capture is
-// a dashboard toggle — without it the Phaser battle records blank).
-const SESSION_REPLAY = true;
+// Session replay: OFF (it wasn't earning its keep). It was on briefly for the
+// Callum-friends test. To re-enable, flip this to true AND turn on Session +
+// Canvas recording in the PostHog project settings (canvas capture is a
+// dashboard toggle — without it the Phaser battle records blank).
+const SESSION_REPLAY = false;
 
 type PH = { capture: (event: string, props?: Record<string, unknown>) => void };
 let ph: PH | null = null;

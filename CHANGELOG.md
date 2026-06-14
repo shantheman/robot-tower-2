@@ -2,6 +2,12 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.7 — 2026-06-14
+
+- **Session replay turned off.** `SESSION_REPLAY = false` — the SDK no longer
+  records sessions (it was on only for the friend test, and wasn't earning its
+  keep). Anonymous playtime/progression/FPS analytics is unaffected.
+
 ## v0.9.6 — 2026-06-14
 
 - **Bust LinkedIn's stale preview cache** — the share image moved to a fresh URL
