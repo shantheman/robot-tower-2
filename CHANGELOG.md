@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.6 — 2026-06-14
+
+- **Bust LinkedIn's stale preview cache** — the share image moved to a fresh URL
+  (`og-image-v2.png`). LinkedIn had pinned a tiny favicon fallback from before
+  the `og:image` existed (pre-v0.9.5) and wouldn't re-fetch the same URL; a new
+  URL forces a clean crawl of the full 1200×630 card.
+
 ## v0.9.5 — 2026-06-13
 
 - **Link previews (social "unfurl" cards).** Added Open Graph + Twitter Card
