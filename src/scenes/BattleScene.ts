@@ -18,7 +18,7 @@ import {
 import { DroneController } from "./drone";
 import { Effects } from "./effects";
 import { perf } from "../perf";
-import { track, addPlaytime, flushPlaytime, addFps, flushFps } from "../analytics";
+import { track, setPlayer, addPlaytime, flushPlaytime, addFps, flushFps } from "../analytics";
 import { enemyAnimFrame, updateEnemyRotors, updateSquadron, placeSatellite } from "./enemyAnim";
 import { makeSilhouette, shadowOffset } from "./shadows";
 import type { Enemy, EnemyBullet } from "./types";
@@ -186,6 +186,7 @@ export class BattleScene extends Phaser.Scene {
   startBattle(): void {
     game.gs.resetRun();
     track("run_started", { level: game.gs.level });
+    setPlayer({ best_stage: game.gs.bestStage }); // furthest stage reached (high-water)
     game.justClearedLevel = null;  // the celebration was seen; back to normal Home copy
     this.applyLevelBackground();
     this.clearBoard(true);
@@ -260,6 +261,7 @@ export class BattleScene extends Phaser.Scene {
     track("wave_cleared", { level, wave });
     if (bossWave) {
       track("level_cleared", { level });
+      setPlayer({ best_stage: game.gs.bestStage }); // just advanced a stage
       flushPlaytime();          // level done → bank the active time so far
       flushFps();               // …and the FPS window for this level
       play("level_clear");      // celebratory sting only on level (boss-wave) completion

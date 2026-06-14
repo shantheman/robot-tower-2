@@ -80,6 +80,7 @@ export class GameState {
   towerLevel = 0;
   level = 1;
   bestWave = 0;
+  bestStage = 1;  // highest stage ever reached (high-water mark; analytics person prop)
   skills = new Set<SkillKey>();
   achievements = new Set<string>();
   tutorialsSeen = new Set<string>(); // one-time tutorial overlays already shown
@@ -143,6 +144,7 @@ export class GameState {
       this.towerLevel = d.tower_level | 0;
       this.level = Math.max(1, d.level | 0);
       this.bestWave = d.best_wave | 0;
+      this.bestStage = Math.max(d.best_stage | 0, this.level); // backfill from prior progress
       this.skills = new Set(d.skills ?? []);
       this.achievements = new Set(d.achievements ?? []);
       this.tutorialsSeen = new Set(d.tutorials ?? []);
@@ -161,6 +163,7 @@ export class GameState {
         tower_level: this.towerLevel,
         level: this.level,
         best_wave: this.bestWave,
+        best_stage: this.bestStage,
         skills: [...this.skills].sort(),
         achievements: [...this.achievements].sort(),
         tutorials: [...this.tutorialsSeen].sort(),
@@ -235,6 +238,7 @@ export class GameState {
     if (!this.waveTookDamage) this.unlockAchievement("perfect");
     if (this.wave > this.bestWave) this.bestWave = this.wave;
     if (bossWave) this.level += 1; // advance the checkpoint
+    if (this.level > this.bestStage) this.bestStage = this.level; // high-water stage
     this.save();
     return { bossWave, coresEarned: earned };
   }

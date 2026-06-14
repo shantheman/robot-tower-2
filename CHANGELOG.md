@@ -2,6 +2,15 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.10.4 — 2026-06-14
+
+- **Analytics: track the furthest stage a player reaches.** Added a persisted
+  `bestStage` high-water mark (in the save) and send it to PostHog as a
+  `best_stage` **person property** (on run start + stage clear), so "highest
+  stage per player" is a one-click distribution. (The stage was already on every
+  run/wave/clear/game-over event as `level`, so it was derivable before — this
+  just makes it a clean per-user attribute.)
+
 ## v0.10.3 — 2026-06-14
 
 - **Fixed: clicking a HUD button fired a bullet** (desktop). Pressing Upgrades /

@@ -25,7 +25,10 @@ const APP = "mech-tide"; // event tag so multiple games can live in one project
 // dashboard toggle — without it the Phaser battle records blank).
 const SESSION_REPLAY = false;
 
-type PH = { capture: (event: string, props?: Record<string, unknown>) => void };
+type PH = {
+  capture: (event: string, props?: Record<string, unknown>) => void;
+  setPersonProperties?: (props: Record<string, unknown>) => void;
+};
 let ph: PH | null = null;
 let playedMs = 0; // accumulated ACTIVE play time, flushed in chunks
 
@@ -72,6 +75,14 @@ export async function initAnalytics(): Promise<void> {
 export function track(event: string, props?: Record<string, unknown>): void {
   if (!ph) return;
   try { ph.capture(event, props); } catch { /* ignore */ }
+}
+
+/** Set person properties on the (anonymous) profile — e.g. `best_stage`, so the
+ * furthest stage a player reached is a one-click distribution in PostHog rather
+ * than a max-over-events query. */
+export function setPlayer(props: Record<string, unknown>): void {
+  if (!ph) return;
+  try { ph.setPersonProperties?.(props); } catch { /* ignore */ }
 }
 
 /** "ios" / "android" inside the Capacitor native shell, else "web". Registered
