@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.3 — 2026-06-13
+
+- **Reverted always-fire — hold to fire again.** Always-fire (v0.9.0) left too
+  little to do ("you just sit there"). The turret now fires only while held:
+  press/hold anywhere on the field (aim there + fire), or hold the corner stick
+  (aim + fire); lifting stops it. Desktop is back to hold-left-mouse. The new
+  aiming (corner stick + tap/hold) stays.
+
 ## v0.9.2 — 2026-06-13
 
 - **Renamed the "Auto-Shooter" upgrade to "Auto-Laser"** (display name only;

@@ -68,7 +68,7 @@ export class BattleScene extends Phaser.Scene {
   private intermission = C.INTERMISSION_TIME;
   private fireTimer = 0;
   private aimAngle = -Math.PI / 2;                       // eased gun heading (gun/laser/bullets)
-  private aimTarget = -Math.PI / 2;                      // raw heading; persists when no input (always-fire)
+  private aimTarget = -Math.PI / 2;                      // raw heading; the gun rests here when not aiming
   private fpsAvg = 60;                                   // smoothed FPS for the perf throttle
   private perfLite = false;                              // FPS-driven low-quality state
   private perfFrames = 0;                                // active frames seen (grace period)
@@ -145,10 +145,10 @@ export class BattleScene extends Phaser.Scene {
 
     this.joyGfx = this.add.graphics().setDepth(900);
     this.input.addPointer(1); // allow the corner stick + a tap to be touched at once
-    // The turret ALWAYS fires (see update); input only steers the aim. On touch:
-    // a press inside the corner stick drives a RELATIVE analog aim; a press
-    // anywhere else snaps the aim toward that point (and tracks if dragged) and
-    // PERSISTS after lifting. On desktop the aim simply follows the cursor.
+    // Hold to fire (see update). On touch: a press inside the corner stick drives
+    // a RELATIVE analog aim + fires while held; a press anywhere else aims toward
+    // that point (tracks if dragged) + fires while held. On desktop the aim
+    // follows the cursor and fires while the mouse is down.
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
       if (!p.wasTouch) return;
       const g = this.stickGeom();
@@ -796,8 +796,14 @@ export class BattleScene extends Phaser.Scene {
       this.syncBaseTexture();
       this.gun.setRotation(this.aimAngle + this.gunSkew() + Math.PI / 2);
       this.gunShadow.setRotation(this.gun.rotation);
+      // Hold to fire: mouse down (desktop), or a finger on the corner stick /
+      // pressing the field (touch). Lifting stops the gun — the player has to
+      // stay engaged rather than parking the turret on auto-fire.
+      const firing = isTouch()
+        ? (this.stickP !== null || this.aimP?.isDown === true)
+        : this.input.activePointer.isDown;
       this.fireTimer -= dt;
-      if (this.fireTimer <= 0) { // always firing — the player only aims
+      if (firing && this.fireTimer <= 0) {
         this.fireSpread();
         this.fireTimer = gs.playerCooldown();
       }
