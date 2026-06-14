@@ -9,41 +9,29 @@ and git).
 
 ## Gameplay & content
 
-- [~] **Mobile battle-HUD overhaul** (v0.10.0, hud-joystick-handoff) — touch only;
-      desktop unchanged. Menus (Skill Tree + Upgrades, new chip icon) moved to the
-      top bar; bottom is the styled **AIM joystick** + ultimate **FIRE orb** as
-      mirrored corner twins (side = Settings → Joystick side, L/R) with a clear
-      dead zone between them. Hold to fire (joystick or field press); empty
-      ultimate slot is reserved ("NONE"). STILL TODO: a one-time controls
-      coach-mark — deferred at Shannon's request until he plays it.
+- [ ] **Controls coach-mark** — a one-time mobile hint for the new HUD ("hold
+      to aim & fire; pad in the corner"). Deferred at Shannon's request until he
+      plays the redesign raw.
+- [ ] **Tower Level Up animation** — give the headline upgrade its own bigger,
+      distinct buy animation (it currently reuses the field-card ping).
 - [ ] **Second Wind** — pay cores to revive in place, once per run. Parked
       from the death-penalty redesign; adds a cores sink once the tree is
       bought out. Revisit after checkpoint feel is validated.
-- [x] **Background music** (done, v0.8.25) — looping MP3 track + separate
-      Sound/Music volume sliders (0 = off), both persisted. File-based SFX
-      system added too (boss fire, shooter fire, level clear, upgrade, click).
 - [ ] **Later levels + is there an end?** — carried from v1, still open.
       What do levels 8+ introduce (new enemies? modifiers?), and is there a
       win condition or is it endless?
 - [ ] **Difficulty / balance pass with real playtest data** — ultimate
-      pricing (250/400/500/1000 coins), shooter spawn weights vs. the new
-      Interceptor, Medic heal rate, checkpoint spacing. Tune after Callum
-      and friends have real hours in.
+      pricing, shooter spawn weights vs. the Interceptor, Medic heal rate,
+      checkpoint spacing. Tune after Callum and friends have real hours in.
 - [ ] **Haptics** — buzz on tower hit / ultimate fire / wave clear. Comes
       free with the Capacitor wrap (Haptics plugin); not available in
       browser on iOS.
-- [~] **Upgrade-screen juice (animations)** — DONE (v0.8.32): buying a card
-      pings a copy of its blue border outward + fades, as a confirmation;
-      honors reduce-motion. STILL TODO: give the Tower **Level Up** its own,
-      bigger/distinct animation (it's the headline upgrade — currently it uses
-      the same card ping).
 
 ## Art & assets
 
-- [x] **Final enemy sprites** — the HANDOFF marks the current five as
-      temporary ("likely replaced later, possibly animated"). Boss, Shooter,
-      and the in-battle drone still use the old pygame-era art, which clashes
-      with the new painterly style.
+- [ ] **Final enemy sprites** — the current set is temporary; Boss, Shooter,
+      and the in-battle drone still use old pygame-era art that clashes with the
+      painterly style. Possibly animated.
 - [ ] **App icon** — favicon shipped (the crystal core); still needed: the
       proper app icon set for the PWA manifest and app stores (512px+,
       maskable, Android adaptive layers).
@@ -52,139 +40,87 @@ and git).
 
 ## Code health
 
-Full audit + cleanup pass completed 2026-06-12 (see git history): the sim
-core is clean and tested (27 unit tests + a 4-flow Playwright e2e suite in
-CI), BattleScene is split into focused modules, panels share a base class,
-keyboard shortcuts live in one map (src/input.ts), CI is SHA-pinned and
-least-privilege, production builds ship a CSP, and innerHTML interpolation
-goes through esc(). Open a fresh audit when the codebase next grows a
-major system.
+- [ ] Re-audit when the codebase next grows a major system. Last full pass
+      2026-06-12 (see git/CHANGELOG): sim core tested (unit + Playwright e2e in
+      CI), BattleScene split into modules, panels share a base class, keyboard
+      map in src/input.ts, CSP on prod builds, innerHTML via esc().
 
 ## Launch readiness
 
-- [~] **Custom domain** — DONE (v0.8.51, 2026-06-13): `mechtide.com`
-      (Squarespace registrar). DNS = 4 apex A records → GitHub Pages
-      (185.199.108–111.153) + `www` CNAME → shantheman.github.io. Vite base
-      flipped to "/", `public/CNAME` = mechtide.com. REMAINING (manual, GitHub
-      UI): set Custom domain = mechtide.com in repo Settings → Pages (the CNAME
-      file usually auto-fills it), wait for the DNS check + Let's Encrypt cert,
-      tick "Enforce HTTPS", and "Verify" the domain (TXT) to block takeover.
-      Done before sharing the friend link, so the per-origin localStorage save
-      reset hit nobody.
 - [ ] **PWA pass** — manifest + icons + service worker: installable to the
       home screen, runs offline, fullscreen standalone on iOS. Cheap, and a
       real alternative to app stores for the friend-circle audience.
       Blocked on the app icon (Art section).
 - [ ] **Capacitor wrap (iOS/Android)** — the real-app path: haptics, app
       icon, splash, store listing. Publishing under **Bauman Games LLC**
-      (Apple org account exists). Bundle ID: **com.baumangames.mechtide**
-      (matches the com.baumangames.chimera convention).
+      (Apple org account exists). Bundle ID: **com.baumangames.mechtide**.
 - [ ] **Desktop packaging decision** — Tauri/Electron, or is "it runs in any
       browser" enough for desktop? (Leaning: browser is enough until proven
       otherwise.)
-- [x] **Save export/import** — DONE (2026-06-12): Settings > Transfer
-      save. EXPORT copies a CD1. save code (also shown for manual copy);
-      IMPORT + LOAD (two-tap confirm) applies it and reloads. This is the
-      migration path for the custom-domain move and phone<->desktop
-      transfer. Cloud saves remain out of scope.
-- [x] **Crash safety net** — DONE (2026-06-12): src/crash.ts (imported
-      first in main.ts) catches uncaught errors + rejections and shows a
-      framework-free reload banner with version + error detail. The hook
-      point for the future crash-reporting SDK.
 - [ ] **Performance pass on older phones** — tested on Shannon's recent
       iPhone only. Check an older device + Android; watch particle counts on
-      late waves. NOTE (v0.8.39): an adaptive throttle now auto-thins explosion
-      particles + skips screen flashes when smoothed FPS drops below ~48 (or
-      reduce-motion is on); zero effect on devices holding framerate. Tunables:
-      `FX_LITE_SCALE` + the 48/56 hysteresis in `BattleScene.updatePerf`. If a
-      real slow device still struggles, next lever is dynamic resolution (drop
-      DPR only while FPS is low) — deliberately NOT a blanket DPR cap, which
-      would soften capable high-DPI devices too.
+      late waves. (An adaptive throttle already thins particles/flashes below
+      ~48 FPS — tunables: `FX_LITE_SCALE` + the 48/56 hysteresis in
+      `BattleScene.updatePerf`. Next lever if needed: dynamic resolution.)
 - [ ] **Browser-compat sweep** — developed against Safari/Chrome; give
       Firefox and Android Chrome one full playthrough.
 - [ ] **LICENSE + asset provenance** — carried from v1, still unresolved:
       no LICENSE file; confirm the AI-generated art/sprites are cleared for
       whatever distribution ends up happening.
 - [ ] **ToS / Privacy Policy + marketing site** — handled in the
-      baumangames.com repo; the handoff brief for that session is
+      baumangames.com repo; the handoff brief is
       `docs/baumangames-site-handoff.md`. Crash-data disclosure gets added
       there only once the crash SDK ships.
-- [~] **Analytics** — DONE (v0.8.47, 2026-06-13): anonymous PostHog (new
-      project under the existing org — no extra fee, shared free tier). Wired
-      in src/analytics.ts; paste the project key into `POSTHOG_KEY` (+ region
-      host) to turn it on — inert/zero-bundle until then. Events: app_open,
-      run_started, wave_cleared{level,wave}, level_cleared{level},
-      game_over{level,wave}, playtime{seconds} (active battle time, summed per
-      person). No PII; anonymous per-browser id. Same code runs in the
-      Capacitor webview and queues offline. ⚠️ This SUPERSEDES the old "crash
-      data only, no analytics" stance — the privacy labels below must now also
-      declare Product Interaction / Usage data.
 - [ ] **Crash reporting** — DECIDED (2026-06-12): yes, before the Apple
-      submission. Shannon leans Crashlytics; consider Sentry instead — in
-      a Capacitor app most "crashes" are JS errors in the webview, which
-      Sentry captures first-class without the Firebase/google-services
-      setup. (PostHog can also capture JS exceptions, so the web build could
-      lean on it for errors too — Crashlytics stays the native-crash tool.)
+      submission. Shannon leans Crashlytics; consider Sentry (Capacitor
+      "crashes" are mostly JS webview errors, which Sentry/PostHog capture
+      first-class). Crashlytics stays the native-crash tool.
 
 ### Store submission checklist (Apple + Google Play)
 
-Context decided 2026-06-12: publisher **Bauman Games LLC**, bundle ID
-**com.baumangames.mechtide**, target audience **13+** (avoids kids/
-Families policy), ToS + Privacy Policy live at baumangames.com.
+Context: publisher **Bauman Games LLC**, bundle ID **com.baumangames.mechtide**,
+target audience **13+**, ToS + Privacy Policy live at baumangames.com.
 
 **Legal / policy**
 - [ ] baumangames.com updates (see docs/baumangames-site-handoff.md).
-- [ ] Apple "App Privacy" nutrition label: declare diagnostics/crash data
-      AND Product Interaction / Usage Data (PostHog analytics) — not linked to
-      identity, not used for tracking (no ATT needed).
+- [ ] Apple "App Privacy" label: declare diagnostics/crash data AND Product
+      Interaction / Usage Data (PostHog) — not linked to identity, no tracking.
 - [ ] Google Play Data Safety form: same declaration (incl. analytics/usage).
-- [ ] Age-rating questionnaires (Apple + IARC): cartoon violence, ~9+/E10
-      content rating; declared target audience 13+ on Play.
-- [ ] EU DSA trader declaration (both stores; the LLC likely declares as
-      trader — confirm what chimera did).
-- [ ] Asset provenance comfort check (AI art) before the content-rights
+- [ ] Age-rating questionnaires (Apple + IARC): cartoon violence, ~9+/E10;
+      target audience 13+ on Play.
+- [ ] EU DSA trader declaration (both stores; confirm what chimera did).
+- [ ] Asset provenance comfort check (AI art) before content-rights
       attestations — ties to the LICENSE item above.
 
 **Accounts / process**
 - [ ] Google Play account: confirm whether an LLC org account exists (org
-      accounts skip the personal-account rule of 12 testers x 14 days,
-      but require a D-U-N-S number — the LLC has one if Apple org
-      enrollment is done).
-- [ ] Reserve the "Mech Tide" name in App Store Connect early (name
-      collisions are common).
+      accounts skip the 12-testers × 14-days rule but need a D-U-N-S number).
+- [ ] Reserve the "Mech Tide" name in App Store Connect early.
 - [ ] Android signing: enroll in Play App Signing (Google keeps the key).
-- [ ] TestFlight internal -> friend-circle external test before release;
+- [ ] TestFlight internal → friend-circle external test before release;
       Play internal testing track likewise.
 
 **Store assets** (Claude-Design batch)
-- [ ] App icon: 1024px (Apple) + Android adaptive (fg/bg layers, maskable)
-      — same art unblocks the PWA manifest item.
-- [ ] Screenshots: iPhone 6.7"/6.5"/5.5" (+ iPad if enabled), Android
-      phone + 7"/10" tablet, Play feature graphic 1024x500.
+- [ ] App icon: 1024px (Apple) + Android adaptive (fg/bg, maskable) — same
+      art unblocks the PWA manifest item.
+- [ ] Screenshots: iPhone 6.7"/6.5"/5.5" (+ iPad), Android phone + 7"/10"
+      tablet, Play feature graphic 1024×500.
 - [ ] Splash screen (required by Capacitor anyway — see Art section).
-- [ ] Listing copy: short + full descriptions, Apple keywords, support URL
-      (baumangames.com or the Pages site), contact email.
+- [ ] Listing copy: short + full descriptions, Apple keywords, support URL,
+      contact email.
 
 **Technical**
-- [x] **Session replay turned OFF** (v0.9.7, 2026-06-14) — `SESSION_REPLAY = false`
-      in src/analytics.ts sets `disable_session_recording: true`, so the SDK
-      records nothing regardless of the PostHog project toggle. Was on only for
-      the Callum-friends test (v0.8.50). Optional belt-and-suspenders: also flip
-      the Session recording toggle off in PostHog project settings. Plain
-      anonymous analytics stays on.
 - [ ] Capacitor config: bundle ID, versionName/versionCode sync with
       GAME_VERSION, min/target OS (Play ratchets target API yearly).
-- [ ] Apple export compliance: ITSAppUsesNonExemptEncryption=NO
-      (HTTPS-only).
-- [ ] Apple 4.2 minimum-functionality pass: fully offline, no browser
-      chrome, haptics wired (games in Capacitor pass routinely; haptics
-      strengthens it).
-- [ ] Decide store-release cadence (web updates every push; store builds
-      are snapshots).
+- [ ] Apple export compliance: ITSAppUsesNonExemptEncryption=NO (HTTPS-only).
+- [ ] Apple 4.2 minimum-functionality pass: fully offline, no browser chrome,
+      haptics wired.
+- [ ] Decide store-release cadence (web updates every push; store builds are
+      snapshots).
 
 ## Decisions needed (Shannon/Callum)
 
-- [ ] Onboarding: is a tutorial needed, or is the friend-circle audience
-      fine learning by dying? (v1 carried this question too.)
+- [ ] Onboarding: beyond the 3 coach-marks + the pending controls hint, is more
+      tutorial needed, or is the friend-circle audience fine learning by doing?
 - [ ] Accessibility beyond reduce-motion: colorblind-safe palette and text
       scaling — worth it pre-launch or post?
