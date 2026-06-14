@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.10.3 — 2026-06-14
+
+- **Fixed: clicking a HUD button fired a bullet** (desktop). Pressing Upgrades /
+  Skill Tree / the Settings gear during battle no longer also fires the turret —
+  the gun only fires when the press lands on the battlefield itself, not on a HUD
+  button (gated on the pointer's `downElement`). Same guard added on touch.
+
 ## v0.10.2 — 2026-06-14
 
 - **Renamed the game "Level" to "Stage"** everywhere it's player-visible (HUD,

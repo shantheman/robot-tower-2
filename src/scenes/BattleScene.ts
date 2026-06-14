@@ -148,7 +148,10 @@ export class BattleScene extends Phaser.Scene {
     // aims toward that point (tracks if dragged) + fires while held. On desktop
     // the aim follows the cursor and fires while the mouse is down.
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
-      if (!p.wasTouch) return; // the joystick is a DOM element; this is a field press
+      // Touch field press only — ignore desktop (joystick is DOM) and any press
+      // that landed on a HUD button (downElement is then the button, not the
+      // canvas), so tapping menus/gear doesn't also fire.
+      if (!p.wasTouch || p.downElement !== this.game.canvas) return;
       this.aimP = p;
       this.aimTarget = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
     });
@@ -760,7 +763,8 @@ export class BattleScene extends Phaser.Scene {
       // parking the turret on auto-fire.
       const firing = isTouch()
         ? (joystick.active || this.aimP?.isDown === true)
-        : this.input.activePointer.isDown;
+        : (this.input.activePointer.isDown
+           && this.input.activePointer.downElement === this.game.canvas); // not a HUD button
       // Hold fire until the gun has swung onto the target heading, so a tap to a
       // new direction doesn't spray shots at the in-between angles it sweeps past.
       const aligned = Math.abs(Phaser.Math.Angle.Wrap(this.aimTarget - this.aimAngle)) < C.AIM_FIRE_TOLERANCE;
