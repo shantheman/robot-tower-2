@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.9 — 2026-06-14
+
+- **Volume sliders now follow perceived loudness** (Sound + Music). Hearing is
+  ~logarithmic, so a linear slider barely changed across its top half; both
+  sliders now apply an `x²` taper to the gain (`perceptualGain` in audio.ts), so
+  50% sounds roughly half as loud. Stored value / displayed % unchanged; 0 still
+  mutes.
+
 ## v0.9.8 — 2026-06-14
 
 - **Fixed the music slider on mobile** (was binary — any level played at full).

@@ -77,6 +77,14 @@ export function getAudioContext(): AudioContext | null {
   return ensureContext();
 }
 
+/** Map a 0..1 slider value to a gain that tracks PERCEIVED loudness. Hearing is
+ * ~logarithmic, so a raw linear slider barely changes across its top half;
+ * squaring makes the knob position feel natural (0 still = silent). Shared by
+ * SFX (here) and music (music.ts) so the curve has one home. */
+export function perceptualGain(v: number): number {
+  return v <= 0 ? 0 : v * v;
+}
+
 /** Fetch + decode each FILE_SFX clip into the buffer pool. Runs once, after the
  * context exists (decodeAudioData needs it). A failed load just skips that SFX. */
 async function loadFileSfx(c: AudioContext): Promise<void> {
@@ -119,7 +127,7 @@ export function play(name: keyof typeof SPECS | keyof typeof FILE_SFX): void {
     const src = c.createBufferSource();
     src.buffer = buf;
     const gain = c.createGain();
-    gain.gain.value = gs.volume * (gainByName.get(name) ?? 1);
+    gain.gain.value = perceptualGain(gs.volume) * (gainByName.get(name) ?? 1);
     src.connect(gain).connect(c.destination);
     src.start();
   } catch { /* never crash over audio */ }

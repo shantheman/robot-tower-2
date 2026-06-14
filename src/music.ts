@@ -4,7 +4,7 @@
  * gesture; raising the Settings slider (a gesture itself) also starts it. */
 
 import { game } from "./game";
-import { getAudioContext } from "./audio";
+import { getAudioContext, perceptualGain } from "./audio";
 
 const TRACK = import.meta.env.BASE_URL + "audio/future.mp3";
 
@@ -52,10 +52,10 @@ function apply(): void {
   const v = Math.max(0, Math.min(1, game.gs.musicVolume));
   const g = unlocked ? ensureGraph(a) : null;
   if (g) {
-    g.gain.value = v;  // iOS-safe volume
-    a.volume = 1;      // element at full; the gain node sets the level
+    g.gain.value = perceptualGain(v);  // iOS-safe volume, perceptual taper
+    a.volume = 1;                       // element at full; the gain node sets the level
   } else {
-    a.volume = v;      // pre-unlock / no Web Audio: best-effort (works on desktop)
+    a.volume = perceptualGain(v);       // pre-unlock / no Web Audio: best-effort (desktop)
   }
   if (v <= 0) {
     a.pause();
