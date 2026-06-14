@@ -20,11 +20,13 @@ import { PauseScreen } from "./ui/pause";
 import { SettingsModal } from "./ui/settings";
 import { AchievementsModal } from "./ui/achievements";
 import { TowerModal } from "./ui/towerModal";
+import { initJoystick } from "./ui/joystick";
 
 if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
   document.documentElement.classList.add("touch");
 }
 applyHanded(); // mirror the touch HUD to the saved left/right preference
+initJoystick(); // wire the touch aim-joystick (no-op visuals on desktop)
 
 initMusic(); // looping background music, unlocked on first gesture (autoplay policy)
 initAnalytics(); // anonymous playtime + progression (no-op until a PostHog key is set)
@@ -171,4 +173,6 @@ window.addEventListener("resize", onViewportChange);
 window.addEventListener("orientationchange", onViewportChange);
 game.onScreenChange = (s) => {
   if (s === "home" && refitPending) location.reload();
+  // The touch combat controls (joystick + ultimate orb) only show in battle.
+  document.documentElement.classList.toggle("in-battle", s === "battle");
 };

@@ -4,7 +4,7 @@
 
 import type { HudState } from "../scenes/BattleScene";
 import { EMP_COOLDOWN, FREEZE_COOLDOWN, LASER_COOLDOWN, WARP_COOLDOWN } from "../config";
-import { game } from "../game";
+import { game, isTouch } from "../game";
 import { ULT_ICONS } from "./icons";
 import { isBossWave, levelStartWave } from "../sim/waves";
 
@@ -68,7 +68,7 @@ export function updateHud(s: HudState): void {
   const wrap = $("ult-wrap");
   if (s.ultimate) {
     const u = s.ultimate;
-    wrap.classList.remove("hidden");
+    wrap.classList.remove("hidden", "empty");
     if (shownUltKey !== u.key) {
       shownUltKey = u.key;
       $("ult-name").textContent = u.name.toUpperCase();
@@ -85,8 +85,19 @@ export function updateHud(s: HudState): void {
     const frac = u.ready ? 1 : 1 - u.cooldown / (ULT_CD_TOTAL[u.key] ?? 10);
     circle.style.setProperty("--cd", String(Math.max(0, Math.min(1, frac))));
   } else {
-    wrap.classList.add("hidden");
     shownUltKey = null;
+    // Touch: reserve the slot with an empty "NONE" orb so the corner layout
+    // never shifts when an ultimate becomes available mid-run. Desktop hides it.
+    if (isTouch()) {
+      wrap.classList.remove("hidden");
+      wrap.classList.add("empty");
+      $("ult-name").textContent = "ULTIMATE";
+      $("ult-state").textContent = "NONE";
+      $("ult-icon").innerHTML = "";
+      $("st-ult").classList.remove("cooling");
+    } else {
+      wrap.classList.add("hidden");
+    }
   }
   chip("st-combo", s.combo >= 3,
     `COMBO x<b>${s.combo}</b> · +${Math.round((s.comboMult - 1) * 100)}% coins`);

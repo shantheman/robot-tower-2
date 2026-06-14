@@ -80,9 +80,19 @@
         <div class="hud-corner shop-corner">
           <span class="corner-label">UPGRADES</span>
           <button id="btn-shop" class="hud-btn">
-            <span class="btn-icon shop"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 4l7 13H5z"/></svg></span>
+            <span class="btn-icon shop"><img class="up-ico" src="art/upgrade.png" alt="" draggable="false" /></span>
             <span class="btn-text">Upgrades&ensp;<kbd>Tab</kbd></span>
           </button>
+        </div>
+      </div>
+      <!-- Touch-only aim joystick (styled puck); drives the gun heading. Hidden
+           on desktop. Positioned bottom-corner per the handedness preference. -->
+      <div id="joystick" class="joystick" aria-hidden="true">
+        <span class="joy-label">AIM</span>
+        <div class="joy-base">
+          <span class="joy-tick t0"></span><span class="joy-tick t90"></span>
+          <span class="joy-tick t180"></span><span class="joy-tick t270"></span>
+          <div class="joy-knob"></div>
         </div>
       </div>
       <div id="wave-intro" class="wave-intro hidden">

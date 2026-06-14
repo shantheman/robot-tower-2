@@ -246,13 +246,6 @@ export const AIM_SMOOTH_RATE = 50;
  * swings to a freshly-tapped direction; loose enough that sustained fire keeps
  * up while you sweep/track a moving aim. */
 export const AIM_FIRE_TOLERANCE = 0.2;
-/** Touch aim stick (mobile only). A fixed analog pad anchored in one bottom
- * corner (side = GameState.handed); touches inside ringR·ACTIVATE grab it,
- * touches elsewhere are tap/drag-to-aim. Sizes are CSS px (converted to world
- * units at runtime). See BattleScene.stickGeom + Settings handedness. */
-export const STICK_RADIUS_PX = 50;        // base-ring radius
-export const STICK_MARGIN_PX = 14;        // gap from the screen corner
-export const STICK_ACTIVATE_SCALE = 1.7;  // grab radius = ringR · this
 /** When a device is dropping frames (or reduce-motion is on), explosion
  * particle counts scale to this fraction to cut additive overdraw. Devices
  * holding framerate stay at 1 (full). See perf.ts + BattleScene.updatePerf. */

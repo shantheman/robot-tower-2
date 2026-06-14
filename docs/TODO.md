@@ -9,13 +9,13 @@ and git).
 
 ## Gameplay & content
 
-- [~] **Mobile controls overhaul** (v0.9.0, fire model reverted v0.9.3) — touch
-      gets a fixed corner aim-stick (side = Settings → Joystick side, L/R) PLUS
-      tap/hold-anywhere to aim; desktop keeps cursor aim. **Hold to fire** on
-      both (always-fire was tried in v0.9.0 and reverted — "not enough to do, you
-      just sit there"). STILL TODO: a one-time controls coach-mark ("hold to aim
-      & fire / pad in the corner") — deferred at Shannon's request until he plays
-      it.
+- [~] **Mobile battle-HUD overhaul** (v0.10.0, hud-joystick-handoff) — touch only;
+      desktop unchanged. Menus (Skill Tree + Upgrades, new chip icon) moved to the
+      top bar; bottom is the styled **AIM joystick** + ultimate **FIRE orb** as
+      mirrored corner twins (side = Settings → Joystick side, L/R) with a clear
+      dead zone between them. Hold to fire (joystick or field press); empty
+      ultimate slot is reserved ("NONE"). STILL TODO: a one-time controls
+      coach-mark — deferred at Shannon's request until he plays it.
 - [ ] **Second Wind** — pay cores to revive in place, once per run. Parked
       from the death-penalty redesign; adds a cores sink once the tree is
       bought out. Revisit after checkpoint feel is validated.

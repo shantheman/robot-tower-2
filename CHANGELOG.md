@@ -2,6 +2,21 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.10.0 — 2026-06-14
+
+- **Mobile battle-HUD redesign** (hud-joystick-handoff; touch only — desktop is
+  unchanged):
+  - **Skill Tree + Upgrades moved to the top bar** (they pause the game, so
+    they're not in the thumb zone), with the new **Upgrade chip icon** replacing
+    the triangle. Gear sized up.
+  - **Bottom = AIM joystick + ultimate FIRE orb** as mirrored corner twins with
+    a clear dead zone between them (no more accidental taps). The joystick is now
+    a styled DOM puck (gradient base, direction ticks, tracking knob) that drives
+    the gun heading; hold it (or press the field) to fire.
+  - **Settings → Joystick side (L/R)** now mirrors the whole pair.
+  - The ultimate slot is **reserved when empty** ("NONE") so the layout never
+    shifts mid-run; ready shows the purple FIRE orb, cooldown the countdown arc.
+
 ## v0.9.9 — 2026-06-14
 
 - **Volume sliders now follow perceived loudness** (Sound + Music). Hearing is

@@ -859,12 +859,7 @@ html.touch kbd { display: none; }
   border: 1px solid rgba(180, 140, 255, 0.45); border-radius: 6px; padding: 2px 9px;
   background: rgba(18, 12, 32, 0.7);
 }
-@media (max-width: 760px) {
-  .ult-circle { width: 76px; height: 76px; }
-  .ult-icon svg { width: 22px; height: 22px; }
-}
-
-/* Corner buttons: expanded on desktop, abridged icon squares on mobile */
+/* Corner buttons (desktop bottom bar): expanded text buttons. */
 .hud-corner { display: flex; flex-direction: column; align-items: center; gap: 6px; align-self: flex-end; }
 .corner-label { display: none; }
 .hud-btn { display: flex; align-items: center; gap: 8px; }
@@ -872,27 +867,102 @@ html.touch kbd { display: none; }
 .btn-icon.skills { color: var(--green); }
 .btn-icon.shop { color: var(--cyan); }
 .btn-icon svg { display: block; }
-@media (max-width: 760px) {
-  .corner-label {
-    display: block; font-size: 9.5px; font-weight: 600; letter-spacing: 0.18em;
-    color: var(--dim);
-  }
-  .btn-icon { display: block; }
-  .btn-text { display: none; }
-  .hud-btn { width: 54px; height: 54px; justify-content: center; padding: 0; border-radius: 14px; }
-}
-
-/* Touch handedness: the aim stick (drawn on the canvas) owns one bottom corner,
-   so cluster Skill Tree + Upgrades on the OTHER side and keep the ultimate
-   centered. Desktop keeps the split layout (skills left / upgrades right). The
-   handed-* class is set on <html> from GameState.handed (see applyHanded). */
-html.touch .hud-bottom { gap: 12px; }
-html.touch .hud-bottom .ult-wrap {
-  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); margin: 0;
-}
-html.touch.handed-right .hud-bottom { justify-content: flex-start; }
-html.touch.handed-left  .hud-bottom { justify-content: flex-end; }
 .set-seg { display: inline-flex; gap: 8px; }
+
+/* ============================================================================
+   TOUCH battle HUD (mobile redesign, hud-joystick-handoff). Desktop is untouched
+   — every rule here is gated on html.touch. Top bar: row1 = level/wave (L) +
+   purse + gear (R); row2 = tower health (L) + Skill Tree / Upgrades icons (R).
+   Bottom: AIM joystick + ultimate FIRE orb as mirrored corner twins (side set
+   by handedness). The .hud-top/.hud-bottom containers dissolve so each piece
+   positions directly against #hud.
+   ========================================================================== */
+html.touch .hud-top, html.touch .hud-bottom { display: contents; }
+
+/* Row 1 */
+html.touch .badge-group {
+  position: absolute; top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left));
+}
+html.touch .counters {
+  position: absolute; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+}
+html.touch .gear { width: 36px; height: 36px; font-size: 20px; }
+/* Row 2: health bar (left, leave room for two icon buttons) + menu icons (right) */
+html.touch .integrity {
+  position: absolute; top: 64px; left: max(12px, env(safe-area-inset-left));
+  right: calc(max(12px, env(safe-area-inset-right)) + 96px);
+  min-width: 0; max-width: none; order: 0;
+}
+html.touch .skills-corner { position: absolute; top: 62px; right: calc(max(12px, env(safe-area-inset-right)) + 46px); }
+html.touch .shop-corner   { position: absolute; top: 62px; right: max(12px, env(safe-area-inset-right)); }
+html.touch .hud-corner { gap: 0; }
+html.touch .hud-corner .corner-label, html.touch .hud-corner .btn-text { display: none; }
+html.touch .hud-corner .btn-icon { display: block; }
+html.touch .hud-corner .hud-btn {
+  width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 10px;
+  background: rgba(8, 14, 28, 0.7); border: 1px solid rgba(120, 160, 230, 0.22);
+}
+html.touch .skills-corner .hud-btn { border-color: rgba(70, 227, 154, 0.32); }
+html.touch .shop-corner .hud-btn { border-color: rgba(127, 232, 255, 0.32); }
+html.touch .up-ico { width: 25px; height: 25px; display: block; }
+html.touch .hud-corner .tree-glyph { width: 22px; height: 22px; }
+/* Status chips drop below row 2. */
+html.touch .hud-status { top: 112px; }
+
+/* Bottom corners — ultimate FIRE orb + AIM joystick, mirrored by handedness
+   (default: joystick right / FIRE left; handed-left swaps). */
+html.touch .ult-wrap { position: absolute; bottom: max(26px, env(safe-area-inset-bottom)); margin: 0; }
+html.touch.handed-right .ult-wrap { left: 22px; right: auto; }
+html.touch.handed-left  .ult-wrap { right: 22px; left: auto; }
+html.touch .ult-circle { width: 96px; height: 96px; }
+html.touch .ult-icon svg { width: 30px; height: 30px; }
+html.touch .ult-wrap.empty .ult-circle {
+  border: 1.5px dashed rgba(120, 160, 230, 0.3); background: rgba(8, 14, 28, 0.4);
+  box-shadow: none; color: #56668c; cursor: default;
+}
+html.touch .ult-wrap.empty .ult-name { color: #4a5570; }
+html.touch .ult-wrap.empty .ult-state { font-size: 13px; letter-spacing: 0.12em; color: #56668c; }
+html.touch .ult-wrap.empty .ult-icon { display: none; }
+
+/* AIM joystick puck (DOM; src/ui/joystick.ts drives it). Shown only in battle. */
+.joystick {
+  position: absolute; bottom: max(26px, env(safe-area-inset-bottom)); z-index: 5;
+  display: none; flex-direction: column; align-items: center; gap: 7px;
+  pointer-events: auto; touch-action: none;
+}
+html.touch.in-battle #joystick { display: flex; }
+html.touch.handed-right #joystick { right: 22px; left: auto; }
+html.touch.handed-left  #joystick { left: 22px; right: auto; }
+.joy-label {
+  font-family: "Chakra Petch", sans-serif; font-size: 9.5px; font-weight: 800;
+  letter-spacing: 0.14em; color: #5f7398;
+}
+.joy-base {
+  position: relative; width: 96px; height: 96px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, rgba(22, 38, 66, 0.7), rgba(8, 14, 28, 0.78));
+  border: 1px solid rgba(120, 160, 230, 0.28);
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+.joystick.active .joy-base { border-color: rgba(150, 190, 250, 0.5); }
+.joy-tick {
+  position: absolute; left: 50%; top: 7px; width: 2px; height: 6px; border-radius: 1px;
+  background: rgba(120, 160, 230, 0.35); transform-origin: 50% 41px;
+}
+.joy-tick.t0   { transform: translateX(-50%) rotate(0deg); }
+.joy-tick.t90  { transform: translateX(-50%) rotate(90deg); }
+.joy-tick.t180 { transform: translateX(-50%) rotate(180deg); }
+.joy-tick.t270 { transform: translateX(-50%) rotate(270deg); }
+.joy-knob {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 50px; height: 50px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 34%, #43597f, #1a2740);
+  border: 1px solid rgba(150, 190, 250, 0.45);
+  box-shadow: 0 3px 11px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(180, 210, 255, 0.25);
+}
+.joy-knob::after {
+  content: ""; position: absolute; inset: 30%; border-radius: 50%;
+  border: 1px solid rgba(150, 190, 250, 0.25);
+}
 
 /* -- Phone landscape: hero left, menu right (mock 844x390) -------------------- */
 @media (orientation: landscape) and (max-height: 480px) {

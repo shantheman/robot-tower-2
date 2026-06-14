@@ -9,6 +9,7 @@
 import Phaser from "phaser";
 import * as C from "../config";
 import { game, isTouch } from "../game";
+import { joystick } from "../ui/joystick";
 import { play } from "../audio";
 import {
   chooseEnemyType, effectiveWave, isBossWave, waveInLevel, waveRobotCount,
@@ -73,9 +74,7 @@ export class BattleScene extends Phaser.Scene {
   private perfLite = false;                              // FPS-driven low-quality state
   private perfFrames = 0;                                // active frames seen (grace period)
   private fpsFlushT = 0;                                 // active seconds since the last FPS analytics flush
-  private stickP: Phaser.Input.Pointer | null = null;    // touch: pointer driving the corner stick
-  private aimP: Phaser.Input.Pointer | null = null;      // touch: pointer driving tap/drag aim
-  private joyGfx!: Phaser.GameObjects.Graphics;
+  private aimP: Phaser.Input.Pointer | null = null;      // touch: pointer driving a field tap/drag aim
   private paused = false;
   private over = false; // tower destroyed; stop simulating
 
@@ -143,24 +142,17 @@ export class BattleScene extends Phaser.Scene {
     this.gun.setScale(C.TURRET_GUN_H / this.gun.height); // mock: gun height = 0.69 x base
     this.gunShadow.setScale(this.gun.scale * C.TOWER_SHADOW.gun.scale);
 
-    this.joyGfx = this.add.graphics().setDepth(900);
-    this.input.addPointer(1); // allow the corner stick + a tap to be touched at once
-    // Hold to fire (see update). On touch: a press inside the corner stick drives
-    // a RELATIVE analog aim + fires while held; a press anywhere else aims toward
-    // that point (tracks if dragged) + fires while held. On desktop the aim
-    // follows the cursor and fires while the mouse is down.
+    this.input.addPointer(1); // allow a battlefield touch alongside the DOM joystick
+    // Hold to fire (see update). On touch: the DOM aim-joystick (src/ui/joystick)
+    // drives a RELATIVE aim + fires while held; a press anywhere on the field
+    // aims toward that point (tracks if dragged) + fires while held. On desktop
+    // the aim follows the cursor and fires while the mouse is down.
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
-      if (!p.wasTouch) return;
-      const g = this.stickGeom();
-      if (g && Phaser.Math.Distance.Between(p.worldX, p.worldY, g.cx, g.cy) <= g.activR) {
-        this.stickP = p;
-      } else {
-        this.aimP = p;
-        this.aimTarget = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
-      }
+      if (!p.wasTouch) return; // the joystick is a DOM element; this is a field press
+      this.aimP = p;
+      this.aimTarget = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
     });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => {
-      if (this.stickP === p) this.stickP = null;
       if (this.aimP === p) this.aimP = null;
     });
     // (Space-fires-ultimate lives in the global keyboard map: src/input.ts.)
@@ -184,7 +176,6 @@ export class BattleScene extends Phaser.Scene {
 
   setPaused(p: boolean): void {
     this.paused = p;
-    this.stickP = null;
     this.aimP = null;
   }
 
@@ -673,36 +664,6 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
-  /** Fixed corner aim-stick geometry in WORLD units (canvas fills the screen at
-   * zoom 1, so world ≈ screen). Side follows the handedness pref. Null on
-   * desktop — there's no stick there. */
-  private stickGeom(): { cx: number; cy: number; ringR: number; activR: number } | null {
-    if (!isTouch()) return null;
-    const ww = this.scale.gameSize.width, wh = this.scale.gameSize.height;
-    const k = ww / (this.scale.displaySize.width || ww); // world units per CSS px
-    const ringR = C.STICK_RADIUS_PX * k, margin = C.STICK_MARGIN_PX * k;
-    const cx = game.gs.handed === "left" ? margin + ringR : ww - margin - ringR;
-    return { cx, cy: wh - margin - ringR, ringR, activR: ringR * C.STICK_ACTIVATE_SCALE };
-  }
-
-  /** Draw the corner stick: a faint base ring (brighter while held) + a knob
-   * that tracks the thumb, clamped to the ring. Touch only. */
-  private drawStick(): void {
-    this.joyGfx.clear();
-    const g = this.stickGeom();
-    if (!g) return;
-    const held = this.stickP !== null;
-    this.joyGfx.lineStyle(2, 0x7fe8ff, held ? 0.5 : 0.2).strokeCircle(g.cx, g.cy, g.ringR);
-    let kx = g.cx, ky = g.cy;
-    if (this.stickP) {
-      const dx = this.stickP.worldX - g.cx, dy = this.stickP.worldY - g.cy;
-      const d = Math.hypot(dx, dy) || 1, cl = Math.min(d, g.ringR);
-      kx = g.cx + (dx / d) * cl; ky = g.cy + (dy / d) * cl;
-    }
-    this.joyGfx.fillStyle(0x7fe8ff, held ? 0.5 : 0.22).fillCircle(kx, ky, g.ringR * 0.42);
-  }
-
-
   private drawShield(): void {
     const gs = game.gs;
     this.shieldGfx.clear();
@@ -772,16 +733,14 @@ export class BattleScene extends Phaser.Scene {
           return;
         }
       }
-      // Steer the aim only — the turret always fires (below). Desktop follows
-      // the cursor; touch uses the corner stick (relative) or a tap/drag
-      // (absolute); with no active touch the heading just persists.
+      // Steer the aim. Desktop follows the cursor; touch uses the DOM joystick
+      // (relative) or a field tap/drag (absolute); with no active input the
+      // heading just persists (gun rests there, not firing).
       if (!isTouch()) {
         const p = this.input.activePointer;
         this.aimTarget = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y, p.worldX, p.worldY);
-      } else if (this.stickP) {
-        const g = this.stickGeom()!;
-        const dx = this.stickP.worldX - g.cx, dy = this.stickP.worldY - g.cy;
-        if (dx * dx + dy * dy > (g.ringR * 0.18) ** 2) this.aimTarget = Math.atan2(dy, dx);
+      } else if (joystick.active) {
+        this.aimTarget = joystick.angle;
       } else if (this.aimP?.isDown) {
         this.aimTarget = Phaser.Math.Angle.Between(this.towerPos.x, this.towerPos.y,
           this.aimP.worldX, this.aimP.worldY);
@@ -796,11 +755,11 @@ export class BattleScene extends Phaser.Scene {
       this.syncBaseTexture();
       this.gun.setRotation(this.aimAngle + this.gunSkew() + Math.PI / 2);
       this.gunShadow.setRotation(this.gun.rotation);
-      // Hold to fire: mouse down (desktop), or a finger on the corner stick /
-      // pressing the field (touch). Lifting stops the gun — the player has to
-      // stay engaged rather than parking the turret on auto-fire.
+      // Hold to fire: mouse down (desktop), or the joystick / a field press held
+      // (touch). Lifting stops the gun — the player stays engaged rather than
+      // parking the turret on auto-fire.
       const firing = isTouch()
-        ? (this.stickP !== null || this.aimP?.isDown === true)
+        ? (joystick.active || this.aimP?.isDown === true)
         : this.input.activePointer.isDown;
       // Hold fire until the gun has swung onto the target heading, so a tap to a
       // new direction doesn't spray shots at the in-between angles it sweeps past.
@@ -810,7 +769,6 @@ export class BattleScene extends Phaser.Scene {
         this.fireSpread();
         this.fireTimer = gs.playerCooldown();
       }
-      this.drawStick();
       this.updateAutoShooter(dt);
       this.droneCtl.update(dt, enemyDt, this.enemies);
       this.updateLaser(dt);
