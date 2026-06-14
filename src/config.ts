@@ -245,8 +245,8 @@ export const AIM_SMOOTH_RATE = 50;
  * corner (side = GameState.handed); touches inside ringR·ACTIVATE grab it,
  * touches elsewhere are tap/drag-to-aim. Sizes are CSS px (converted to world
  * units at runtime). See BattleScene.stickGeom + Settings handedness. */
-export const STICK_RADIUS_PX = 62;        // base-ring radius
-export const STICK_MARGIN_PX = 26;        // gap from the screen corner
+export const STICK_RADIUS_PX = 50;        // base-ring radius
+export const STICK_MARGIN_PX = 14;        // gap from the screen corner
 export const STICK_ACTIVATE_SCALE = 1.7;  // grab radius = ringR · this
 /** When a device is dropping frames (or reduce-motion is on), explosion
  * particle counts scale to this fraction to cut additive overdraw. Devices

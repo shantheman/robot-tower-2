@@ -2,6 +2,11 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.1 — 2026-06-13
+
+- **Smaller aim-stick, tucked tighter into the corner** — ring radius 62 → 50px,
+  corner margin 26 → 14px (grab zone scales with the radius).
+
 ## v0.9.0 — 2026-06-13
 
 - **The turret always fires now** (both platforms). Aiming is the whole game;
