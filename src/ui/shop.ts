@@ -102,7 +102,7 @@ export class ShopPanel extends Panel {
     });
     // Repair + Plating are limited per level (v2 balance: stacking them made
     // the tower unkillable). Spent cards show a green "USED".
-    const per = (max: number) => max === 1 ? "once per level" : `${max}× per level`;
+    const per = (max: number) => max === 1 ? "once per stage" : `${max}× per stage`;
     if (gs.skills.has("repair")) {
       const used = gs.repairBuys >= C.REPAIR_MAX_BUYS;
       const hurt = gs.hp < gs.maxHp();
@@ -191,7 +191,7 @@ export class ShopPanel extends Panel {
       ${towerBannerHtml()}
 
       <div class="section-head field"><span class="sh-label">FIELD UPGRADES</span>
-        <span class="sh-note">↺ reset at end of level</span><span class="sh-rule"></span></div>
+        <span class="sh-note">↺ reset at end of stage</span><span class="sh-rule"></span></div>
       ${(["ECONOMY", "CANNON", "DEFENSE", "DRONE"] as Category[]).map((cat) => {
         const items = this.fieldCards().filter((c) => c.cat === cat);
         if (!items.length) return "";
@@ -204,8 +204,8 @@ export class ShopPanel extends Panel {
       ${ults.length === 0 ? "" : `
       <div class="section-head ult"><span class="sh-label">ULTIMATES</span>
         <span class="sh-note">${isTouch()
-          ? "own many · tap to equip · reset at end of level"
-          : "own many · click to equip · [Space] fires it · reset at end of level"}</span><span class="sh-rule"></span></div>
+          ? "own many · tap to equip · reset at end of stage"
+          : "own many · click to equip · [Space] fires it · reset at end of stage"}</span><span class="sh-rule"></span></div>
       <div class="card-grid ult">${ults.map((c) => this.card(c)).join("")}</div>`}
       </div>
 

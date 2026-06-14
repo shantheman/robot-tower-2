@@ -26,7 +26,7 @@ export class HomeScreen extends Panel {
 
     const strip = !returning ? "" : `
       <div class="home-strip">
-        <div class="hs-box"><label>REACHED</label><b class="lt">Lv ${gs.level}</b></div>
+        <div class="hs-box"><label>REACHED</label><b class="lt">Stage ${gs.level}</b></div>
         <div class="hs-box"><label>CORES</label><span class="hs-val"><span class="core-icon small"></span><b class="cy">${gs.cores}</b></span></div>
         <div class="hs-box hs-tower" data-act="tower" title="Upgrade tower"><label>TOWER</label><b class="cy">Lv ${gs.towerLevel}</b></div>
         <div class="hs-box"><label>SKILLS</label><b class="gr">${gs.skills.size}/${SKILL_NODES.length}</b></div>
@@ -47,7 +47,7 @@ export class HomeScreen extends Panel {
             <img class="hero-gun" src="sprites/turret_gun_1.png" alt="" />
           </div>
           <div class="home-badge">${game.justClearedLevel
-            ? `LEVEL ${game.justClearedLevel} COMPLETE — CORES BANKED`
+            ? `STAGE ${game.justClearedLevel} COMPLETE — CORES BANKED`
             : returning ? "WELCOME BACK, DEFENDER" : "A 360° SURVIVAL DEFENSE"}</div>
           <h1 class="home-title">MECH TIDE</h1>
         </div>
@@ -55,8 +55,8 @@ export class HomeScreen extends Panel {
           ${strip}
           <button class="menu-btn primary" data-act="play">
             <span class="mb-icon">▸&#xFE0E;</span>
-            <span class="mb-col"><span class="mb-title">${game.justClearedLevel ? "NEXT LEVEL" : returning ? "CONTINUE" : "NEW GAME"}</span>
-            <span class="mb-sub">${returning ? `${game.justClearedLevel ? "Onward" : "Jump back in"} · Level ${gs.level} · Wave 1` : "Begin at Level 1 · Wave 1"}</span></span>
+            <span class="mb-col"><span class="mb-title">${game.justClearedLevel ? "NEXT STAGE" : returning ? "CONTINUE" : "NEW GAME"}</span>
+            <span class="mb-sub">${returning ? `${game.justClearedLevel ? "Onward" : "Jump back in"} · Stage ${gs.level} · Wave 1` : "Begin at Stage 1 · Wave 1"}</span></span>
           </button>
           <div class="menu-row">
             <button class="menu-btn green" data-act="skills"><span class="mb-icon tree-glyph"></span>
@@ -86,7 +86,7 @@ export class HomeScreen extends Panel {
       maybeTutorial({
         key: "level1",
         step: 2, total: 3,
-        text: "Congrats — you've got the hang of it and cleared <b>Level 1</b>! Heads up: each new level resets your coins and field upgrades, but your <b>Tower Level</b> and unlocked <b>Skill Tree</b> items stay with you.",
+        text: "Congrats — you've got the hang of it and cleared <b>Stage 1</b>! Heads up: each new stage resets your coins and field upgrades, but your <b>Tower Level</b> and unlocked <b>Skill Tree</b> items stay with you.",
       });
     } else if (game.justClearedLevel === 2) {
       maybeTutorial({

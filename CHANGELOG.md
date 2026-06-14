@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.10.2 — 2026-06-14
+
+- **Renamed the game "Level" to "Stage"** everywhere it's player-visible (HUD,
+  wave intro, home, death screen, "Stage X Complete", the achievement) so it no
+  longer clashes with **Tower Level**. Tower Level and item upgrade levels ("Lv")
+  are unchanged; internal code/save keys untouched.
+
 ## v0.10.1 — 2026-06-14
 
 - **Decluttered the blue CTA buttons.** Dropped the ▸ play-triangle from the

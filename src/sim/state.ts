@@ -48,7 +48,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: "wave10", name: "Hold the Line", how: "Reach wave 10", bounty: 10 },
   { id: "wave25", name: "Last Stand", how: "Reach wave 25", bounty: 15 },
   { id: "wave50", name: "Unstoppable", how: "Reach wave 50", bounty: 25 },
-  { id: "level5", name: "Onward & Upward", how: "Reach Level 5", bounty: 15 },
+  { id: "level5", name: "Onward & Upward", how: "Reach Stage 5", bounty: 15 },
   { id: "boss", name: "Boss Slayer", how: "Destroy a boss", bounty: 10 },
   { id: "combo15", name: "Killing Spree", how: "Hit a 15+ kill combo", bounty: 15 },
   { id: "kills200", name: "Robot Recycler", how: "200 kills in one run", bounty: 20 },

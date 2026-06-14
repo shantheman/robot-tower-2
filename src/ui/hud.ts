@@ -107,7 +107,7 @@ export function updateHud(s: HudState): void {
   const intro = $("wave-intro");
   if (s.intermission > 0) {
     intro.classList.remove("hidden");
-    $("wi-level").textContent = `LEVEL ${s.level}`;
+    $("wi-level").textContent = `STAGE ${s.level}`;
     const globalWave = levelStartWave(s.level) + s.waveInLevel - 1;
     const boss = isBossWave(globalWave);
     const waveEl = $("wi-wave");
