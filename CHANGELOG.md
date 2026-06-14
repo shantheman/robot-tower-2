@@ -2,6 +2,13 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.5 — 2026-06-13
+
+- **Link previews (social "unfurl" cards).** Added Open Graph + Twitter Card
+  meta tags + a 1200×630 key-art image (Claude Design's "Hold the center" card),
+  so sharing mechtide.com on Facebook / iMessage / Slack / Discord / X / LinkedIn
+  shows a proper title, description, and image instead of a bare link.
+
 ## v0.9.4 — 2026-06-13
 
 - **No more firing mid-swing.** When you tap a new direction, the gun holds fire
