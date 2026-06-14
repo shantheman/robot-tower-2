@@ -4,11 +4,13 @@
  * gesture; raising the Settings slider (a gesture itself) also starts it. */
 
 import { game } from "./game";
+import { getAudioContext } from "./audio";
 
 const TRACK = import.meta.env.BASE_URL + "audio/future.mp3";
 
 let el: HTMLAudioElement | null = null;
 let unlocked = false;
+let gainNode: GainNode | null = null;
 
 function ensureEl(): HTMLAudioElement {
   if (!el) {
@@ -21,12 +23,40 @@ function ensureEl(): HTMLAudioElement {
   return el;
 }
 
+/** Route the <audio> element through a Web Audio gain node so the volume is
+ * actually adjustable on iOS, which IGNORES HTMLMediaElement.volume (there any
+ * value > 0 plays at full). Built once, after a gesture has unlocked audio.
+ * After routing, the element plays ONLY through the graph, so gainNode owns the
+ * level. Returns null pre-context / if routing fails (caller falls back to
+ * a.volume, which is correct on desktop). */
+function ensureGraph(a: HTMLAudioElement): GainNode | null {
+  if (gainNode) return gainNode;
+  const ctx = getAudioContext();
+  if (!ctx) return null;
+  if (ctx.state === "suspended") void ctx.resume();
+  try {
+    const src = ctx.createMediaElementSource(a);
+    const g = ctx.createGain();
+    src.connect(g).connect(ctx.destination);
+    gainNode = g;
+  } catch {
+    gainNode = null; // already routed / unsupported -> a.volume fallback
+  }
+  return gainNode;
+}
+
 /** Push the current musicVolume to the live element, starting or pausing as
  * needed. Playback only begins once a user gesture has unlocked audio. */
 function apply(): void {
   const a = ensureEl();
   const v = Math.max(0, Math.min(1, game.gs.musicVolume));
-  a.volume = v;
+  const g = unlocked ? ensureGraph(a) : null;
+  if (g) {
+    g.gain.value = v;  // iOS-safe volume
+    a.volume = 1;      // element at full; the gain node sets the level
+  } else {
+    a.volume = v;      // pre-unlock / no Web Audio: best-effort (works on desktop)
+  }
   if (v <= 0) {
     a.pause();
   } else if (unlocked && a.paused) {

@@ -69,6 +69,14 @@ function ensureContext(): AudioContext | null {
   return ctx;
 }
 
+/** The shared AudioContext (created on demand). music.ts routes the background
+ * track through it so volume is adjustable on iOS, which ignores
+ * HTMLMediaElement.volume. Reusing one context keeps the iOS unlock + the
+ * "playback" audioSession set up here in one place. */
+export function getAudioContext(): AudioContext | null {
+  return ensureContext();
+}
+
 /** Fetch + decode each FILE_SFX clip into the buffer pool. Runs once, after the
  * context exists (decodeAudioData needs it). A failed load just skips that SFX. */
 async function loadFileSfx(c: AudioContext): Promise<void> {

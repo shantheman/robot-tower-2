@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.9.8 — 2026-06-14
+
+- **Fixed the music slider on mobile** (was binary — any level played at full).
+  iOS ignores `HTMLMediaElement.volume`, so setting the `<audio>` element's
+  volume did nothing there. Music now routes through the same Web Audio context
+  as the SFX and its level is set via a gain node (which iOS honors), so the
+  slider scales smoothly on mobile too. Desktop unchanged.
+
 ## v0.9.7 — 2026-06-14
 
 - **Session replay turned off.** `SESSION_REPLAY = false` — the SDK no longer
