@@ -20,9 +20,9 @@ export class DeadScreen extends Panel {
         <div class="dead-sub">You fell on <b>Level ${gs.level}</b> · Wave ${waveInLevel(gs.wave)}</div>
         <div class="dead-btns">
           ${cpWave !== null && cpWave > 1
-        ? `<button class="cta" data-act="checkpoint">RETRY FROM WAVE ${cpWave} ▸</button>
+        ? `<button class="cta" data-act="checkpoint">RETRY FROM WAVE ${cpWave}</button>
            <button class="ghost-btn" data-act="retry">RESTART LEVEL ${gs.level}</button>`
-        : `<button class="cta" data-act="retry">RETRY LEVEL ${gs.level} ▸</button>`}
+        : `<button class="cta" data-act="retry">RETRY LEVEL ${gs.level}</button>`}
           <button class="ghost-btn" data-act="home">HOME</button>
         </div>
       </div>`);

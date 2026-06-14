@@ -79,12 +79,6 @@ export class SkillsPanel extends Panel {
       <header class="panel-head">
         <div class="panel-title-group"><h1>SKILL TREE</h1></div>
       </header>
-      <div class="tree-legend">
-        <span class="lg owned"><i></i>OWNED</span>
-        <span class="lg avail"><i></i>CAN BUY</span>
-        <span class="lg locked"><i></i>LOCKED</span>
-        <span class="lg-hint">|&ensp;unlocks appear in your in-battle Upgrades</span>
-      </div>
       <div class="tree-tabs">${tabs}</div>
       <div class="tree-cols">${cols}</div>
       <div class="tree-foot">${isTouch() ? "Tap" : "Click"} a node to unlock it.</div>
@@ -93,7 +87,6 @@ export class SkillsPanel extends Panel {
         <div class="foot-bal"><label>CORES</label>
           <span class="fb-val"><span class="core-icon"></span><b class="cy">${gs.cores}</b></span></div>
         <button class="cta startwave" data-act="back">
-          <span class="play">▸&#xFE0E;</span>
           <span class="cta-col"><span class="cta-big">${this.returnTo === "battle" ? "RESUME BATTLE" : "BACK TO BASE"}</span>
           ${isTouch() ? "" : `<span class="cta-sub2">[Esc]</span>`}</span>
         </button>

@@ -2,6 +2,14 @@
 
 Newest at top. The running version shows in Settings.
 
+## v0.10.1 — 2026-06-14
+
+- **Decluttered the blue CTA buttons.** Dropped the ▸ play-triangle from the
+  death-screen retry, the Upgrades "Start Next Wave / Resume", and the Skill Tree
+  "Back to Base" buttons. Kept it on the Home screen's New Game / Continue.
+- **Removed the Skill Tree legend** (the Owned / Can Buy / Locked key) — the node
+  states are self-evident, so it was just clutter. (Orphaned CSS pruned.)
+
 ## v0.10.0 — 2026-06-14
 
 - **Mobile battle-HUD redesign** (hud-joystick-handoff; touch only — desktop is

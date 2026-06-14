@@ -214,12 +214,10 @@ export class ShopPanel extends Panel {
           <span class="fb-val"><span class="coin-icon"></span><b>${Math.floor(gs.money).toLocaleString("en-US")}</b></span></div>
         ${cleared
         ? `<button class="cta startwave" data-act="next">
-             <span class="play">▸&#xFE0E;</span>
              <span class="cta-col"><span class="cta-big">START NEXT WAVE</span>
              <span class="cta-sub2">Wave ${Math.min(wil + 1, total)} of ${total}${isTouch() ? "" : " · [Space]"}</span></span>
            </button>`
         : `<button class="cta startwave" data-act="close">
-             <span class="play">▸&#xFE0E;</span>
              <span class="cta-col"><span class="cta-big">RESUME BATTLE</span>
              <span class="cta-sub2">Wave ${wil} of ${total}${isTouch() ? "" : " · [Tab / Esc]"}</span></span>
            </button>`}
